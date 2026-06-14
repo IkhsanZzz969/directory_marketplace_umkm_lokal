@@ -31,6 +31,10 @@ Route::get('profile', function () {
     return view('profile');
 })->middleware('auth')->name('profile');
 
+Route::get('/kelola-toko', function () {
+    return view('kelola-toko');
+})->middleware('auth')->name('kelola-toko');
+
 Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

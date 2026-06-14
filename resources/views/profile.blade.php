@@ -209,7 +209,7 @@
         </div>
         <div class="profile-header-actions">
           @if(Auth::user()->role === 'umkm')
-          <a href="create-shop.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-store"></i> Kelola Toko</a>
+          <a href="/kelola-toko" class="btn btn-primary btn-sm"><i class="fa-solid fa-store"></i> Kelola Toko</a>
           @endif
           <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.2);">
             <i class="fa-solid fa-gear"></i>
