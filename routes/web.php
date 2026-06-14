@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -38,3 +40,10 @@ Route::get('/kelola-toko', function () {
 Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/administrator', [AdminController::class, 'administrator'])->name('administrator');
+
+    Route::get('/create-shop', [StoreController::class, 'create'])->name('shop.create');
+    Route::post('/create-shop', [StoreController::class, 'store'])->name('shop.store');
+});

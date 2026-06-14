@@ -376,7 +376,7 @@
         <div class="auth-layout">
 
             <div class="auth-left">
-                <a href="index.html" class="auth-left-logo">Laba</a>
+                <a href="/" class="auth-left-logo">Laba</a>
                 <div class="auth-left-tagline">
                     Bergabunglah dengan <em>Komunitas</em> UMKM Indonesia
                 </div>
@@ -799,7 +799,7 @@
 
                     if (data.success) {
                         // Jika login sukses, arahkan ke halaman profil/dashboard
-                        window.location.href = "{{ route('profile') }}";
+                        window.location.href = data.redirect_url;
                     } else {
                         // Tampilkan pesan error jika kredensial salah
                         errMsg.textContent = data.message || 'Email atau password salah.';

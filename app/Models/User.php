@@ -3,7 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Shop;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -18,6 +20,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
         'phone',
@@ -57,5 +60,10 @@ class User extends Authenticatable
         
         // urlencode digunakan agar spasi pada nama berubah menjadi format URL (misal: Budi+Santoso)
         return 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=random&color=fff&size=128';
+    }
+
+    public function shops(): HasOne
+    {
+        return $this->hasOne(Shop::class, 'user_id', 'id');
     }
 }

@@ -209,7 +209,13 @@
         </div>
         <div class="profile-header-actions">
           @if(Auth::user()->role === 'umkm')
-          <a href="/kelola-toko" class="btn btn-primary btn-sm"><i class="fa-solid fa-store"></i> Kelola Toko</a>
+            @if(!auth()->user()->shops)
+            <a href="{{ route('shop.create') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-store"></i> Buat Toko</a>
+            @elseif(auth()->user()->shops->status === 'pending')
+            <button class="btn btn-secondary btn-sm" disabled><i class="fa-solid fa-store"></i> Toko sedang ditinjau</button>
+            @else
+            <a href="{{ route('kelola-toko') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-store"></i> Kelola Toko</a>
+            @endif
           @endif
           <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.2);">
             <i class="fa-solid fa-gear"></i>
@@ -220,7 +226,9 @@
       <div class="profile-tabs">
         <div class="ptab active" onclick="showPanel('dashboard',this)"><i class="fa-solid fa-house fa-xs"></i> Dashboard</div>
         <div class="ptab" onclick="showPanel('edit-profil',this)"><i class="fa-solid fa-user-pen fa-xs"></i> Edit Profil</div>
+        @if(Auth::user()->role === 'user')
         <div class="ptab" onclick="showPanel('wishlist',this)"><i class="fa-regular fa-heart fa-xs"></i> Wishlist <span class="badge-dot">6</span></div>
+        @endif
         <div class="ptab" onclick="showPanel('riwayat',this)"><i class="fa-solid fa-clock-rotate-left fa-xs"></i> Riwayat Chat</div>
         @if(Auth::user()->role === 'umkm')
         <div class="ptab" onclick="showPanel('toko-saya',this)"><i class="fa-solid fa-store fa-xs"></i> Toko Saya</div>
@@ -256,7 +264,9 @@
         <div class="ps-card">
           <div class="ps-nav-item active" onclick="showPanel('dashboard',null); setActive(this)"><span class="icon"><i class="fa-solid fa-house"></i></span> Dashboard</div>
           <div class="ps-nav-item" onclick="showPanel('edit-profil',null); setActive(this)"><span class="icon"><i class="fa-solid fa-user-pen"></i></span> Edit Profil</div>
+          @if(Auth::user()->role === 'user')
           <div class="ps-nav-item" onclick="showPanel('wishlist',null); setActive(this)"><span class="icon"><i class="fa-regular fa-heart"></i></span> Wishlist <span class="badge badge-primary" style="margin-left:auto;font-size:.65rem;padding:1px 7px;">6</span></div>
+          @endif
           <div class="ps-nav-item" onclick="showPanel('riwayat',null); setActive(this)"><span class="icon"><i class="fa-solid fa-clock-rotate-left"></i></span> Riwayat Chat</div>
           <div class="ps-nav-sep"></div>
           @if(Auth::user()->role === 'umkm')
@@ -412,45 +422,30 @@
             <div class="form-grid-2">
               <div class="form-group">
                 <label class="form-label">Nama Lengkap <span>*</span></label>
-                <input class="form-control" value="Sari Wulandari">
+                <input class="form-control" value="{{ Auth::user()->name }}">
               </div>
               <div class="form-group">
                 <label class="form-label">Username</label>
                 <div class="input-icon-wrap">
                   <i class="fa-solid fa-at input-icon"></i>
-                  <input class="form-control" value="sari.wulandari" placeholder="username_kamu">
+                  <input class="form-control" value="{{ Auth::user()->username }}" placeholder="username_kamu">
                 </div>
               </div>
               <div class="form-group">
                 <label class="form-label">Email <span>*</span></label>
-                <input class="form-control" value="sari.wulandari@email.com" type="email">
+                <input class="form-control" value="{{ Auth::user()->email }}" type="email">
               </div>
               <div class="form-group">
                 <label class="form-label">Nomor WhatsApp <span>*</span></label>
                 <div class="input-icon-wrap">
                   <i class="fa-brands fa-whatsapp input-icon" style="color:#25D366;"></i>
-                  <input class="form-control" value="081234567890" type="tel">
+                  <input class="form-control" value="{{ Auth::user()->phone }}" type="tel">
                 </div>
               </div>
             </div>
             <div class="form-group">
-              <label class="form-label">Bio Singkat</label>
-              <textarea class="form-control" rows="3" placeholder="Ceritakan sedikit tentang dirimu...">Ibu rumah tangga yang senang memasak dan menjalankan usaha kuliner rumahan di Semarang.</textarea>
-            </div>
-            <div class="form-grid-2">
-              <div class="form-group">
-                <label class="form-label">Kota / Kabupaten</label>
-                <input class="form-control" value="Semarang">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Provinsi</label>
-                <select class="form-control">
-                  <option selected>Jawa Tengah</option>
-                  <option>Jawa Barat</option>
-                  <option>Jawa Timur</option>
-                  <option>DI Yogyakarta</option>
-                </select>
-              </div>
+              <label class="form-label">Alamat</label>
+              <textarea class="form-control" rows="3" placeholder="Contoh: Jl. Pemuda No. 12, RT 03/RW 05, Semarang Tengah, Kota Semarang, Jawa Tengah 50132.">{{ Auth::user()->address }}</textarea>
             </div>
             <div style="display:flex;gap:12px;justify-content:flex-end;">
               <button class="btn btn-ghost">Batal</button>
@@ -539,23 +534,38 @@
             <p>Kelola toko dan produk UMKM kamu.</p>
           </div>
 
+          @if(auth()->user()->shops)
           <!-- Toko summary card -->
           <div class="info-panel-card" style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;">
             <div style="width:64px;height:64px;background:var(--primary);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;">🍱</div>
             <div style="flex:1;">
-              <div style="font-family:var(--font-display);font-weight:700;font-size:1.1rem;color:var(--dark);">Dapur Bu Sari</div>
-              <div style="font-size:.78rem;color:var(--dark-light);margin-top:4px;"><i class="fa-solid fa-location-dot fa-xs"></i> Semarang Tengah</div>
+              <div style="font-family:var(--font-display);font-weight:700;font-size:1.1rem;color:var(--dark);">{{ auth()->user()->shops->name }}</div>
+              <div style="font-size:.78rem;color:var(--dark-light);margin-top:4px;"><i class="fa-solid fa-location-dot fa-xs"></i> {{ auth()->user()->shops->district }}</div>
               <div style="display:flex;gap:8px;margin-top:8px;">
-                <span class="badge badge-success"><i class="fa-solid fa-circle-check fa-xs"></i> Approved</span>
+                @if(Auth::user()->shops->status === 'approved')
+                <span class="badge badge-success"><i class="fa-solid fa-circle-check fa-xs"></i> Disetujui</span>
+                @elseif(Auth::user()->shops->status === 'pending')
+                <span class="badge badge-secondary"><i class="fa-solid fa-clock fa-xs"></i> Menunggu</span>
+                @elseif(Auth::user()->shops->status === 'rejected')
+                <span class="badge badge-danger"><i class="fa-solid fa-xmark fa-xs"></i> Ditolak</span>
+                @endif
+                @if(Auth::user()->shops->status === 'approved')
                 <span class="badge badge-primary">⭐ 4.9 Rating</span>
+                @endif
               </div>
             </div>
             <div style="display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;">
+
+            @if(Auth::user()->shops->status === 'approved')
               <a href="store-profile.html" class="btn btn-outline btn-sm"><i class="fa-solid fa-eye"></i> Lihat Publik</a>
-              <a href="create-shop.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen"></i> Edit Toko</a>
+              <a href="{{ route('shop.create') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen"></i> Edit Toko</a>
+            @else
+            <button class="btn btn-secondary btn-sm" disabled><i class="fa-solid fa-store"></i> Toko sedang ditinjau</button>
+            @endif
             </div>
           </div>
 
+          @if(Auth::user()->shops->status === 'approved')
           <!-- Toko stats -->
           <div class="grid-4" style="margin-bottom:20px;">
             <div class="info-panel-card" style="padding:16px;margin-bottom:0;text-align:center;">
@@ -581,10 +591,19 @@
             <div style="font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:16px;">Aksi Cepat</div>
             <div style="display:flex;gap:12px;flex-wrap:wrap;">
               <a href="add-product.html" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah Produk</a>
-              <a href="create-shop.html" class="btn btn-dark"><i class="fa-solid fa-pen-to-square"></i> Edit Info Toko</a>
+              <a href="{{ route('shop.create') }}" class="btn btn-dark"><i class="fa-solid fa-pen-to-square"></i> Edit Info Toko</a>
               <a href="store-profile.html" class="btn btn-outline"><i class="fa-solid fa-eye"></i> Preview Toko</a>
             </div>
           </div>
+          @endif
+          @else
+          <div class="info-panel-card" style="text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:12px;">�</div>
+            <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:6px;">Kamu belum memiliki toko</div>
+            <div style="font-size:.82rem;color:var(--dark-light);margin-bottom:16px;">Jadilah penjual dan mulai jualan produkmu di PasarLokal!</div>
+            <a href="{{ route('shop.create') }}" class="btn btn-primary"><i class="fa-solid fa-store"></i> Buat Toko Pertama</a>
+          </div>
+          @endif
         </div>
 
         <!-- ■ PENGATURAN ■ -->
