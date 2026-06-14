@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -8,7 +9,7 @@ Route::get('/', function () {
 
 Route::get('/auth', function () {
     return view('auth');
-});
+})->name('login');
 
 Route::get('/catalog', function () {
     return view('catalog');
@@ -21,3 +22,15 @@ Route::get('/product-detail', function () {
 Route::get('/store-profile', function () {
     return view('store-profile');
 });
+
+Route::get('/toko-umkm', function () {
+    return view('toko-umkm');
+});
+
+Route::get('profile', function () {
+    return view('profile');
+})->middleware('auth')->name('profile');
+
+Route::post('/register', [AuthController::class, 'register'])->name('register.store');
+Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

@@ -326,26 +326,7 @@
     <body>
 
         <!-- NAVBAR -->
-        <nav class="navbar" id="navbar">
-            <div class="nav-inner">
-                <a href="index.html" class="nav-logo">
-                    <div class="nav-logo-icon">
-                        <img src="{{ asset('assets/img/laba-transparent.png') }}" alt="" srcset="">
-                    </div>
-                    Laba
-                </a>
-                <div class="nav-links">
-                    <a href="index.html" class="nav-link">Beranda</a>
-                    <a href="catalog.html" class="nav-link active">Produk</a>
-                    <a href="index.html#toko" class="nav-link">Toko UMKM</a>
-                    {{-- <a href="index.html#tips" class="nav-link">Tips & Artikel</a> --}}
-                </div>
-                <div class="nav-actions">
-                    <a href="auth.html" class="btn btn-ghost btn-sm">Masuk</a>
-                    <a href="auth.html?mode=register" class="btn btn-primary btn-sm">Daftar Gratis</a>
-                </div>
-            </div>
-        </nav>
+        @include('layouts.partials.navbar')
 
         <!-- PAGE HERO -->
         <div class="page-top">

@@ -20,6 +20,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'address',
+        'role',
+        'status',
+        'avatar',
     ];
 
     /**
@@ -43,5 +48,14 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        // Mengambil nama user, default ke 'User' jika kosong
+        $name = $this->name ?: 'User';
+        
+        // urlencode digunakan agar spasi pada nama berubah menjadi format URL (misal: Budi+Santoso)
+        return 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=random&color=fff&size=128';
     }
 }

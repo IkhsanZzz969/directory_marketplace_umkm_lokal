@@ -291,26 +291,7 @@
 <body>
 
 <!-- ===== NAVBAR ===== -->
-<nav class="navbar" id="navbar">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon">
-        <img src="{{ asset('assets/img/laba-transparent.png') }}" alt="" srcset="">
-      </div>
-      Laba
-    </a>
-    <div class="nav-links">
-      <a href="index.html" class="nav-link active">Beranda</a>
-      <a href="/catalog" class="nav-link">Produk</a>
-      <a href="#toko" class="nav-link">Toko UMKM</a>
-      {{-- <a href="#tips" class="nav-link">Tips & Artikel</a> --}}
-    </div>
-    <div class="nav-actions">
-      <a href="/auth" class="btn btn-ghost btn-sm">Masuk</a>
-      <a href="/auth?mode=register" class="btn btn-primary btn-sm">Daftar Gratis</a>
-    </div>
-  </div>
-</nav>
+@include('layouts.partials.navbar')
 
 <!-- ===== HERO ===== -->
 <section class="hero">

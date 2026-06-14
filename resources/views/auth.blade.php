@@ -5,9 +5,11 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Masuk / Daftar — {{ env('APP_NAME') }}</title>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <style>
+            /* STYLE TETAP SAMA TIDAK ADA YANG BERUBAH */
             body {
                 min-height: 100vh;
                 display: flex;
@@ -21,7 +23,6 @@
                 width: 100%;
             }
 
-            /* LEFT PANEL */
             .auth-left {
                 width: 420px;
                 flex-shrink: 0;
@@ -115,7 +116,6 @@
                 position: relative;
             }
 
-            /* RIGHT PANEL */
             .auth-right {
                 flex: 1;
                 display: flex;
@@ -211,7 +211,6 @@
                 box-shadow: var(--shadow-sm);
             }
 
-            /* OTP Panel */
             .otp-panel {
                 display: none;
             }
@@ -326,7 +325,6 @@
                 color: var(--primary);
             }
 
-            /* Password strength */
             .pwd-strength {
                 margin-top: 8px;
             }
@@ -377,13 +375,12 @@
     <body>
         <div class="auth-layout">
 
-            <!-- LEFT PANEL -->
             <div class="auth-left">
                 <a href="index.html" class="auth-left-logo">Laba</a>
                 <div class="auth-left-tagline">
                     Bergabunglah dengan <em>Komunitas</em> UMKM Indonesia
                 </div>
-                <p>Ribuan penjual dan pembeli telah mempercayakan bisnis mereka ke PasarLokal. Saatnya giliran kamu.</p>
+                <p>Ribuan penjual dan pembeli telah mempercayakan bisnis mereka ke Laba. Saatnya giliran kamu.</p>
                 <ul class="auth-feature-list">
                     <li class="auth-feature-item">
                         <div class="auth-feature-icon"><i class="fa-solid fa-shield-check"></i></div>
@@ -402,22 +399,19 @@
                         <span>Dashboard analitik untuk memantau performa toko</span>
                     </li>
                 </ul>
-                <div class="auth-left-foot">© 2026 PasarLokal. Semua hak dilindungi.</div>
+                <div class="auth-left-foot">© 2026 Laba. Semua hak dilindungi.</div>
             </div>
 
-            <!-- RIGHT PANEL -->
             <div class="auth-right">
                 <div class="auth-box">
-                    <!-- TABS -->
                     <div class="auth-tabs">
                         <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Masuk</button>
                         <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Daftar</button>
                     </div>
 
-                    <!-- LOGIN PANEL -->
                     <div class="auth-panel active" id="panel-login">
                         <h2 class="auth-title">Selamat Datang Kembali!</h2>
-                        <p class="auth-subtitle">Masuk untuk melanjutkan ke PasarLokal.</p>
+                        <p class="auth-subtitle">Masuk untuk melanjutkan ke Laba.</p>
 
                         <div class="social-auth">
                             <button class="btn-social">
@@ -453,13 +447,20 @@
                         <div class="flex-between mt-4 mb-24">
                             <label
                                 style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--dark-mid);cursor:pointer;">
-                                <input type="checkbox" style="accent-color:var(--primary)"> Ingat saya
+                                <input type="checkbox" id="login-remember" style="accent-color:var(--primary)"> Ingat
+                                saya
                             </label>
                             <a href="#" style="font-size:0.82rem;color:var(--primary);font-weight:600;">Lupa
                                 password?</a>
                         </div>
 
-                        <button class="btn btn-primary w-full btn-lg" onclick="doLogin()">
+                        <div id="login-error"
+                            style="text-align:center;color:var(--danger);font-size:0.82rem;margin-bottom:12px;display:none;">
+                            <i class="fa-solid fa-circle-exclamation"></i> <span id="login-error-msg">Email atau
+                                password salah.</span>
+                        </div>
+
+                        <button id="btn-login" class="btn btn-primary w-full btn-lg" onclick="doLogin()">
                             <i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang
                         </button>
 
@@ -469,15 +470,13 @@
                         </p>
                     </div>
 
-                    <!-- REGISTER PANEL -->
                     <div class="auth-panel" id="panel-register">
-                        <!-- STEP 1: Role Select + Form -->
                         <div id="register-step-1">
                             <h2 class="auth-title">Buat Akun Baru</h2>
                             <p class="auth-subtitle">Pilih tipe akun yang sesuai.</p>
 
                             <div class="role-selector">
-                                <div class="role-card selected" id="role-buyer" onclick="selectRole('buyer')">
+                                <div class="role-card selected" id="role-user" onclick="selectRole('user')">
                                     <span class="role-icon">🛍️</span>
                                     <div class="role-label">Pembeli</div>
                                     <div class="role-desc">Saya ingin berbelanja</div>
@@ -536,7 +535,7 @@
                                 style="display:flex;align-items:flex-start;gap:8px;font-size:0.8rem;color:var(--dark-mid);margin-bottom:20px;cursor:pointer;line-height:1.5;">
                                 <input type="checkbox" style="accent-color:var(--primary);margin-top:2px;" id="reg-tos">
                                 Saya setuju dengan <a href="#" style="color:var(--primary);">Syarat & Ketentuan</a>
-                                serta <a href="#" style="color:var(--primary);">Kebijakan Privasi</a> PasarLokal.
+                                serta <a href="#" style="color:var(--primary);">Kebijakan Privasi</a> Laba.
                             </label>
 
                             <button class="btn btn-primary w-full btn-lg" onclick="goToOtp()">
@@ -548,7 +547,6 @@
                             </p>
                         </div>
 
-                        <!-- STEP 2: OTP Verification -->
                         <div id="register-step-2" style="display:none;">
                             <div style="text-align:center;margin-bottom:32px;">
                                 <div
@@ -579,7 +577,7 @@
                                 <i class="fa-solid fa-circle-exclamation"></i> Kode OTP salah. Silakan coba lagi.
                             </div>
 
-                            <button class="btn btn-primary w-full btn-lg" onclick="verifyOtp()">
+                            <button id="btn-verify-otp" class="btn btn-primary w-full btn-lg" onclick="verifyOtp()">
                                 <i class="fa-solid fa-shield-check"></i> Verifikasi & Buat Akun
                             </button>
 
@@ -595,13 +593,12 @@
                             </div>
                         </div>
 
-                        <!-- STEP 3: Success -->
                         <div id="register-step-3" style="display:none;text-align:center;padding:32px 0;">
                             <div style="font-size:4rem;margin-bottom:16px;">🎉</div>
                             <h2 class="auth-title" style="text-align:center;">Akun Berhasil Dibuat!</h2>
-                            <p style="color:var(--dark-mid);margin-bottom:28px;">Selamat datang di PasarLokal! Akun kamu
+                            <p style="color:var(--dark-mid);margin-bottom:28px;">Selamat datang di Laba! Akun kamu
                                 sudah aktif dan siap digunakan.</p>
-                            <a href="profile.html" class="btn btn-primary btn-lg w-full">
+                            <a href="{{ route('profile') }}" class="btn btn-primary btn-lg w-full">
                                 Pergi ke Dashboard <i class="fa-solid fa-arrow-right"></i>
                             </a>
                             <div class="mt-16">
@@ -615,110 +612,210 @@
         </div>
 
         <script>
+            let userRole = 'user';
+
             function switchTab(tab) {
-    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('tab-' + tab).classList.add('active');
-    document.getElementById('panel-' + tab).classList.add('active');
-  }
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+                document.getElementById('tab-' + tab).classList.add('active');
+                document.getElementById('panel-' + tab).classList.add('active');
+            }
 
-  function selectRole(role) {
-    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
-    document.getElementById('role-' + role).classList.add('selected');
-  }
+            function selectRole(role) {
+                document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+                document.getElementById('role-' + role).classList.add('selected');
+                userRole = role; 
+            }
 
-  function togglePass(id, icon) {
-    const inp = document.getElementById(id);
-    const isPass = inp.type === 'password';
-    inp.type = isPass ? 'text' : 'password';
-    icon.className = isPass ? 'fa-regular fa-eye-slash input-icon-right' : 'fa-regular fa-eye input-icon-right';
-    icon.style.cssText = 'position:absolute;right:13px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--dark-light)';
-  }
+            function togglePass(id, icon) {
+                const inp = document.getElementById(id);
+                const isPass = inp.type === 'password';
+                inp.type = isPass ? 'text' : 'password';
+                icon.className = isPass ? 'fa-regular fa-eye-slash input-icon-right' : 'fa-regular fa-eye input-icon-right';
+                icon.style.cssText = 'position:absolute;right:13px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--dark-light)';
+            }
 
-  function checkPwd(val) {
-    const bars = [document.getElementById('pb1'),document.getElementById('pb2'),document.getElementById('pb3'),document.getElementById('pb4')];
-    const lbl = document.getElementById('pwd-label');
-    bars.forEach(b => b.className = 'pwd-bar');
-    if (val.length === 0) { lbl.textContent = 'Masukkan password'; return; }
-    let score = 0;
-    if (val.length >= 8) score++;
-    if (/[A-Z]/.test(val)) score++;
-    if (/[0-9]/.test(val)) score++;
-    if (/[^A-Za-z0-9]/.test(val)) score++;
-    const cls = score <= 1 ? 'weak' : score === 2 ? 'medium' : score === 3 ? 'medium' : 'strong';
-    const labels = ['','Lemah','Cukup','Kuat','Sangat Kuat'];
-    for (let i = 0; i < score; i++) bars[i].classList.add(cls);
-    lbl.textContent = labels[score] || '';
-    lbl.style.color = cls === 'weak' ? 'var(--danger)' : cls === 'medium' ? 'var(--warning)' : 'var(--success)';
-  }
+            function checkPwd(val) {
+                const bars = [document.getElementById('pb1'),document.getElementById('pb2'),document.getElementById('pb3'),document.getElementById('pb4')];
+                const lbl = document.getElementById('pwd-label');
+                bars.forEach(b => b.className = 'pwd-bar');
+                if (val.length === 0) { lbl.textContent = 'Masukkan password'; return; }
+                let score = 0;
+                if (val.length >= 8) score++;
+                if (/[A-Z]/.test(val)) score++;
+                if (/[0-9]/.test(val)) score++;
+                if (/[^A-Za-z0-9]/.test(val)) score++;
+                const cls = score <= 1 ? 'weak' : score === 2 ? 'medium' : score === 3 ? 'medium' : 'strong';
+                const labels = ['','Lemah','Cukup','Kuat','Sangat Kuat'];
+                for (let i = 0; i < score; i++) bars[i].classList.add(cls);
+                lbl.textContent = labels[score] || '';
+                lbl.style.color = cls === 'weak' ? 'var(--danger)' : cls === 'medium' ? 'var(--warning)' : 'var(--success)';
+            }
 
-  function goToOtp() {
-    const name = document.getElementById('reg-name').value;
-    const email = document.getElementById('reg-email').value;
-    const pass = document.getElementById('reg-pass').value;
-    const phone = document.getElementById('reg-phone').value;
-    const tos = document.getElementById('reg-tos').checked;
-    if (!name || !email || !pass || !phone) { alert('Harap lengkapi semua kolom!'); return; }
-    if (!tos) { alert('Harap setujui syarat dan ketentuan!'); return; }
-    document.getElementById('otp-target').textContent = phone;
-    document.getElementById('register-step-1').style.display = 'none';
-    document.getElementById('register-step-2').style.display = 'block';
-    startCountdown();
-    document.querySelector('.otp-input').focus();
-  }
+            function goToOtp() {
+                const name = document.getElementById('reg-name').value;
+                const email = document.getElementById('reg-email').value;
+                const pass = document.getElementById('reg-pass').value;
+                const phone = document.getElementById('reg-phone').value;
+                const tos = document.getElementById('reg-tos').checked;
+                if (!name || !email || !pass || !phone) { alert('Harap lengkapi semua kolom!'); return; }
+                if (!tos) { alert('Harap setujui syarat dan ketentuan!'); return; }
+                document.getElementById('otp-target').textContent = phone;
+                document.getElementById('register-step-1').style.display = 'none';
+                document.getElementById('register-step-2').style.display = 'block';
+                startCountdown();
+                document.querySelector('.otp-input').focus();
+            }
 
-  function goBackToForm() {
-    document.getElementById('register-step-1').style.display = 'block';
-    document.getElementById('register-step-2').style.display = 'none';
-  }
+            function goBackToForm() {
+                document.getElementById('register-step-1').style.display = 'block';
+                document.getElementById('register-step-2').style.display = 'none';
+            }
 
-  let countdownInterval;
-  function startCountdown() {
-    let secs = 60;
-    const el = document.getElementById('countdown');
-    const link = document.getElementById('resend-link');
-    const cd = document.getElementById('resend-countdown');
-    clearInterval(countdownInterval);
-    cd.style.display = 'inline'; link.style.display = 'none';
-    countdownInterval = setInterval(() => {
-      secs--;
-      el.textContent = secs;
-      if (secs <= 0) {
-        clearInterval(countdownInterval);
-        cd.style.display = 'none';
-        link.style.display = 'inline';
-      }
-    }, 1000);
-  }
+            let countdownInterval;
+            function startCountdown() {
+                let secs = 60;
+                const el = document.getElementById('countdown');
+                const link = document.getElementById('resend-link');
+                const cd = document.getElementById('resend-countdown');
+                clearInterval(countdownInterval);
+                cd.style.display = 'inline'; link.style.display = 'none';
+                countdownInterval = setInterval(() => {
+                secs--;
+                el.textContent = secs;
+                if (secs <= 0) {
+                    clearInterval(countdownInterval);
+                    cd.style.display = 'none';
+                    link.style.display = 'inline';
+                }
+                }, 1000);
+            }
 
-  function resendOtp() { startCountdown(); }
+            function resendOtp() { startCountdown(); }
 
-  function otpMove(el, idx) {
-    el.classList.toggle('filled', el.value !== '');
-    const inputs = document.querySelectorAll('.otp-input');
-    if (el.value && idx < 5) inputs[idx + 1].focus();
-  }
+            function otpMove(el, idx) {
+                el.classList.toggle('filled', el.value !== '');
+                const inputs = document.querySelectorAll('.otp-input');
+                if (el.value && idx < 5) inputs[idx + 1].focus();
+            }
 
-  function verifyOtp() {
-    const inputs = document.querySelectorAll('.otp-input');
-    const code = Array.from(inputs).map(i => i.value).join('');
-    if (code.length < 6) { alert('Masukkan kode OTP 6 digit!'); return; }
-    // Demo: accept any 6-digit code
-    document.getElementById('register-step-2').style.display = 'none';
-    document.getElementById('register-step-3').style.display = 'block';
-  }
+            function verifyOtp() {
+                const inputs = document.querySelectorAll('.otp-input');
+                const code = Array.from(inputs).map(i => i.value).join('');
+                if (code.length < 6) { alert('Masukkan kode OTP 6 digit!'); return; }
 
-  function doLogin() {
-    const email = document.getElementById('login-email').value;
-    const pass = document.getElementById('login-pass').value;
-    if (!email || !pass) { alert('Harap isi email dan password!'); return; }
-    // Demo: redirect to profile
-    window.location.href = 'profile.html';
-  }
+                const name = document.getElementById('reg-name').value;
+                const email = document.getElementById('reg-email').value;
+                const password = document.getElementById('reg-pass').value;
+                const phone = document.getElementById('reg-phone').value;
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const btn = document.getElementById('btn-verify-otp');
+                const originalText = btn.innerHTML;
+                
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Memproses...';
+                btn.style.pointerEvents = 'none'; 
+                document.getElementById('otp-error').style.display = 'none'; 
 
-  // Check URL param for mode
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('mode') === 'register') switchTab('register');
+                fetch("{{ route('register.store') }}", { 
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken,
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        role: userRole,
+                        name: name,
+                        email: email,
+                        password: password,
+                        phone: phone,
+                        otp: code
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    btn.innerHTML = originalText;
+                    btn.style.pointerEvents = 'auto';
+
+                    if (data.success) {
+                        document.getElementById('register-step-2').style.display = 'none';
+                        document.getElementById('register-step-3').style.display = 'block';
+                    } else {
+                        const errDiv = document.getElementById('otp-error');
+                        errDiv.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${data.message || 'Kode OTP salah. Silakan coba lagi.'}`;
+                        errDiv.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch Error:', error);
+                    btn.innerHTML = originalText;
+                    btn.style.pointerEvents = 'auto';
+                    alert('Terjadi kesalahan saat menghubungi server.');
+                });
+            }
+
+            // FUNGSI INI SUDAH DIUBAH UNTUK MELAKUKAN POST LOGIN
+            function doLogin() {
+                const email = document.getElementById('login-email').value;
+                const pass = document.getElementById('login-pass').value;
+                const remember = document.getElementById('login-remember').checked;
+                
+                if (!email || !pass) { 
+                    alert('Harap isi email dan password!'); 
+                    return; 
+                }
+
+                // Ambil elemen yang dibutuhkan
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const btn = document.getElementById('btn-login');
+                const errDiv = document.getElementById('login-error');
+                const errMsg = document.getElementById('login-error-msg');
+                
+                // Set tombol menjadi loading
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Memproses...';
+                btn.style.pointerEvents = 'none'; 
+                errDiv.style.display = 'none'; // Sembunyikan error sebelumnya
+
+                // Ganti route dibawah sesuai dengan Route Post Login kamu, contoh: route('login.post')
+                fetch("{{ route('authenticate') }}", { 
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken,
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: pass,
+                        remember: remember
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Kembalikan tombol seperti semula
+                    btn.innerHTML = originalText;
+                    btn.style.pointerEvents = 'auto';
+
+                    if (data.success) {
+                        // Jika login sukses, arahkan ke halaman profil/dashboard
+                        window.location.href = "{{ route('profile') }}";
+                    } else {
+                        // Tampilkan pesan error jika kredensial salah
+                        errMsg.textContent = data.message || 'Email atau password salah.';
+                        errDiv.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch Error:', error);
+                    btn.innerHTML = originalText;
+                    btn.style.pointerEvents = 'auto';
+                    alert('Terjadi kesalahan saat menghubungi server.');
+                });
+            }
+
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('mode') === 'register') switchTab('register');
         </script>
     </body>
 
