@@ -713,7 +713,16 @@
   }
   function removeWishlist(el){ el.closest('.product-card').style.opacity='0.4'; }
   function chatAgain(name){ window.open(`https://wa.me/6281234567890?text=${encodeURIComponent('Halo '+name+'! Saya ingin melanjutkan percakapan tentang produk kamu di PasarLokal.')}`, '_blank'); }
-  function confirmLogout(){ if(confirm('Yakin ingin keluar dari akun?')) doLogout(); }
+  async function confirmLogout(){
+    const confirmed = await showConfirm({
+      type: 'danger',
+      title: 'Keluar dari Akun?',
+      message: 'Yakin ingin keluar dari akun kamu? Kamu harus login kembali untuk mengakses profil.',
+      confirmText: 'Ya, Keluar',
+      cancelText: 'Batal',
+    });
+    if (confirmed) doLogout();
+  }
   function doLogout() {
   // Ambil CSRF Token dari meta tag head yang sudah dibuat sebelumnya
   const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -736,9 +745,11 @@
   })
   .catch(error => {
   console.error('Error Logout:', error);
-      alert('Terjadi kesalahan saat logout.');
+      showModal({ type: 'error', title: 'Gagal Logout', message: 'Terjadi kesalahan saat logout. Silakan coba lagi.' });
       });
   }
 </script>
+
+@include('layouts.partials.custom-modal')
 </body>
 </html>

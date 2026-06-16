@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('district');
             $table->enum('status', ['approved', 'rejected', 'pending'])->default('pending');
-            $table->enum('is_active', ['active', 'inactive'])->default('active');
+            $table->enum('is_active', ['active', 'inactive'])->default('inactive');
             $table->timestamps();
         });
     }

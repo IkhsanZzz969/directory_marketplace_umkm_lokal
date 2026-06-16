@@ -44,6 +44,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/administrator', [AdminController::class, 'administrator'])->name('administrator');
 
+    Route::patch('/admin/shop/{shop}/approve', [AdminController::class, 'approveShop'])->name('admin.shop.approve');
+    Route::patch('/admin/shop/{shop}/reject', [AdminController::class, 'rejectShop'])->name('admin.shop.reject');
+
     Route::get('/create-shop', [StoreController::class, 'create'])->name('shop.create');
     Route::post('/create-shop', [StoreController::class, 'store'])->name('shop.store');
 });

@@ -464,7 +464,7 @@
                                 class="fa-solid fa-chart-line fa-xs"></i> Ikhtisar</div>
                         <div class="ptab" id="tab-pengajuan" onclick="showPanel('pengajuan',this)"><i
                                 class="fa-solid fa-store-slash fa-xs"></i> Persetujuan Toko <span
-                                class="badge-dot">3</span></div>
+                                class="badge-dot">{{ $pendingUmkm }}</span></div>
                         <div class="ptab" id="tab-toko" onclick="showPanel('toko',this)"><i
                                 class="fa-solid fa-shop fa-xs"></i> Daftar Toko</div>
                         <div class="ptab" id="tab-pengguna" onclick="showPanel('pengguna',this)"><i
@@ -483,7 +483,7 @@
                             <div class="admin-summary-title"><i class="fa-solid fa-server"
                                     style="color:var(--primary);margin-right:6px;"></i> Status Sistem</div>
                             <ul class="admin-summary-list">
-                                <li class="admin-summary-item">Pengajuan Menunggu <span class="val alert">3 Toko</span>
+                                <li class="admin-summary-item">Pengajuan Menunggu <span class="val alert">{{ $pendingUmkm }} Toko</span>
                                 </li>
                                 <li class="admin-summary-item">Total UMKM Aktif <span class="val">142 Toko</span></li>
                                 <li class="admin-summary-item">Total Produk <span class="val">1,240 Item</span></li>
@@ -500,7 +500,7 @@
                                 onclick="showPanel('pengajuan', document.getElementById('tab-pengajuan')); setActive(this)">
                                 <span class="icon"><i class="fa-solid fa-file-signature"></i></span> Persetujuan Toko
                                 <span class="badge"
-                                    style="background:#ef4444;color:white;margin-left:auto;font-size:.65rem;padding:2px 7px;border-radius:10px;">3</span>
+                                    style="background:#ef4444;color:white;margin-left:auto;font-size:.65rem;padding:2px 7px;border-radius:10px;">{{ $pendingUmkm }}</span>
                             </div>
                             <div class="ps-nav-item"
                                 onclick="showPanel('toko', document.getElementById('tab-toko')); setActive(this)"><span
@@ -532,7 +532,7 @@
                                     <div style="font-size:1.8rem;margin-bottom:6px;">⚠️</div>
                                     <div
                                         style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--dark);">
-                                        3</div>
+                                        {{ $pendingUmkm }}</div>
                                     <div style="font-size:.75rem;color:var(--dark-light);">Menunggu Persetujuan</div>
                                 </div>
                                 <div class="info-panel-card"
@@ -637,14 +637,14 @@
                                             <th style="text-align:center;">Aksi</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="pengajuan-tbody">
                                         @forelse ($umkm->where('status', 'pending') as $u)
-                                            <tr id="row-toko-1">
+                                            <tr id="row-toko-{{ $u->id }}">
                                                 <td>
                                                     <div style="display:flex;align-items:center;gap:12px;">
                                                         <div
                                                             style="width:40px;height:40px;background:#f3f4f6;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:1.2rem;">
-                                                            ☕</div>
+                                                            {{ $u->logo }}</div>
                                                         <div>
                                                             <div style="font-weight:600;font-size:.88rem;color:var(--dark);">
                                                                 {{ $u->name }}</div>
@@ -659,23 +659,28 @@
                                                 </td>
                                                 <td>
                                                     <span
-                                                        style="display:inline-block;padding:2px 8px;background:#e0e7ff;color:#4f46e5;border-radius:10px;font-size:.7rem;font-weight:600;margin-bottom:4px;">{{ $u->category }}</span>
+                                                        style="display:inline-block;padding:2px 8px;background:#e0e7ff;color:#4f46e5;border-radius:10px;font-size:.7rem;font-weight:600;margin-bottom:4px;">{{ ucfirst($u->category) }}</span>
                                                     <div style="font-size:.72rem;color:var(--dark-light);"><i class="fa-solid fa-location-dot"></i> {{ $u->address }}</div>
                                                 </td>
                                                 <td>
-                                                    <div style="font-size:.82rem;">Hari ini, 09:15</div>
+                                                    @php
+                                                    $dateSubmit = \Carbon\Carbon::parse($u->created_at)->timezone('Asia/Jakarta')->locale('id');
+                                                    @endphp
+                                                    <div style="font-size:.82rem;">{{ $dateSubmit->diffForHumans() }}</div>
                                                 </td>
-                                                <td style="text-align:center; display:flex; gap:6px; justify-content:center;">
-                                                    <button class="btn btn-sm" style="background:#16a34a;color:white;border:none;"
-                                                        onclick="processAction('row-toko-1', 'disetujui')" title="Setujui"><i
-                                                            class="fa-solid fa-check"></i></button>
-                                                    <button class="btn btn-sm" style="background:#ef4444;color:white;border:none;"
-                                                        onclick="processAction('row-toko-1', 'ditolak')" title="Tolak"><i class="fa-solid fa-xmark"></i></button>
-                                                    <button class="btn btn-ghost btn-sm" title="Lihat Detail"><i class="fa-solid fa-file-lines"></i></button>
+                                                <td style="text-align:center;">
+                                                    <div style="display:flex;gap:6px;justify-content:center;">
+                                                        <button class="btn btn-sm" style="background:#16a34a;color:white;border:none;"
+                                                            onclick="handleShopAction({{ $u->id }}, 'approve')" title="Setujui"><i
+                                                                class="fa-solid fa-check"></i></button>
+                                                        <button class="btn btn-sm" style="background:#ef4444;color:white;border:none;"
+                                                            onclick="handleShopAction({{ $u->id }}, 'reject')" title="Tolak"><i class="fa-solid fa-xmark"></i></button>
+                                                        <button class="btn btn-ghost btn-sm" title="Lihat Detail"><i class="fa-solid fa-file-lines"></i></button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @empty
-                                            <tr>
+                                            <tr id="empty-pengajuan-row">
                                                 <td colspan="5" style="text-align:center;padding:40px 0;color:var(--dark-light);">
                                                     <i class="fa-solid fa-inbox fa-2xl" style="margin-bottom:12px;"></i>
                                                     <div style="font-size:.9rem;">Tidak ada pengajuan toko baru saat ini.</div>
@@ -708,52 +713,53 @@
                                         <tr>
                                             <th>Nama Toko</th>
                                             <th>Kategori</th>
-                                            <th>Status</th>
+                                            <th>Status Persetujuan</th>
+                                            <th>Status Aktif</th>
                                             <th>Total Produk</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>
-                                                <div style="font-weight:600;font-size:.88rem;color:var(--dark);">Batik
-                                                    Nusantara</div>
-                                                <div style="font-size:.72rem;color:var(--dark-light);">Pemilik: Rina
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div style="font-size:.82rem;">Fashion</div>
-                                            </td>
-                                            <td><span
-                                                    style="padding:3px 8px;background:#dcfce7;color:#16a34a;border-radius:10px;font-size:.7rem;font-weight:600;"><i
-                                                        class="fa-solid fa-circle-check fa-xs"></i> Aktif</span></td>
-                                            <td>
-                                                <div style="font-size:.82rem;">48 Item</div>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-outline btn-sm">Detail</button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div style="font-weight:600;font-size:.88rem;color:var(--dark);">Dapur
-                                                    Bu Sari</div>
-                                                <div style="font-size:.72rem;color:var(--dark-light);">Pemilik: Sariwati
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div style="font-size:.82rem;">Makanan</div>
-                                            </td>
-                                            <td><span
-                                                    style="padding:3px 8px;background:#dcfce7;color:#16a34a;border-radius:10px;font-size:.7rem;font-weight:600;"><i
-                                                        class="fa-solid fa-circle-check fa-xs"></i> Aktif</span></td>
-                                            <td>
-                                                <div style="font-size:.82rem;">12 Item</div>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-outline btn-sm">Detail</button>
-                                            </td>
-                                        </tr>
+                                        @forelse ($umkm as $u)
+                                            <tr>
+                                                <td>
+                                                    <div style="font-weight:600;font-size:.88rem;color:var(--dark);">{{ $u->name }}</div>
+                                                    <div style="font-size:.72rem;color:var(--dark-light);">Pemilik: {{ $u->user->name }}</div>
+                                                </td>
+                                                <td>
+                                                    <div style="font-size:.82rem;">{{ ucfirst($u->category) }}</div>
+                                                </td>
+                                                <td>
+                                                    @if($u->status === 'approved')
+                                                    <span style="padding:3px 8px;background:rgba(16,185,129,.2);color:#10b981;border-radius:10px;font-size:.7rem;font-weight:600;">{{ strtoupper($u->status) }}</span> 
+                                                    @elseif($u->status === 'pending')
+                                                    <span style="padding:3px 8px;background:var(--primary-light);color:var(--primary);border-radius:10px;font-size:.7rem;font-weight:600;">{{ strtoupper($u->status) }}</span>
+                                                    @else
+                                                    <span style="padding:3px 8px;background:rgba(228, 37, 24, 0.84);color:#ffffff;border-radius:10px;font-size:.7rem;font-weight:600;">{{ strtoupper($u->status) }}</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($u->is_active === 'active')
+                                                    <span style="padding:3px 8px;background:rgba(16,185,129,.2);color:#10b981;border-radius:10px;font-size:.7rem;font-weight:600;">Aktif</span> 
+                                                    @else
+                                                    <span style="padding:3px 8px;background:rgba(228, 37, 24, 0.84);color:#ffffff;border-radius:10px;font-size:.7rem;font-weight:600;">Non-Aktif</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <div style="font-size:.82rem;">0 Item</div>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-outline btn-sm">Detail</button>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" style="text-align:center;padding:40px 0;color:var(--dark-light);">
+                                                    <i class="fa-solid fa-inbox fa-2xl" style="margin-bottom:12px;"></i>
+                                                    <div style="font-size:.9rem;">Tidak ada UMKM terdaftar saat ini.</div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
                             </div>
@@ -777,54 +783,40 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>
-                                                <div style="display:flex;align-items:center;gap:10px;">
-                                                    <img src="https://ui-avatars.com/api/?name=Agus+P&background=random"
-                                                        style="width:32px;border-radius:50%;" alt="Avatar">
-                                                    <div style="font-weight:600;font-size:.88rem;color:var(--dark);">
-                                                        Agus Pratama</div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div style="font-size:.82rem;">agus@email.com</div>
-                                                <div style="font-size:.72rem;color:var(--dark-light);">08123456789</div>
-                                            </td>
-                                            <td><span
-                                                    style="padding:3px 8px;background:var(--primary-light);color:var(--primary);border-radius:10px;font-size:.7rem;font-weight:600;">Pembeli</span>
-                                            </td>
-                                            <td>
-                                                <div style="font-size:.82rem;">12 Jan 2026</div>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-ghost btn-sm" title="Edit/Suspend"><i
-                                                        class="fa-solid fa-ellipsis-vertical"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div style="display:flex;align-items:center;gap:10px;">
-                                                    <img src="https://ui-avatars.com/api/?name=Sari+W&background=random"
-                                                        style="width:32px;border-radius:50%;" alt="Avatar">
-                                                    <div style="font-weight:600;font-size:.88rem;color:var(--dark);">
-                                                        Sariwati</div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div style="font-size:.82rem;">sari@email.com</div>
-                                                <div style="font-size:.72rem;color:var(--dark-light);">08987654321</div>
-                                            </td>
-                                            <td><span
-                                                    style="padding:3px 8px;background:rgba(16,185,129,.2);color:#10b981;border-radius:10px;font-size:.7rem;font-weight:600;">UMKM</span>
-                                            </td>
-                                            <td>
-                                                <div style="font-size:.82rem;">05 Feb 2026</div>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-ghost btn-sm"><i
-                                                        class="fa-solid fa-ellipsis-vertical"></i></button>
-                                            </td>
-                                        </tr>
+                                        @forelse ($listUser as $user)
+                                            <tr>
+                                                <td>
+                                                    <div style="display:flex;align-items:center;gap:10px;">
+                                                        <img src="{{ $user->avatar_url }}" style="width:32px;border-radius:50%;"
+                                                            alt="Avatar">
+                                                        <div style="font-weight:600;font-size:.88rem;color:var(--dark);">
+                                                            {{ ucfirst($user->name) }}</div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div style="font-size:.82rem;">{{ $user->email }}</div>
+                                                    <div style="font-size:.72rem;color:var(--dark-light);">{{ $user->phone }}</div>
+                                                </td>
+                                                <td>
+                                                    @if($user->role === 'umkm')
+                                                    <span style="padding:3px 8px;background:var(--primary-light);color:var(--primary);border-radius:10px;font-size:.7rem;font-weight:600;">{{ strtoupper($user->role) }}</span>
+                                                    @else
+                                                    <span style="padding:3px 8px;background:rgba(16,185,129,.2);color:#10b981;border-radius:10px;font-size:.7rem;font-weight:600;">{{ ucfirst($user->role) }}</span> 
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <div style="font-size:.82rem;">12 Jan 2026</div>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-ghost btn-sm" title="Edit/Suspend"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" style="text-align:center;">Tidak ada data</td>
+                                            </tr>
+                                        @endforelse
+                                        
                                     </tbody>
                                 </table>
                             </div>
@@ -923,20 +915,102 @@
     el.classList.add('active');
   }
 
-  // Dummy action for approval/reject
-  function processAction(rowId, action) {
-    if(confirm(`Yakin ingin memberikan status: ${action} untuk pengajuan ini?`)) {
-      const row = document.getElementById(rowId);
-      row.style.opacity = '0.5';
-      setTimeout(() => {
-        row.remove();
-        alert(`Toko berhasil ${action}!`);
-      }, 500);
+  // Approve / Reject Shop via AJAX
+  async function handleShopAction(shopId, action) {
+    const actionLabel = action === 'approve' ? 'menyetujui' : 'menolak';
+    const confirmType = action === 'approve' ? 'confirm' : 'danger';
+    const confirmIcon = action === 'approve' ? 'Setujui' : 'Tolak';
+
+    const confirmed = await showConfirm({
+      type: confirmType,
+      title: `${action === 'approve' ? 'Setujui' : 'Tolak'} Pengajuan Toko?`,
+      message: `Yakin ingin ${actionLabel} pengajuan toko ini? Tindakan ini akan mengubah status toko.`,
+      confirmText: `Ya, ${confirmIcon}`,
+      cancelText: 'Batal',
+    });
+    if (!confirmed) return;
+
+    const row = document.getElementById('row-toko-' + shopId);
+    if (!row) return;
+
+    // Disable buttons to prevent double clicks
+    const buttons = row.querySelectorAll('button');
+    buttons.forEach(btn => { btn.disabled = true; btn.style.opacity = '0.5'; });
+
+    const url = `/admin/shop/${shopId}/${action}`;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    try {
+      const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json'
+        }
+      });
+      if (!response.ok) throw new Error('Gagal memproses permintaan.');
+      const data = await response.json();
+
+      if (data.success) {
+        // Animate row out
+        row.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(30px)';
+        setTimeout(() => {
+          row.remove();
+          updatePendingCount();
+        }, 400);
+        await showModal({
+          type: action === 'approve' ? 'success' : 'warning',
+          title: action === 'approve' ? 'Toko Disetujui!' : 'Toko Ditolak',
+          message: data.message,
+        });
+      } else {
+        await showModal({ type: 'error', title: 'Gagal!', message: data.message || 'Terjadi kesalahan.' });
+        buttons.forEach(btn => { btn.disabled = false; btn.style.opacity = '1'; });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      await showModal({ type: 'error', title: 'Kesalahan Jaringan', message: 'Terjadi kesalahan jaringan. Silakan coba lagi.' });
+      buttons.forEach(btn => { btn.disabled = false; btn.style.opacity = '1'; });
     }
   }
 
-  function confirmLogout(){ 
-    if(confirm('Yakin ingin keluar dari portal Admin?')) doLogout(); 
+  // Update pending count badges after approve/reject
+  function updatePendingCount() {
+    const tbody = document.getElementById('pengajuan-tbody');
+    const remainingRows = tbody.querySelectorAll('tr:not(#empty-pengajuan-row)');
+    const count = remainingRows.length;
+
+    // Update all badge-dot elements
+    document.querySelectorAll('.badge-dot').forEach(dot => { dot.textContent = count; });
+
+    // Update sidebar badge
+    const sidebarBadge = document.querySelector('.ps-nav-item .badge');
+    if (sidebarBadge) sidebarBadge.textContent = count;
+
+    // Show empty state if no pending shops remain
+    if (count === 0) {
+      tbody.innerHTML = `
+        <tr id="empty-pengajuan-row">
+          <td colspan="5" style="text-align:center;padding:40px 0;color:var(--dark-light);">
+            <i class="fa-solid fa-circle-check fa-2xl" style="margin-bottom:12px;color:#16a34a;"></i>
+            <div style="font-size:.9rem;">Semua pengajuan telah diproses. 🎉</div>
+          </td>
+        </tr>`;
+    }
+  }
+
+  async function confirmLogout() {
+    const confirmed = await showConfirm({
+      type: 'danger',
+      title: 'Keluar dari Admin?',
+      message: 'Yakin ingin keluar dari portal Admin? Kamu harus login kembali untuk mengakses dashboard.',
+      confirmText: 'Ya, Keluar',
+      cancelText: 'Batal',
+    });
+    if (confirmed) doLogout();
   }
   
   function doLogout() {
@@ -952,15 +1026,16 @@
         }
     })
     .then(response => {
-      // Dummy redirect for template testing
       window.location.href = '/admin/login';
     })
     .catch(error => {
         console.error('Error Logout:', error);
-        alert('Terjadi kesalahan saat logout.');
+        showModal({ type: 'error', title: 'Gagal Logout', message: 'Terjadi kesalahan saat logout. Silakan coba lagi.' });
     });
   }
         </script>
+
+        @include('layouts.partials.custom-modal')
     </body>
 
 </html>
