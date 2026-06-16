@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,4 +50,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/create-shop', [StoreController::class, 'create'])->name('shop.create');
     Route::post('/create-shop', [StoreController::class, 'store'])->name('shop.store');
+
+    Route::get('/tambah-produk', [ProductController::class, 'create'])->name('product.create');
 });
