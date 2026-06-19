@@ -271,6 +271,22 @@
             display: none;
         }
 
+        /* IMAGE LOADING SPINNER */
+        .img-loading-spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: imgSpin .7s linear infinite;
+        }
+
+        @keyframes imgSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         /* IMAGE GRID (preview after adding) */
         .img-preview-grid {
             display: grid;
@@ -1272,11 +1288,11 @@
                 </div>
                 <div class="pt-actions">
                     <button class="btn btn-ghost btn-sm"
-                        style="color:rgba(255,255,255,.55);border:1.5px solid rgba(255,255,255,.15);"
+                        style="color:rgba(255,255,255,.55);border:1.5px solid rgba(255,255,255,.15);" type="button"
                         onclick="saveDraft()">
                         <i class="fa-solid fa-floppy-disk fa-xs"></i> Simpan Draft
                     </button>
-                    <button class="btn btn-primary btn-sm" onclick="publishProduct()">
+                    <button type="submit" form="form-create-product" class="btn btn-primary btn-sm" id="top-pub-btn">
                         <i class="fa-solid fa-rocket fa-xs"></i> Publikasikan
                     </button>
                 </div>
@@ -1286,8 +1302,20 @@
 
     <!-- MAIN -->
     <div class="container">
-        <div class="prod-layout">
+        @if ($errors->any())
+            <div class="alert alert-danger" style="background:var(--danger);color:white;padding:15px;border-radius:8px;margin-bottom:20px;">
+                <div style="font-weight:bold;margin-bottom:8px;"><i class="fa-solid fa-triangle-exclamation"></i> Terdapat kesalahan pada form:</div>
+                <ul style="margin:0;padding-left:20px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
+        <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data" class="prod-layout"
+            id="form-create-product" onsubmit="return handleFormSubmit(event)">
+            @csrf
             <!-- LEFT: FORM -->
             <div>
 
@@ -1306,6 +1334,10 @@
                     </div>
                     <div class="fcard-body">
 
+                        <!-- Hidden file input (outside drop zone to prevent click conflicts) -->
+                        <input type="file" id="file-input" name="images[]" class="img-hidden-input" multiple
+                            accept="image/*">
+
                         <!-- Upload drop zone -->
                         <div class="img-upload-area" id="drop-zone" ondragover="onDragOver(event)"
                             ondragleave="onDragLeave(event)" ondrop="onDrop(event)"
@@ -1320,8 +1352,6 @@
                             </button>
                             <div style="font-size:.72rem;color:var(--dark-light);margin-top:8px;">JPG · PNG · WebP ·
                                 Maks. 5MB · Min. 800×800px</div>
-                            <input type="file" id="file-input" class="img-hidden-input" multiple accept="image/*"
-                                onchange="onFileSelect(this)">
 
                             <!-- Emoji quick-pick -->
                             <div class="emoji-picker-row">
@@ -1388,7 +1418,7 @@
                                         style="font-size:.68rem;background:var(--bg);border:1px solid var(--border);padding:0 4px;border-radius:3px;color:var(--primary);">name
                                         VARCHAR(150)</code></span>
                             </label>
-                            <input class="form-control" id="prod-name"
+                            <input class="form-control" id="prod-name" name="name"
                                 placeholder="Contoh: Nastar Keju Premium Lebaran 500gr" maxlength="150"
                                 oninput="onName(this.value)" autofocus>
                             <div class="ffoot">
@@ -1407,15 +1437,12 @@
                                             style="font-size:.68rem;background:var(--bg);border:1px solid var(--border);padding:0 4px;border-radius:3px;color:var(--primary);">category_id
                                             INT FK</code></span>
                                 </label>
-                                <select class="form-control" id="prod-cat" onchange="updatePreview()">
+                                <select class="form-control" id="prod-cat" name="category_id"
+                                    onchange="updatePreview()">
                                     <option value="">— Pilih Kategori —</option>
-                                    <option value="1">🍱 Kuliner & Makanan</option>
-                                    <option value="2">👗 Fashion & Batik</option>
-                                    <option value="3">🎨 Kerajinan Tangan</option>
-                                    <option value="4">🌿 Pertanian & Herbal</option>
-                                    <option value="5">💆 Kecantikan & Perawatan</option>
-                                    <option value="6">🪴 Dekorasi & Tanaman</option>
-                                    <option value="7">📦 Lainnya</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="form-group">
@@ -1426,8 +1453,9 @@
                                             style="font-size:.68rem;background:var(--bg);border:1px solid var(--border);padding:0 4px;border-radius:3px;color:var(--primary);">slug
                                             VARCHAR(170) UNIQUE</code></span>
                                 </label>
-                                <input class="form-control" id="prod-slug" placeholder="nastar-keju-premium-500gr"
-                                    maxlength="170" oninput="onSlug(this.value)">
+                                <input class="form-control" id="prod-slug" name="slug"
+                                    placeholder="nastar-keju-premium-500gr" maxlength="170"
+                                    oninput="onSlug(this.value)">
                                 <div class="slug-pill" id="slug-pill">
                                     <i class="fa-solid fa-link fa-xs" style="color:var(--dark-light);"></i>
                                     /produk/<span class="slug-val" id="slug-val">nama-produk</span>
@@ -1444,7 +1472,8 @@
                                         style="font-size:.68rem;background:var(--bg);border:1px solid var(--border);padding:0 4px;border-radius:3px;color:var(--primary);">description
                                         TEXT</code></span>
                             </label>
-                            <textarea class="form-control" id="prod-desc" rows="7" maxlength="2000" oninput="onDesc(this.value)"
+                            <textarea class="form-control" id="prod-desc" name="description" rows="7" maxlength="2000"
+                                oninput="onDesc(this.value)"
                                 placeholder="Deskripsikan produkmu secara detail:&#10;&#10;• Bahan baku dan komposisi&#10;• Ukuran / berat / volume&#10;• Keunggulan produk (tanpa pengawet, bersertifikat, dll)&#10;• Masa simpan / kedaluwarsa&#10;• Cara pemesanan dan pengiriman&#10;&#10;Deskripsi yang lengkap mengurangi tanya-jawab via WA dan meningkatkan konversi."></textarea>
                             <div class="ffoot">
                                 <span class="form-hint">Min. 50 karakter untuk publikasi.</span>
@@ -1471,8 +1500,8 @@
                                 <label class="form-label">Harga Jual <span>*</span></label>
                                 <div class="price-row">
                                     <div class="price-pfx">Rp</div>
-                                    <input class="form-control" id="prod-price" type="number" min="0"
-                                        step="500" placeholder="65000" oninput="onPrice()">
+                                    <input class="form-control" id="prod-price" name="price" type="number"
+                                        min="0" step="500" placeholder="65000" oninput="onPrice()">
                                 </div>
                                 <div class="price-result" id="price-result">
                                     <i class="fa-solid fa-tag fa-xs" style="color:var(--primary);"></i>
@@ -1667,7 +1696,7 @@
                                     3× tayangan lebih banyak</div>
                             </div>
                             <label class="tsw" onclick="event.stopPropagation()">
-                                <input type="checkbox" id="prod-feat"
+                                <input type="checkbox" id="prod-feat" name="is_featured" value="1"
                                     onchange="document.getElementById('feat-row').classList.toggle('on',this.checked);updatePreview();">
                                 <div class="tsw-track"></div>
                             </label>
@@ -1764,37 +1793,6 @@
                     </div>
                 </div>
 
-                <!-- Schema reference -->
-                <div class="schema-box">
-                    <div class="sch-title"><i class="fa-solid fa-database"></i> products table</div>
-                    <div class="sf"><span class="sf-c">umkm_id</span><span class="sf-t">bigint FK</span><span
-                            class="sf-r">AUTO</span></div>
-                    <div class="sf"><span class="sf-c">category_id</span><span class="sf-t">int
-                            FK</span><span class="sf-r">REQ</span></div>
-                    <div class="sf"><span class="sf-c">name</span><span class="sf-t">varchar(150)</span><span
-                            class="sf-r">REQ</span></div>
-                    <div class="sf"><span class="sf-c">slug</span><span class="sf-t">varchar(170)</span><span
-                            class="sf-r">REQ</span></div>
-                    <div class="sf"><span class="sf-c">price</span><span
-                            class="sf-t">decimal(12,2)</span><span class="sf-r">REQ</span></div>
-                    <div class="sf"><span class="sf-c">description</span><span class="sf-t">text</span><span
-                            class="sf-r">REQ</span></div>
-                    <div class="sf"><span class="sf-c">is_featured</span><span
-                            class="sf-t">boolean</span><span class="sf-n">default:false</span></div>
-                    <div class="sf"><span class="sf-c">views_count</span><span class="sf-t">int</span><span
-                            class="sf-n">auto:0</span></div>
-                    <div style="border-top:1px solid rgba(255,255,255,.07);margin-top:7px;padding-top:8px;">
-                        <div class="sch-title" style="margin-bottom:8px;"><i class="fa-solid fa-images"></i>
-                            product_images</div>
-                        <div class="sf"><span class="sf-c">product_id</span><span class="sf-t">bigint
-                                FK</span><span class="sf-r">REQ</span></div>
-                        <div class="sf"><span class="sf-c">image_path</span><span
-                                class="sf-t">varchar(255)</span><span class="sf-r">REQ</span></div>
-                        <div class="sf"><span class="sf-c">is_primary</span><span
-                                class="sf-t">boolean</span><span class="sf-n">1st=true</span></div>
-                    </div>
-                </div>
-
                 <!-- Tips -->
                 <div class="tips-box">
                     <div class="tips-head">
@@ -1815,7 +1813,7 @@
                 </div>
             </aside>
 
-        </div><!-- end prod-layout -->
+        </form><!-- end prod-layout -->
     </div>
 
     <!-- STICKY SAVE BAR -->
@@ -1834,7 +1832,7 @@
                     <button class="btn btn-dark" onclick="previewProd()">
                         <i class="fa-solid fa-eye fa-xs"></i> Preview
                     </button>
-                    <button class="btn btn-primary" id="pub-btn" onclick="publishProduct()">
+                    <button type="submit" form="form-create-product" class="btn btn-primary" id="pub-btn">
                         <i class="fa-solid fa-rocket fa-xs"></i> Simpan & Publikasikan
                     </button>
                 </div>
@@ -1882,9 +1880,19 @@
             'linear-gradient(135deg,#d1fae5,#a7f3d0)', 'linear-gradient(135deg,#ede9fe,#ddd6fe)',
             'linear-gradient(135deg,#fce7f3,#fbcfe8)', 'linear-gradient(135deg,#fee2e2,#fecaca)'
         ];
-        let images = []; // [{emoji, isPrimary}]
+        let images = []; // [{file, url, emoji, isPrimary, loading}]
         let stockVal = 'available';
         let statusVal = 'active';
+        let _syncing = false; // guard to prevent onchange re-trigger from syncFileInput
+        const fileInput = document.getElementById('file-input');
+
+        // Attach change listener with re-entry guard
+        fileInput.addEventListener('change', function() {
+            if (_syncing) return;
+            if (this.files && this.files.length) {
+                handleFiles(this.files);
+            }
+        });
 
         /* ═══ IMAGE UPLOAD ═══ */
         function onDragOver(e) {
@@ -1899,15 +1907,52 @@
         function onDrop(e) {
             e.preventDefault();
             onDragLeave(e);
-            toast('Foto ditambahkan (simulasi)');
-            addEmojiSlot(null, '📷');
+            if (e.dataTransfer.files.length) {
+                handleFiles(e.dataTransfer.files);
+            }
         }
 
-        function onFileSelect(input) {
-            [...input.files].forEach(f => {
-                if (images.length < 4) addEmojiSlot(null, '🖼️');
+        function handleFiles(fileList) {
+            const filesToProcess = [...fileList].filter(f => f.type.startsWith('image/'));
+            if (!filesToProcess.length) return;
+
+            filesToProcess.forEach(f => {
+                if (images.length >= 4) {
+                    toast('Maksimal 4 foto produk', 'err');
+                    return;
+                }
+
+                const isPrimary = images.length === 0;
+                const idx = images.length;
+                // Add a loading placeholder immediately
+                images.push({
+                    file: f,
+                    url: null,
+                    emoji: null,
+                    isPrimary,
+                    loading: true
+                });
+                renderImageGrid();
+
+                // Read the file asynchronously
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (images[idx]) {
+                        images[idx].url = e.target.result;
+                        images[idx].loading = false;
+                        renderImageGrid();
+                        if (images[idx].isPrimary) {
+                            updatePreviewImage(e.target.result);
+                        }
+                        toast(
+                            `📸 Foto ${idx + 1} berhasil dimuat${images[idx].isPrimary ? ' sebagai foto utama' : ''}`);
+                    }
+                    syncFileInput();
+                    updateProgress();
+                };
+                reader.readAsDataURL(f);
             });
-            input.value = '';
+            updateProgress();
         }
 
         function addEmojiSlot(btn, emoji) {
@@ -1915,41 +1960,92 @@
                 toast('Maksimal 4 foto produk', 'err');
                 return;
             }
-            // mark picked emoji btn
             if (btn) {
                 document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('picked'));
                 btn.classList.add('picked');
             }
             const isPrimary = images.length === 0;
             images.push({
+                file: null,
+                url: null,
                 emoji,
-                isPrimary
+                isPrimary,
+                loading: false
             });
             renderImageGrid();
             updateProgress();
             if (isPrimary) {
                 document.getElementById('prev-emoji').textContent = emoji;
-                document.getElementById('prev-img').style.background = IMG_BG[Math.floor(Math.random() * IMG_BG.length)];
+                document.getElementById('prev-emoji').style.display = '';
+                const prevImgEl = document.getElementById('prev-img');
+                prevImgEl.style.background = IMG_BG[Math.floor(Math.random() * IMG_BG.length)];
+                const existingImg = prevImgEl.querySelector('img');
+                if (existingImg) existingImg.remove();
             }
-            toast(`📸 Foto ${images.length} ditambahkan${isPrimary?' sebagai foto utama':''}`);
+            toast(`📸 Foto ${images.length} ditambahkan${isPrimary ? ' sebagai foto utama' : ''}`);
+        }
+
+        function updatePreviewImage(url) {
+            const prevImgEl = document.getElementById('prev-img');
+            const prevEmoji = document.getElementById('prev-emoji');
+            prevEmoji.style.display = 'none';
+            let img = prevImgEl.querySelector('img');
+            if (!img) {
+                img = document.createElement('img');
+                img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0;';
+                prevImgEl.appendChild(img);
+            }
+            img.src = url;
         }
 
         function removeImg(idx) {
             images.splice(idx, 1);
             images.forEach((img, i) => img.isPrimary = i === 0);
+            syncFileInput();
             renderImageGrid();
             updateProgress();
             if (images.length === 0) {
                 document.getElementById('prev-emoji').textContent = '📦';
+                document.getElementById('prev-emoji').style.display = '';
                 document.getElementById('prev-img').style.background = 'linear-gradient(135deg,#fef3c7,#fed7aa)';
-            } else document.getElementById('prev-emoji').textContent = images[0].emoji;
+                const existingImg = document.getElementById('prev-img').querySelector('img');
+                if (existingImg) existingImg.remove();
+            } else if (images[0].url) {
+                updatePreviewImage(images[0].url);
+            } else if (images[0].emoji) {
+                document.getElementById('prev-emoji').textContent = images[0].emoji;
+                document.getElementById('prev-emoji').style.display = '';
+                const existingImg = document.getElementById('prev-img').querySelector('img');
+                if (existingImg) existingImg.remove();
+            }
         }
 
         function setMainImg(idx) {
+            if (images[idx].loading) return;
             images.forEach((img, i) => img.isPrimary = i === idx);
             renderImageGrid();
-            document.getElementById('prev-emoji').textContent = images[idx].emoji;
+            if (images[idx].url) {
+                updatePreviewImage(images[idx].url);
+            } else if (images[idx].emoji) {
+                document.getElementById('prev-emoji').textContent = images[idx].emoji;
+                document.getElementById('prev-emoji').style.display = '';
+                const existingImg = document.getElementById('prev-img').querySelector('img');
+                if (existingImg) existingImg.remove();
+            }
             toast('✅ Foto utama diperbarui');
+        }
+
+        function syncFileInput() {
+            _syncing = true;
+            const dt = new DataTransfer();
+            images.forEach(img => {
+                if (img.file) dt.items.add(img.file);
+            });
+            fileInput.files = dt.files;
+            // Reset flag after a tick to allow future real user changes
+            setTimeout(() => {
+                _syncing = false;
+            }, 50);
         }
 
         function renderImageGrid() {
@@ -1958,13 +2054,24 @@
             badge.textContent = images.length + ' / 4';
             badge.style.background = images.length > 0 ? 'var(--primary)' : '#e2e8f0';
             badge.style.color = images.length > 0 ? 'white' : 'var(--dark-light)';
-            let html = images.map((img, i) => `
-    <div class="img-preview-item" onclick="setMainImg(${i})" title="${img.isPrimary?'Foto Utama':'Klik untuk jadikan foto utama'}" style="${img.isPrimary?'border-color:var(--primary);box-shadow:0 0 0 2px rgba(253,116,0,.2);':''}">
-      ${img.emoji}
+            let html = images.map((img, i) => {
+                if (img.loading) {
+                    return `
+    <div class="img-preview-item" style="${img.isPrimary?'border-color:var(--primary);box-shadow:0 0 0 2px rgba(253,116,0,.2);':''}cursor:default;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div class="img-loading-spinner"></div>
+        <span style="font-size:.65rem;color:var(--dark-light);">Memuat...</span>
+      </div>
+      ${img.isPrimary ? '<div class="img-primary-lbl">Utama</div>' : ''}
+    </div>`;
+                }
+                return `
+    <div class="img-preview-item" onclick="setMainImg(${i})" title="${img.isPrimary?'Foto Utama':'Klik untuk jadikan foto utama'}" style="${img.isPrimary?'border-color:var(--primary);box-shadow:0 0 0 2px rgba(253,116,0,.2);':''}${img.url ? 'font-size:0;' : ''}">
+      ${img.url ? `<img src="${img.url}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:inherit;">` : (img.emoji || '')}
       <div class="item-del" onclick="event.stopPropagation();removeImg(${i})"><i class="fa-solid fa-xmark"></i></div>
       ${img.isPrimary ? '<div class="img-primary-lbl">Utama</div>' : ''}
-    </div>
-  `).join('');
+    </div>`;
+            }).join('');
             if (images.length < 4) html +=
                 `<div class="img-add-slot" onclick="document.getElementById('file-input').click()"><i class="fa-solid fa-plus"></i><span>Tambah</span></div>`;
             grid.innerHTML = html;
@@ -2171,37 +2278,33 @@
         }
 
         /* ═══ SUBMIT ═══ */
-        function publishProduct() {
+        function handleFormSubmit(e) {
             const err = validate();
             if (err) {
+                e.preventDefault();
                 toast(err, 'err');
-                return;
+                return false;
             }
+
+            // Check if still loading images
+            if (images.some(img => img.loading)) {
+                e.preventDefault();
+                toast('⚠️ Harap tunggu, sedang memproses foto...', 'err');
+                return false;
+            }
+
             const btn = document.getElementById('pub-btn');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin fa-xs"></i> Mempublikasikan...';
-            btn.disabled = true;
-            const payload = {
-                umkm_id: 1,
-                category_id: parseInt(document.getElementById('prod-cat').value),
-                name: document.getElementById('prod-name').value.trim(),
-                slug: document.getElementById('prod-slug').value.trim(),
-                price: parseFloat(document.getElementById('prod-price').value),
-                description: document.getElementById('prod-desc').value.trim(),
-                is_featured: document.getElementById('prod-feat').checked,
-                views_count: 0,
-                // product_images sent separately
-                images: images.map((img, i) => ({
-                    image_path: img.emoji,
-                    is_primary: i === 0
-                })),
-            };
-            console.log('POST /api/products →', payload);
-            setTimeout(() => {
-                btn.innerHTML = '<i class="fa-solid fa-rocket fa-xs"></i> Simpan & Publikasikan';
-                btn.disabled = false;
-                document.getElementById('suc-name').textContent = payload.name;
-                document.getElementById('success-overlay').classList.add('show');
-            }, 1800);
+            if (btn) {
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin fa-xs"></i> Mempublikasikan...';
+                btn.disabled = true;
+            }
+            const topBtn = document.getElementById('top-pub-btn');
+            if (topBtn) {
+                topBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin fa-xs"></i> Mempublikasikan...';
+                topBtn.disabled = true;
+            }
+            // Allow native form submission to proceed
+            return true;
         }
 
         function saveDraft() {

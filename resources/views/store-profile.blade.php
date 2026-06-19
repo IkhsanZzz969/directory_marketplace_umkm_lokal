@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dapur Bu Sari — {{ env('APP_NAME') }}</title>
+  <title>{{ $shop->name }} — {{ env('APP_NAME') }}</title>
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -218,13 +218,15 @@
     <div class="container">
       <div class="store-header-body">
         <div class="store-identity">
-          <div class="store-logo-big">🍱</div>
+          <div class="store-logo-big">{{ $shop->logo ?: '🏪' }}</div>
           <div class="store-identity-info">
-            <div class="store-identity-name">Dapur Bu Sari</div>
+            <div class="store-identity-name">{{ $shop->name }}</div>
             <div class="store-identity-sub">
+              @if($shop->status === 'approved')
               <span class="badge-verified"><i class="fa-solid fa-circle-check fa-xs"></i> Terverifikasi</span>
-              <span><i class="fa-solid fa-location-dot fa-xs"></i> Semarang Tengah, Jawa Tengah</span>
-              <span><i class="fa-solid fa-store fa-xs"></i> Bergabung Maret 2023</span>
+              @endif
+              <span><i class="fa-solid fa-location-dot fa-xs"></i> {{ $shop->district }}</span>
+              <span><i class="fa-solid fa-store fa-xs"></i> Bergabung {{ $shop->created_at ? $shop->created_at->format('M Y') : 'Baru saja' }}</span>
               <span><i class="fa-solid fa-star fa-xs" style="color:#fbbf24;"></i> 4.9 · 248 ulasan</span>
             </div>
           </div>
@@ -263,7 +265,7 @@
         <!-- Stat strip (always visible) -->
         <div class="stat-strip">
           <div class="stat-strip-item">
-            <div class="stat-strip-num">48</div>
+            <div class="stat-strip-num">{{ $products->count() }}</div>
             <div class="stat-strip-lbl">Total Produk</div>
           </div>
           <div class="stat-strip-item">
@@ -313,12 +315,9 @@
         <!-- ── TENTANG TAB ── -->
         <div class="tab-panel" id="tab-tentang">
           <div class="info-card">
-            <div class="info-card-title"><i class="fa-solid fa-circle-info"></i> Tentang Dapur Bu Sari</div>
+            <div class="info-card-title"><i class="fa-solid fa-circle-info"></i> Tentang {{ $shop->name }}</div>
             <p style="line-height:1.8;margin-bottom:16px;">
-              Dapur Bu Sari adalah usaha rumahan yang dirintis sejak tahun 2018 oleh Ibu Sari Wulandari di kawasan Semarang Tengah. Bermula dari berjualan kue kering untuk tetangga dan kerabat, kini Dapur Bu Sari telah melayani pelanggan dari seluruh Indonesia.
-            </p>
-            <p style="line-height:1.8;margin-bottom:16px;">
-              Semua produk dibuat dengan bahan-bahan pilihan berkualitas premium, tanpa bahan pengawet buatan, dan dikemas secara higienis. Kami berkomitmen menghadirkan cita rasa autentik rumahan yang bikin rindu.
+              {{ $shop->description ?: 'Toko ini belum menambahkan deskripsi.' }}
             </p>
             <div style="display:flex;gap:16px;flex-wrap:wrap;">
               <div class="badge badge-success"><i class="fa-solid fa-certificate fa-xs"></i> Sertifikat PIRT</div>
@@ -423,19 +422,19 @@
           <ul class="store-info-list">
             <li class="store-info-item">
               <div class="store-info-icon"><i class="fa-solid fa-location-dot fa-xs"></i></div>
-              <div><div class="store-info-key">Alamat</div><div class="store-info-value">Jl. Pemuda No.12, Semarang Tengah, Jawa Tengah 50132</div></div>
+              <div><div class="store-info-key">Alamat</div><div class="store-info-value">{{ $shop->address }}</div></div>
             </li>
             <li class="store-info-item">
               <div class="store-info-icon"><i class="fa-brands fa-whatsapp fa-xs"></i></div>
-              <div><div class="store-info-key">WhatsApp</div><div class="store-info-value">+62 812-3456-7890</div></div>
+              <div><div class="store-info-key">WhatsApp</div><div class="store-info-value">{{ $shop->whatsapp_number }}</div></div>
             </li>
             <li class="store-info-item">
               <div class="store-info-icon"><i class="fa-solid fa-tag fa-xs"></i></div>
-              <div><div class="store-info-key">Kategori Utama</div><div class="store-info-value">Kuliner & Makanan</div></div>
+              <div><div class="store-info-key">Kategori Utama</div><div class="store-info-value">{{ $shop->category }}</div></div>
             </li>
             <li class="store-info-item">
               <div class="store-info-icon"><i class="fa-solid fa-calendar fa-xs"></i></div>
-              <div><div class="store-info-key">Bergabung</div><div class="store-info-value">Maret 2023</div></div>
+              <div><div class="store-info-key">Bergabung</div><div class="store-info-value">{{ $shop->created_at ? $shop->created_at->format('M Y') : 'Baru Saja' }}</div></div>
             </li>
             <li class="store-info-item">
               <div class="store-info-icon"><i class="fa-solid fa-truck fa-xs"></i></div>
@@ -469,28 +468,37 @@
   window.addEventListener('scroll',()=> document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>10));
 
   // ── Products ──
-  const STORE_PRODS = [
-    {e:'🍪',bg:'linear-gradient(135deg,#fef3c7,#fed7aa)',name:'Nastar Keju Premium 500gr',price:'65.000',badge:'Terlaris'},
-    {e:'🎁',bg:'linear-gradient(135deg,#fee2e2,#fecaca)',name:'Hampers Lebaran Set 5 Toples',price:'250.000',badge:'Promo'},
-    {e:'🧁',bg:'linear-gradient(135deg,#fce7f3,#fbcfe8)',name:'Putri Salju Kacang 400gr',price:'55.000',badge:null},
-    {e:'🍘',bg:'linear-gradient(135deg,#f0fdf4,#dcfce7)',name:'Kastengel Keju Edam 400gr',price:'72.000',badge:null},
-    {e:'🍩',bg:'linear-gradient(135deg,#fffbeb,#fef3c7)',name:'Kue Semprit Susu Klasik 500gr',price:'58.000',badge:null},
-    {e:'🫐',bg:'linear-gradient(135deg,#ede9fe,#e0e7ff)',name:'Kue Lidah Kucing Lembut 300gr',price:'48.000',badge:'Baru'},
-  ];
+  const STORE_PRODS = {!! json_encode($products->map(function($p) {
+      $img = $p->primaryImage->first();
+      $primaryImg = $img ? \Illuminate\Support\Facades\Storage::url($img->image_path) : null;
+      return [
+          'id' => $p->id,
+          'e' => '📦',
+          'bg' => 'linear-gradient(135deg,#f0fdf4,#dcfce7)',
+          'img_url' => $primaryImg,
+          'name' => $p->name,
+          'slug' => $p->slug,
+          'price' => number_format($p->price, 0, ',', '.'),
+          'badge' => $p->is_featured ? 'Unggulan' : null,
+      ];
+  })) !!};
+
   document.getElementById('store-prod-grid').innerHTML = STORE_PRODS.map(p=>`
-    <div class="product-card" onclick="location.href='product-detail.html'" style="cursor:pointer;">
-      <div class="product-card-img">
-        <div style="width:100%;height:100%;background:${p.bg};display:flex;align-items:center;justify-content:center;font-size:2.8rem;">${p.e}</div>
-        ${p.badge?`<div class="product-card-badge" style="${p.badge==='Baru'?'background:var(--dark)':p.badge==='Promo'?'background:#ef4444':''}">${p.badge}</div>`:''}
+    <a href="/produk/${p.slug}" class="product-card" style="cursor:pointer; text-decoration:none; color:inherit; display:flex; flex-direction:column;">
+      <div class="product-card-img" style="position:relative;overflow:hidden;">
+        <div style="width:100%;height:100%;background:${p.bg};display:flex;align-items:center;justify-content:center;font-size:2.8rem;">
+            ${p.img_url ? `<img src="${p.img_url}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">` : p.e}
+        </div>
+        ${p.badge?`<div class="product-card-badge" style="background:var(--primary);">${p.badge}</div>`:''}
       </div>
       <div class="product-card-body">
         <div class="product-card-name">${p.name}</div>
         <div class="product-card-price">Rp ${p.price}</div>
       </div>
-      <div class="product-card-actions">
-        <button class="btn btn-wa w-full btn-sm" onclick="event.stopPropagation();chatWA()"><i class="fa-brands fa-whatsapp"></i> Chat WA</button>
+      <div class="product-card-actions" style="margin-top:auto;">
+        <button class="btn btn-wa w-full btn-sm" onclick="event.preventDefault(); event.stopPropagation(); chatWA()"><i class="fa-brands fa-whatsapp"></i> Chat WA</button>
       </div>
-    </div>
+    </a>
   `).join('');
 
   // ── Reviews ──
@@ -520,7 +528,7 @@
   function setProdCat(el){ document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
 
   function chatWA(){
-    window.open(`https://wa.me/6281234567890?text=${encodeURIComponent('Halo Dapur Bu Sari! Saya menemukan toko kamu di PasarLokal dan ingin bertanya tentang produk kamu.')}`, '_blank');
+    window.open(`https://wa.me/{{ preg_replace('/^0/', '62', $shop->whatsapp_number) }}?text=${encodeURIComponent('Halo {{ $shop->name }}! Saya menemukan toko kamu di PasarLokal dan ingin bertanya tentang produk kamu.')}`, '_blank');
   }
   function toggleFollow(btn){
     const following = btn.dataset.following==='1';

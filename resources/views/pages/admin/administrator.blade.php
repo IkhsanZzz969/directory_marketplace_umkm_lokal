@@ -406,6 +406,39 @@
                 }
             }
 
+            /* ── CATEGORY MODAL OVERLAY ── */
+            .success-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(46, 53, 61, .6);
+                backdrop-filter: blur(6px);
+                z-index: 9999;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .success-box {
+                background: white;
+                border-radius: var(--radius-xl);
+                padding: 32px;
+                max-width: 480px;
+                width: 90%;
+                box-shadow: var(--shadow-xl);
+                animation: modalPopIn .25s ease;
+            }
+
+            @keyframes modalPopIn {
+                from {
+                    transform: scale(.9);
+                    opacity: 0;
+                }
+                to {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+
             @media (max-width: 540px) {
                 .profile-header-inner {
                     flex-direction: column;
@@ -469,6 +502,8 @@
                                 class="fa-solid fa-shop fa-xs"></i> Daftar Toko</div>
                         <div class="ptab" id="tab-pengguna" onclick="showPanel('pengguna',this)"><i
                                 class="fa-solid fa-users fa-xs"></i> Kelola Pengguna</div>
+                        <div class="ptab" id="tab-kategori" onclick="showPanel('kategori',this)"><i
+                                class="fa-solid fa-tags fa-xs"></i> Kelola Kategori</div>
                         <div class="ptab" id="tab-pengaturan" onclick="showPanel('pengaturan',this)"><i
                                 class="fa-solid fa-gear fa-xs"></i> Pengaturan Sistem</div>
                     </div>
@@ -508,6 +543,9 @@
                             <div class="ps-nav-item"
                                 onclick="showPanel('pengguna', document.getElementById('tab-pengguna')); setActive(this)">
                                 <span class="icon"><i class="fa-solid fa-users"></i></span> Kelola Pengguna</div>
+                            <div class="ps-nav-item"
+                                onclick="showPanel('kategori', document.getElementById('tab-kategori')); setActive(this)">
+                                <span class="icon"><i class="fa-solid fa-tags"></i></span> Kelola Kategori</div>
                             <div class="ps-nav-sep"></div>
                             <div class="ps-nav-item"
                                 onclick="showPanel('pengaturan', document.getElementById('tab-pengaturan')); setActive(this)">
@@ -822,6 +860,64 @@
                             </div>
                         </div>
 
+                        <div class="panel" id="panel-kategori">
+                            <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <h3>Kelola Kategori</h3>
+                                    <p>Manajemen kategori produk yang tersedia di PasarLokal.</p>
+                                </div>
+                                <button class="btn btn-primary btn-sm" onclick="showCategoryModal()">
+                                    <i class="fa-solid fa-plus"></i> Tambah Kategori
+                                </button>
+                            </div>
+
+                            <div class="info-panel-card" style="padding: 0;">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nama Kategori</th>
+                                            <th>Slug</th>
+                                            <th>Total Produk</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($categories as $cat)
+                                            <tr>
+                                                <td>
+                                                    <div style="font-weight:600;font-size:.88rem;color:var(--dark);">
+                                                        {{ $cat->name }}</div>
+                                                </td>
+                                                <td>
+                                                    <div style="font-size:.82rem;">{{ $cat->slug }}</div>
+                                                </td>
+                                                <td>
+                                                    <div style="font-size:.82rem;">{{ $cat->products()->count() ?? 0 }} Item</div>
+                                                </td>
+                                                <td>
+                                                    <div style="display:flex;gap:6px;">
+                                                        <button class="btn btn-ghost btn-sm" title="Edit Kategori" onclick="editCategory({{ $cat->id }}, '{{ $cat->name }}', '{{ $cat->slug }}')"><i class="fa-solid fa-pencil"></i></button>
+                                                        <form action="{{ route('admin.category.destroy', $cat->id) }}" method="POST" onsubmit="return confirm('Hapus kategori ini?');" style="display:inline-block;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button class="btn btn-ghost btn-sm" style="color:var(--danger);" title="Hapus Kategori"><i class="fa-solid fa-trash"></i></button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" style="text-align:center;padding:40px 0;color:var(--dark-light);">
+                                                    <i class="fa-solid fa-tags fa-2xl" style="margin-bottom:12px;"></i>
+                                                    <div style="font-size:.9rem;">Belum ada kategori yang ditambahkan.</div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                         <div class="panel" id="panel-pengaturan">
                             <div class="panel-header">
                                 <h3>Pengaturan Sistem</h3>
@@ -1034,6 +1130,62 @@
     });
   }
         </script>
+
+        <script>
+            // JS Category handling
+            function showCategoryModal() {
+                const form = document.getElementById('category-form');
+                form.action = "{{ route('category.store') }}";
+                document.getElementById('cat-method').innerHTML = ''; // POST
+                document.getElementById('cat-name').value = '';
+                document.getElementById('cat-slug').value = '';
+                document.getElementById('cat-modal-title').innerText = 'Tambah Kategori';
+                document.getElementById('category-modal').style.display = 'flex';
+            }
+
+            function editCategory(id, name, slug) {
+                const form = document.getElementById('category-form');
+                form.action = `/admin/category/${id}`;
+                document.getElementById('cat-method').innerHTML = '<input type="hidden" name="_method" value="PUT">';
+                document.getElementById('cat-name').value = name;
+                document.getElementById('cat-slug').value = slug;
+                document.getElementById('cat-modal-title').innerText = 'Edit Kategori';
+                document.getElementById('category-modal').style.display = 'flex';
+            }
+
+            function closeCategoryModal() {
+                document.getElementById('category-modal').style.display = 'none';
+            }
+
+            // Auto-generate slug for category
+            document.getElementById('cat-name')?.addEventListener('input', function(e) {
+                const slug = e.target.value.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+                document.getElementById('cat-slug').value = slug;
+            });
+        </script>
+
+        <!-- Category Modal -->
+        <div class="success-overlay" id="category-modal" style="z-index:9999;">
+            <div class="success-box" style="text-align:left;">
+                <h2 id="cat-modal-title" style="margin-bottom:20px;">Tambah Kategori</h2>
+                <form id="category-form" method="POST" action="">
+                    @csrf
+                    <div id="cat-method"></div>
+                    <div class="form-group" style="margin-bottom:16px;">
+                        <label class="form-label" style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px;">Nama Kategori</label>
+                        <input type="text" id="cat-name" name="name" class="form-control" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-md);" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom:24px;">
+                        <label class="form-label" style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px;">Slug</label>
+                        <input type="text" id="cat-slug" name="slug" class="form-control" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-md);" required>
+                    </div>
+                    <div style="display:flex;gap:10px;justify-content:flex-end;">
+                        <button type="button" class="btn btn-outline" onclick="closeCategoryModal()">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         @include('layouts.partials.custom-modal')
     </body>

@@ -1079,11 +1079,10 @@
                                     </div>
                                 </div>
                                 <div style="display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;">
-
                                     @if (Auth::user()->shops->status === 'approved')
                                         <a href="store-profile.html" class="btn btn-outline btn-sm"><i
                                                 class="fa-solid fa-eye"></i> Lihat Publik</a>
-                                        <a href="{{ route('shop.create') }}" class="btn btn-primary btn-sm"><i
+                                        <a href="{{ route('shop.edit') }}" class="btn btn-primary btn-sm"><i
                                                 class="fa-solid fa-pen"></i> Edit Toko</a>
                                     @else
                                         <button class="btn btn-secondary btn-sm" disabled><i
