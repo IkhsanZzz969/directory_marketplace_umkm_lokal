@@ -1,6 +1,6 @@
 <nav class="navbar" id="navbar">
     <div class="nav-inner">
-        <a href="index.html" class="nav-logo">
+        <a href="/" class="nav-logo">
             <div class="nav-logo-icon">
                 <img src="{{ asset('assets/img/laba-transparent.png') }}" alt="" srcset="">
             </div>
@@ -14,13 +14,13 @@
         </div>
         <div class="nav-actions">
             @guest
-            <a href="/auth" class="btn btn-ghost btn-sm">Masuk</a>
-            <a href="/auth?mode=register" class="btn btn-primary btn-sm">Daftar Gratis</a>
+                <a href="/auth" class="btn btn-ghost btn-sm">Masuk</a>
+                <a href="/auth?mode=register" class="btn btn-primary btn-sm">Daftar Gratis</a>
             @endguest
             @auth
-                @if(request()->is('kelola-toko'))
-                <a href="/profile" class="btn btn-ghost btn-sm"><i class="fa-solid fa-arrow-left fa-xs"></i>
-                    Kembali ke Profil</a>
+                @if (request()->is('kelola-toko'))
+                    <a href="/profile" class="btn btn-ghost btn-sm"><i class="fa-solid fa-arrow-left fa-xs"></i>
+                        Kembali ke Profil</a>
                 @endif
                 <div class="nav-avatar" onclick="location.href='/profile'">
                     <img src="{{ auth()->user()->avatar_url }}" alt="Profile Avatar" style="border-radius: 50%;">
