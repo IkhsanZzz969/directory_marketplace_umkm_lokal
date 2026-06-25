@@ -3,16 +3,14 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\StoreController;
+use App\Http\Controllers\ShopController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/auth', function () {
-    return view('auth');
-})->name('login');
+Route::get('/auth', [AuthController::class, 'index'])->name('login');
 
 Route::get('/catalog', function () {
     return view('catalog');
@@ -20,7 +18,7 @@ Route::get('/catalog', function () {
 
 Route::get('/produk/{slug}', [ProductController::class, 'show'])->name('product.show');
 
-Route::get('/toko/{slug}', [StoreController::class, 'show'])->name('shop.show');
+Route::get('/toko/{slug}', [ShopController::class, 'show'])->name('shop.show');
 
 Route::get('/toko-umkm', function () {
     return view('toko-umkm');
@@ -29,27 +27,6 @@ Route::get('/toko-umkm', function () {
 Route::get('profile', function () {
     return view('profile');
 })->middleware('auth')->name('profile');
-
-Route::get('/kelola-toko', function () {
-    $categories = \App\Models\Category::all();
-    $products = \App\Models\Product::with(['category', 'primaryImage'])->orderByDesc('created_at')->get()->map(function($p) {
-        $primaryImg = $p->primaryImage->first();
-        return [
-            'id' => $p->id,
-            'e' => $primaryImg ? '' : '📦',
-            'bg' => '#fef3c7',
-            'img_url' => $primaryImg ? asset('storage/' . $primaryImg->image_path) : null,
-            'name' => $p->name,
-            'slug' => $p->slug,
-            'cat' => $p->category ? $p->category->name : 'Tanpa Kategori',
-            'price' => (float) $p->price,
-            'views' => $p->views_count,
-            'featured' => $p->is_featured,
-            'status' => 'active'
-        ];
-    });
-    return view('kelola-toko', ['categories' => $categories, 'jsProducts' => $products]);
-})->middleware('auth')->name('kelola-toko');
 
 Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
@@ -65,11 +42,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/admin/category/{category}', [AdminController::class, 'updateCategory'])->name('admin.category.update');
     Route::delete('/admin/category/{category}', [AdminController::class, 'deleteCategory'])->name('admin.category.destroy');
 
-    Route::get('/create-shop', [StoreController::class, 'create'])->name('shop.create');
-    Route::post('/create-shop', [StoreController::class, 'store'])->name('shop.store');
-    
-    Route::get('/edit-toko', [StoreController::class, 'edit'])->name('shop.edit');
-    Route::put('/edit-toko', [StoreController::class, 'update'])->name('shop.update');
+    Route::get('/create-shop', [ShopController::class, 'create'])->name('shop.create');
+    Route::post('/create-shop', [ShopController::class, 'store'])->name('shop.store');
+
+    Route::get('/edit-toko', [ShopController::class, 'edit'])->name('shop.edit');
+    Route::put('/edit-toko', [ShopController::class, 'update'])->name('shop.update');
+
+    Route::get('/manage-shop', [ShopController::class, 'manageShop'])->name('shop.manage');
 
     Route::get('/tambah-produk', [ProductController::class, 'create'])->name('product.create');
     Route::post('/tambah-produk', [ProductController::class, 'store'])->name('product.store');

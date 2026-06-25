@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class StoreController extends Controller
+class ShopController extends Controller
 {
     public function create()
     {
-        return view('pages.shop.create-shop');
+        return view('pages.shop.shop-create');
     }
 
     public function store(Request $request)
@@ -83,7 +83,7 @@ class StoreController extends Controller
             return redirect()->route('shop.create')->with('error', 'Anda belum memiliki toko.');
         }
 
-        return view('pages.shop.edit-shop', compact('shop'));
+        return view('pages.shop.shop-edit', compact('shop'));
     }
 
     public function update(Request $request)
@@ -146,6 +146,30 @@ class StoreController extends Controller
         $shop = Shop::where('slug', $slug)->firstOrFail();
         $products = Product::where('shop_id', $shop->id)->get();
 
-        return view('store-profile', compact('shop', 'products'));
+        return view('pages.shop.shop-profile', compact('shop', 'products'));
+    }
+
+    public function manageShop()
+    {
+        $categories = Category::all();
+        $products = Product::with(['category', 'primaryImage'])->orderByDesc('created_at')->get()->map(function ($p) {
+            $primaryImg = $p->primaryImage->first();
+
+            return [
+                'id' => $p->id,
+                'e' => $primaryImg ? '' : '📦',
+                'bg' => '#fef3c7',
+                'img_url' => $primaryImg ? asset('storage/'.$primaryImg->image_path) : null,
+                'name' => $p->name,
+                'slug' => $p->slug,
+                'cat' => $p->category ? $p->category->name : 'Tanpa Kategori',
+                'price' => (float) $p->price,
+                'views' => $p->views_count,
+                'featured' => $p->is_featured,
+                'status' => 'active',
+            ];
+        });
+
+        return view('pages.shop.shop-manage', ['categories' => $categories, 'jsProducts' => $products]);
     }
 }

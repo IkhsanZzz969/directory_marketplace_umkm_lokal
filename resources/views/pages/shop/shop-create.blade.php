@@ -1482,7 +1482,7 @@
                     Kamu akan mendapat notifikasi via WhatsApp setelah toko disetujui.
                 </p>
                 <div class="success-actions">
-                    <a href="{{ route('kelola-toko') }}" class="btn btn-primary btn-lg"><i class="fa-solid fa-store"></i> Kelola
+                    <a href="{{ route('shop.manage') }}" class="btn btn-primary btn-lg"><i class="fa-solid fa-store"></i> Kelola
                         Toko</a>
                     <a href="{{ route('profile') }}" class="btn btn-ghost btn-lg" style="border:1.5px solid var(--border);">Ke
                         Profil</a>

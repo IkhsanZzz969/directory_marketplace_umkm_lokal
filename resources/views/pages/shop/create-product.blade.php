@@ -1257,7 +1257,7 @@
                 <a href="toko-umkm.html" class="nav-link">Toko UMKM</a>
             </div>
             <div class="nav-actions">
-                <a href="{{ route('kelola-toko') }}" class="btn btn-ghost btn-sm"><i
+                <a href="{{ route('shop.manage') }}" class="btn btn-ghost btn-sm"><i
                         class="fa-solid fa-arrow-left fa-xs"></i>
                     Kelola Toko</a>
                 <div class="nav-avatar">S</div>
@@ -1273,7 +1273,7 @@
                     <div class="pt-breadcrumb">
                         <a href="profile.html">Profil</a>
                         <i class="fa-solid fa-chevron-right"></i>
-                        <a href="{{ route('kelola-toko') }}">Kelola Toko</a>
+                        <a href="{{ route('shop.manage') }}">Kelola Toko</a>
                         <i class="fa-solid fa-chevron-right"></i>
                         <span>Tambah Produk</span>
                     </div>
@@ -1303,8 +1303,10 @@
     <!-- MAIN -->
     <div class="container">
         @if ($errors->any())
-            <div class="alert alert-danger" style="background:var(--danger);color:white;padding:15px;border-radius:8px;margin-bottom:20px;">
-                <div style="font-weight:bold;margin-bottom:8px;"><i class="fa-solid fa-triangle-exclamation"></i> Terdapat kesalahan pada form:</div>
+            <div class="alert alert-danger"
+                style="background:var(--danger);color:white;padding:15px;border-radius:8px;margin-bottom:20px;">
+                <div style="font-weight:bold;margin-bottom:8px;"><i class="fa-solid fa-triangle-exclamation"></i>
+                    Terdapat kesalahan pada form:</div>
                 <ul style="margin:0;padding-left:20px;">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -1853,7 +1855,7 @@
                 <button class="btn btn-primary" onclick="addAnother()">
                     <i class="fa-solid fa-plus"></i> Tambah Produk Lain
                 </button>
-                <a href="kelola-toko.html" class="btn btn-dark">
+                <a href="{{ route('shop.manage') }}" class="btn btn-dark">
                     <i class="fa-solid fa-store"></i> Ke Kelola Toko
                 </a>
                 <a href="product-detail.html" class="btn btn-outline" target="_blank">
@@ -1945,7 +1947,8 @@
                             updatePreviewImage(e.target.result);
                         }
                         toast(
-                            `📸 Foto ${idx + 1} berhasil dimuat${images[idx].isPrimary ? ' sebagai foto utama' : ''}`);
+                            `📸 Foto ${idx + 1} berhasil dimuat${images[idx].isPrimary ? ' sebagai foto utama' : ''}`
+                            );
                     }
                     syncFileInput();
                     updateProgress();

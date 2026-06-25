@@ -625,7 +625,7 @@
                                 <button class="btn btn-secondary btn-sm" disabled><i class="fa-solid fa-store"></i> Toko
                                     sedang ditinjau</button>
                             @else
-                                <a href="{{ route('kelola-toko') }}" class="btn btn-primary btn-sm"><i
+                                <a href="{{ route('shop.manage') }}" class="btn btn-primary btn-sm"><i
                                         class="fa-solid fa-store"></i> Kelola Toko</a>
                             @endif
                         @endif
@@ -772,7 +772,8 @@
                             <div class="timeline">
                                 <div class="tl-item">
                                     <div class="tl-dot" style="background:var(--primary-light);color:var(--primary);">
-                                        <i class="fa-regular fa-heart fa-xs"></i></div>
+                                        <i class="fa-regular fa-heart fa-xs"></i>
+                                    </div>
                                     <div class="tl-content">
                                         <div class="tl-title">Menyimpan produk ke wishlist</div>
                                         <div class="tl-sub">Batik Tulis Motif Kawung — Batik Nusantara</div>
@@ -808,7 +809,8 @@
                                 </div>
                                 <div class="tl-item">
                                     <div class="tl-dot" style="background:var(--primary-light);color:var(--primary);">
-                                        <i class="fa-solid fa-user-plus fa-xs"></i></div>
+                                        <i class="fa-solid fa-user-plus fa-xs"></i>
+                                    </div>
                                     <div class="tl-content">
                                         <div class="tl-title">Akun berhasil dibuat & diverifikasi</div>
                                         <div class="tl-sub">Selamat bergabung di PasarLokal!</div>

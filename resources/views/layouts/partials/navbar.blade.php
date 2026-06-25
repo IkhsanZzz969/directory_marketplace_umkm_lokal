@@ -18,7 +18,7 @@
                 <a href="/auth?mode=register" class="btn btn-primary btn-sm">Daftar Gratis</a>
             @endguest
             @auth
-                @if (request()->is('kelola-toko'))
+                @if (request()->is('shop.manage'))
                     <a href="/profile" class="btn btn-ghost btn-sm"><i class="fa-solid fa-arrow-left fa-xs"></i>
                         Kembali ke Profil</a>
                 @endif
