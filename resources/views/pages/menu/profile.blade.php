@@ -1171,7 +1171,7 @@
                                     <div style="display:flex;gap:12px;flex-wrap:wrap;">
                                         <a href="{{ route('product.create') }}" class="btn btn-primary"><i
                                                 class="fa-solid fa-plus"></i> Tambah Produk</a>
-                                        <a href="{{ route('shop.create') }}" class="btn btn-dark"><i
+                                        <a href="{{ route('shop.edit') }}" class="btn btn-dark"><i
                                                 class="fa-solid fa-pen-to-square"></i> Edit Info Toko</a>
                                         <a href="store-profile.html" class="btn btn-outline"><i
                                                 class="fa-solid fa-eye"></i> Preview Toko</a>

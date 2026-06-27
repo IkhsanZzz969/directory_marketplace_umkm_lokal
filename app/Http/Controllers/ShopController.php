@@ -158,8 +158,13 @@ class ShopController extends Controller
 
     public function manageShop()
     {
+        $shop = Auth::user()->shops;
+        if (! $shop) {
+            return redirect()->route('shop.create')->with('error', 'Anda belum memiliki toko.');
+        }
+
         $categories = Category::all();
-        $products = Product::with(['category', 'primaryImage'])->orderByDesc('created_at')->get()->map(function ($p) {
+        $products = Product::with(['category', 'primaryImage'])->where('shop_id', $shop->id)->orderByDesc('created_at')->get()->map(function ($p) {
             $primaryImg = $p->primaryImage->first();
 
             return [
@@ -177,6 +182,6 @@ class ShopController extends Controller
             ];
         });
 
-        return view('pages.shop.shop-manage', ['categories' => $categories, 'jsProducts' => $products]);
+        return view('pages.shop.shop-manage', ['shop' => $shop, 'categories' => $categories, 'jsProducts' => $products]);
     }
 }

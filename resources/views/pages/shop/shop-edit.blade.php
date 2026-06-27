@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Toko — PasarLokal</title>
+    <title>Edit Toko — {{ env('APP_NAME') }}</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -1050,7 +1050,7 @@
                             <div class="form-group" style="margin-bottom:0;">
                                 <label class="form-label">Slug URL Toko <span>*</span></label>
                                 <div class="input-pre-wrap">
-                                    <div class="input-pre">pasarlokal.com/</div>
+                                    <div class="input-pre">laba.web.id/</div>
                                     <input type="text" class="form-control" id="shop-slug"
                                         placeholder="dapur-bu-sari" maxlength="120" autocomplete="off"
                                         value="{{ old('slug', $shop->slug ?? '') }}">
@@ -1061,7 +1061,7 @@
                                 </div>
                                 <div class="slug-preview" id="slug-preview">
                                     <i class="fa-solid fa-link fa-xs" style="color:var(--dark-light);"></i>
-                                    pasarlokal.id/toko/<span class="slug-val" id="slug-display">nama-toko-kamu</span>
+                                    laba.web.id/toko/<span class="slug-val" id="slug-display">nama-toko-kamu</span>
                                 </div>
                             </div>
                         </div>
@@ -1100,30 +1100,49 @@
                             </div>
                         </div>
                         <div class="form-block-body">
-                            <div class="form-group" style="margin-bottom:0;">
-                                <label class="form-label">Kategori Utama <span>*</span></label>
-                                <select class="form-control" id="shop-cat"
-                                    data-selected="{{ $shop->category ?? '' }}">
-                                    <option value="">— Pilih Kategori Toko —</option>
-                                    <option value="Makanan & Minuman"
-                                        {{ ($shop->category ?? '') == 'Makanan & Minuman' ? 'selected' : '' }}>🍔
-                                        Makanan & Minuman</option>
-                                    <option value="Kerajinan Tangan"
-                                        {{ ($shop->category ?? '') == 'Kerajinan Tangan' ? 'selected' : '' }}>🧶
-                                        Kerajinan Tangan</option>
-                                    <option value="Fashion & Aksesoris"
-                                        {{ ($shop->category ?? '') == 'Fashion & Aksesoris' ? 'selected' : '' }}>👗
-                                        Fashion & Aksesoris</option>
-                                    <option value="Kebutuhan Rumah Tangga"
-                                        {{ ($shop->category ?? '') == 'Kebutuhan Rumah Tangga' ? 'selected' : '' }}>🏡
-                                        Kebutuhan Rumah Tangga</option>
-                                    <option value="Agrikultur & Hasil Bumi"
-                                        {{ ($shop->category ?? '') == 'Agrikultur & Hasil Bumi' ? 'selected' : '' }}>🌾
-                                        Agrikultur & Hasil Bumi</option>
-                                    <option value="Lainnya"
-                                        {{ ($shop->category ?? '') == 'Lainnya' ? 'selected' : '' }}>✨ Lainnya</option>
-                                </select>
+                            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;" id="cat-grid">
+                                <div class="district-card {{ ($shop->category ?? '') == 'kuliner' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'kuliner')">
+                                    <span class="dc-icon">🍱</span><span class="dc-name">Kuliner</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'fashion' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'fashion')">
+                                    <span class="dc-icon">👗</span><span class="dc-name">Fashion</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'kerajinan' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'kerajinan')">
+                                    <span class="dc-icon">🎨</span><span class="dc-name">Kerajinan</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'pertanian' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'pertanian')">
+                                    <span class="dc-icon">🌿</span><span class="dc-name">Pertanian</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'kecantikan' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'kecantikan')">
+                                    <span class="dc-icon">💆</span><span class="dc-name">Kecantikan</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'dekorasi' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'dekorasi')">
+                                    <span class="dc-icon">🪴</span><span class="dc-name">Dekorasi</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'elektronik' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'elektronik')">
+                                    <span class="dc-icon">🔌</span><span class="dc-name">Elektronik</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'lainnya' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'lainnya')">
+                                    <span class="dc-icon">📦</span><span class="dc-name">Lainnya</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
                             </div>
+                            <input type="hidden" id="shop-cat" value="{{ $shop->category ?? '' }}">
                         </div>
                     </div>
 
@@ -1208,7 +1227,7 @@
                                     </div>
                                     <input class="form-control" id="shop-wa" type="tel"
                                         placeholder="812-3456-7890" maxlength="15" oninput="onWAInput(this.value)"
-                                        value="{{ old('whatsapp_number', $shop->whatsapp_number ?? '') }}">
+                                        value="{{ preg_replace('/^(\+62|62|0)/', '', old('whatsapp_number', $shop->whatsapp_number ?? '')) }}">
                                 </div>
                                 <div class="field-footer">
                                     <span class="form-hint">Nomor aktif yang bisa dihubungi pembeli. Tanpa spasi
@@ -1223,7 +1242,7 @@
                                 <div class="wa-preview-card">
                                     <div class="wa-bubble">
                                         Halo <strong id="wa-preview-name">Nama Toko</strong>! 👋<br>
-                                        Saya tertarik dengan produk kamu di PasarLokal.<br>
+                                        Saya tertarik dengan produk kamu di laba.web.<br>
                                         Boleh minta info lebih lanjut? 🙏
                                         <div class="wa-time">14:32 ✓✓</div>
                                     </div>
@@ -1313,13 +1332,13 @@
 
                             <label class="form-label">Pilih Kecamatan <span>*</span></label>
                             <div class="district-grid" id="district-grid"></div>
-                            <input type="hidden" id="shop-district" value="{{ $shop->district_id ?? '' }}">
+                            <input type="hidden" id="shop-district" value="{{ $shop->district ?? '' }}">
 
-                            <div style="margin-top:14px;padding:12px 14px;background:var(--primary-light);border-radius:var(--radius-sm);border:1px solid rgba(253,116,0,.2);font-size:.8rem;display:none;"
+                            <div style="margin-top:14px;padding:12px 14px;background:var(--primary-light);border-radius:var(--radius-sm);border:1px solid rgba(253,116,0,.2);font-size:.8rem;display:{{ !empty($shop->district) ? 'block' : 'none' }};"
                                 id="district-selected-info">
                                 <i class="fa-solid fa-location-dot" style="color:var(--primary);"></i>
                                 Kecamatan dipilih: <strong id="district-name-display"
-                                    style="color:var(--primary);">—</strong>
+                                    style="color:var(--primary);">{{ $shop->district ?? '—' }}</strong>
                             </div>
                         </div>
                     </div>
@@ -1366,7 +1385,7 @@
                                     serta
                                     <a href="#" style="color:var(--primary);font-weight:600;">Kebijakan
                                         Privasi</a>
-                                    PasarLokal.
+                                    laba.web.
                                     Toko saya tidak menjual produk yang melanggar hukum.</span>
                             </label>
                         </div>
@@ -1545,14 +1564,39 @@
 
         function collectStep1() {
             formData.logo = document.getElementById('shop-logo').value;
-            const raw = document.getElementById('shop-wa').value.replace(/\D/g, '');
-            formData.whatsapp_number = raw ? '0' + raw : '';
+            let raw = document.getElementById('shop-wa').value.replace(/\D/g, '');
+            if (raw.startsWith('62')) {
+                raw = raw.substring(2);
+            } else if (raw.startsWith('0')) {
+                raw = raw.substring(1);
+            }
+            formData.whatsapp_number = raw ? '+62' + raw : '';
+        }
+
+        function selectCat(el, val) {
+            document.querySelectorAll('#cat-grid .district-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('shop-cat').value = val;
         }
 
         function collectStep2() {
             formData.address = document.getElementById('shop-address').value.trim();
             formData.district_id = document.getElementById('shop-district').value || null;
             formData.district_name = document.getElementById('district-name-display').textContent;
+
+            // Collect Operational Hours
+            const hours = [];
+            DAYS_DATA.forEach((h, i) => {
+                const f = document.getElementById('hf-' + i);
+                const t = document.getElementById('ht-' + i);
+                hours.push({
+                    day: h.d,
+                    is_open: !f.disabled,
+                    open: f.value,
+                    close: t.value
+                });
+            });
+            formData.operational_hours = hours;
         }
 
         function onNameInput(val) {
@@ -1626,7 +1670,8 @@
             }
         }
 
-        const DAYS_DATA = [{
+        const savedHours = {!! json_encode($shop->operational_hours) !!};
+        const defaultHours = [{
                 d: 'Senin',
                 o: true,
                 f: '08:00',
@@ -1667,8 +1712,15 @@
                 o: false,
                 f: '',
                 t: ''
-            },
+            }
         ];
+
+        const DAYS_DATA = (savedHours && savedHours.length > 0) ? savedHours.map(h => ({
+            d: h.day,
+            o: h.is_open,
+            f: h.open,
+            t: h.close
+        })) : defaultHours;
         document.getElementById('hours-grid').innerHTML = DAYS_DATA.map((h, i) => `
               <div class="hours-row" id="hrow-${i}">
                 <span class="hours-day">${h.d}</span>
@@ -1856,7 +1908,7 @@
         function renderDistricts(data) {
             const grid = document.getElementById('district-grid');
             grid.innerHTML = data.map(d => `
-                <div class="district-card ${document.getElementById('shop-district').value == d.name ? 'active' : ''}" data-id="${d.id}" data-name="${d.name}" onclick="selectDistrict(this)">
+                <div class="district-card ${document.getElementById('shop-district').value == d.name ? 'active' : ''}" data-name="${d.name}" onclick="selectDistrict(this)">
                   <span class="dc-icon">${d.icon}</span>
                   <span class="dc-name">${d.name}</span>
                   <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
@@ -1882,47 +1934,79 @@
             collectStep0();
             collectStep1();
             collectStep2();
+            
             const logo = formData.logo || '🏪';
-            document.getElementById('review-body').innerHTML = `
+            
+            const rc = document.getElementById('review-body');
+            if (rc) {
+            rc.innerHTML = `
                 <div style="display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg);border-radius:var(--radius-md);border:1.5px solid var(--border);margin-bottom:20px;">
-                  <div class="review-logo-preview">${logo}</div>
+                  <div class="review-logo-preview" style="width:50px;height:50px;border-radius:var(--radius-sm);background:var(--primary-light);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:1.6rem;flex-shrink:0;">${logo}</div>
                   <div>
                     <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--dark);">${formData.name || '—'}</div>
-                    <div style="font-size:.78rem;color:var(--dark-light);margin-top:4px;font-family:monospace;">pasarlokal.id/toko/${formData.slug}</div>
+                    <div style="font-size:.78rem;color:var(--dark-light);margin-top:4px;font-family:monospace;">laba.web.id/toko/${formData.slug}</div>
                   </div>
                 </div>
 
                 <div class="review-section">
-                  <div class="review-section-title">Step 1 — Info Toko</div>
+                  <div class="review-section-title">Step 1 - Info Toko</div>
+                  <div class="review-row" style="align-items:flex-start;">
+                    <div style="width:40px;height:40px;border-radius:var(--radius-sm);background:var(--primary-light);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:1.2rem;flex-shrink:0;">
+                        <i class="fa-solid fa-shop"></i>
+                    </div>
+                    <div>
+                    <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--dark);">${formData.name || '-'}</div>
+                    <div style="font-size:.78rem;color:var(--dark-light);margin-top:4px;font-family:monospace;">laba.web.id/toko/${formData.slug}</div>
+                    </div>
+                    <span class="review-edit" onclick="goStep(0)">Edit</span>
+                  </div>
                   <div class="review-row">
-                    <span class="review-key">Nama Toko</span>
-                    <span class="review-val">${formData.name || '<em style="color:var(--danger)">Belum diisi</em>'}</span>
+                    <span class="review-key">Deskripsi</span>
+                    <span class="review-val" style="font-weight:400;color:var(--dark-mid);">${formData.description || '<em style="color:var(--dark-light);">Tidak diisi (opsional)</em>'}</span>
+                    <span class="review-edit" onclick="goStep(0)">Edit</span>
                   </div>
                   <div class="review-row">
                     <span class="review-key">Kategori</span>
                     <span class="review-val">${formData.category || '<em style="color:var(--danger)">Belum dipilih</em>'}</span>
+                    <span class="review-edit" onclick="goStep(0)">Edit</span>
                   </div>
                 </div>
 
                 <div class="review-section">
-                  <div class="review-section-title">Step 2 — Logo & Kontak</div>
+                  <div class="review-section-title">Step 2 - Logo & Kontak</div>
+                  <div class="review-row">
+                    <span class="review-key">Logo</span>
+                    <span class="review-val">${formData.logo ? `<span style="font-size:1.4rem;">${formData.logo}</span>` : '<em style="color:var(--dark-light);">Tidak dipasang</em>'}</span>
+                    <span class="review-edit" onclick="goStep(1)">Edit</span>
+                  </div>
                   <div class="review-row">
                     <span class="review-key">WhatsApp</span>
                     <span class="review-val" style="color:var(--success);display:flex;align-items:center;gap:6px;">
                       <i class="fa-brands fa-whatsapp"></i>
                       ${formData.whatsapp_number || '<em style="color:var(--danger)">Belum diisi</em>'}
                     </span>
+                    <span class="review-edit" onclick="goStep(1)">Edit</span>
                   </div>
                 </div>
 
                 <div class="review-section">
-                  <div class="review-section-title">Step 3 — Alamat</div>
+                  <div class="review-section-title">Step 3 - Alamat</div>
                   <div class="review-row">
                     <span class="review-key">Alamat</span>
                     <span class="review-val" style="font-weight:400;">${formData.address || '<em style="color:var(--danger)">Belum diisi</em>'}</span>
+                    <span class="review-edit" onclick="goStep(2)">Edit</span>
+                  </div>
+                  <div class="review-row">
+                    <span class="review-key">Kecamatan</span>
+                    <span class="review-val" style="display:flex;align-items:center;gap:6px;">
+                      <i class="fa-solid fa-location-dot" style="color:var(--primary);"></i>
+                      ${formData.district_name || '<em style="color:var(--danger)">Belum dipilih</em>'}
+                    </span>
+                    <span class="review-edit" onclick="goStep(2)">Edit</span>
                   </div>
                 </div>
               `;
+            }
         }
 
         function submitShop(event) {
@@ -1948,12 +2032,11 @@
             const originalText = btn.innerHTML;
 
             // Set tombol menjadi loading
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Mendaftarkan...';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Menyimpan Perubahan...';
             btn.style.pointerEvents = 'none';
 
-            // Ganti route dibawah sesuai dengan Route Post Pembuatan Toko, misal: route('shop.store')
-            fetch("{{ route('shop.store') }}", {
-                    method: 'POST',
+            fetch("{{ route('shop.update') }}", {
+                    method: 'PUT',
                     headers: {
                         "Content-Type": "application/json",
                         "X-CSRF-TOKEN": csrfToken,
@@ -1978,7 +2061,7 @@
                         });
                     } else {
                         // Tampilkan pesan error jika validasi di sisi server gagal
-                        toast(data.message || 'Gagal mendaftarkan toko. Silakan periksa kembali data Anda.', 'error');
+                        toast(data.message || 'Gagal menyimpan perubahan. Silakan periksa kembali data Anda.', 'error');
                     }
                 })
                 .catch(error => {

@@ -524,18 +524,18 @@
 
   // Demo product data
   const PRODUCTS = [
-    { emoji:'🍪', bg:'linear-gradient(135deg,#fef3c7,#fed7aa)', badge:'Terlaris', name:'Nastar Keju Premium 500gr', shop:'Dapur Bu Sari', district:'Semarang', price:'65.000', views:1240 },
-    { emoji:'🎨', bg:'linear-gradient(135deg,#dbeafe,#bfdbfe)', badge:'Baru', name:'Batik Tulis Motif Kawung', shop:'Batik Nusantara', district:'Solo', price:'185.000', views:860 },
-    { emoji:'🍯', bg:'linear-gradient(135deg,#d1fae5,#a7f3d0)', badge:null, name:'Madu Hutan Murni 500ml', shop:'Lebah Madu Asli', district:'Malang', price:'85.000', views:742 },
-    { emoji:'👜', bg:'linear-gradient(135deg,#ede9fe,#ddd6fe)', badge:'Promo', name:'Tas Anyam Rotan Handmade L', shop:'Anyaman Jogja', district:'Yogyakarta', price:'95.000', views:620 },
-    { emoji:'🧃', bg:'linear-gradient(135deg,#fff3e8,#ffedd5)', badge:null, name:'Minuman Jahe Merah Sachet 10pcs', shop:'Herbal Segar', district:'Malang', price:'28.000', views:508 },
-    { emoji:'🌿', bg:'linear-gradient(135deg,#dcfce7,#bbf7d0)', badge:'Unggulan', name:'Teh Herbal Daun Kelor Organik', shop:'Kebun Organik', district:'Batu', price:'45.000', views:490 },
-    { emoji:'🪴', bg:'linear-gradient(135deg,#dbeafe,#e0f2fe)', badge:null, name:'Tanaman Hias Monstera Mini', shop:'Green Corner', district:'Bandung', price:'75.000', views:410 },
-    { emoji:'🫙', bg:'linear-gradient(135deg,#fef9c3,#fef3c7)', badge:null, name:'Sambal Bawang Homemade Pedas', shop:'Dapur Lezat', district:'Surabaya', price:'25.000', views:380 },
-    { emoji:'🧶', bg:'linear-gradient(135deg,#fce7f3,#fbcfe8)', badge:'Baru', name:'Rajutan Tas Jinjing Handmade', shop:'Rajutan Manis', district:'Bandung', price:'120.000', views:295 },
-    { emoji:'🕯️', bg:'linear-gradient(135deg,#fef3c7,#fef9c3)', badge:null, name:'Lilin Aromaterapi Lavender 200g', shop:'Aroma Nusantara', district:'Yogyakarta', price:'55.000', views:260 },
-    { emoji:'🎁', bg:'linear-gradient(135deg,#fee2e2,#fecaca)', badge:'Promo', name:'Hampers Lebaran Premium Set', shop:'Dapur Bu Sari', district:'Semarang', price:'250.000', views:240 },
-    { emoji:'🫐', bg:'linear-gradient(135deg,#ede9fe,#e0e7ff)', badge:null, name:'Selai Blueberry Homemade 250gr', shop:'Selai Nusantara', district:'Malang', price:'38.000', views:210 },
+    { emoji:'🍪', bg:'linear-gradient(135deg,#fef3c7,#fed7aa)', badge:'Terlaris', name:'Nastar Keju Premium 500gr', shop:'Dapur Bu Sari', district:'Semarang', price:'65.000', views:1240, wa:'6281234560001' },
+    { emoji:'🎨', bg:'linear-gradient(135deg,#dbeafe,#bfdbfe)', badge:'Baru', name:'Batik Tulis Motif Kawung', shop:'Batik Nusantara', district:'Solo', price:'185.000', views:860, wa:'6281234560002' },
+    { emoji:'🍯', bg:'linear-gradient(135deg,#d1fae5,#a7f3d0)', badge:null, name:'Madu Hutan Murni 500ml', shop:'Lebah Madu Asli', district:'Malang', price:'85.000', views:742, wa:'6281234560003' },
+    { emoji:'👜', bg:'linear-gradient(135deg,#ede9fe,#ddd6fe)', badge:'Promo', name:'Tas Anyam Rotan Handmade L', shop:'Anyaman Jogja', district:'Yogyakarta', price:'95.000', views:620, wa:'6281234560004' },
+    { emoji:'🧃', bg:'linear-gradient(135deg,#fff3e8,#ffedd5)', badge:null, name:'Minuman Jahe Merah Sachet 10pcs', shop:'Herbal Segar', district:'Malang', price:'28.000', views:508, wa:'6281234560005' },
+    { emoji:'🌿', bg:'linear-gradient(135deg,#dcfce7,#bbf7d0)', badge:'Unggulan', name:'Teh Herbal Daun Kelor Organik', shop:'Kebun Organik', district:'Batu', price:'45.000', views:490, wa:'6281234560006' },
+    { emoji:'🪴', bg:'linear-gradient(135deg,#dbeafe,#e0f2fe)', badge:null, name:'Tanaman Hias Monstera Mini', shop:'Green Corner', district:'Bandung', price:'75.000', views:410, wa:'6281234560007' },
+    { emoji:'🫙', bg:'linear-gradient(135deg,#fef9c3,#fef3c7)', badge:null, name:'Sambal Bawang Homemade Pedas', shop:'Dapur Lezat', district:'Surabaya', price:'25.000', views:380, wa:'6281234560008' },
+    { emoji:'🧶', bg:'linear-gradient(135deg,#fce7f3,#fbcfe8)', badge:'Baru', name:'Rajutan Tas Jinjing Handmade', shop:'Rajutan Manis', district:'Bandung', price:'120.000', views:295, wa:'6281234560009' },
+    { emoji:'🕯️', bg:'linear-gradient(135deg,#fef3c7,#fef9c3)', badge:null, name:'Lilin Aromaterapi Lavender 200g', shop:'Aroma Nusantara', district:'Yogyakarta', price:'55.000', views:260, wa:'6281234560010' },
+    { emoji:'🎁', bg:'linear-gradient(135deg,#fee2e2,#fecaca)', badge:'Promo', name:'Hampers Lebaran Premium Set', shop:'Dapur Bu Sari', district:'Semarang', price:'250.000', views:240, wa:'6281234560011' },
+    { emoji:'🫐', bg:'linear-gradient(135deg,#ede9fe,#e0e7ff)', badge:null, name:'Selai Blueberry Homemade 250gr', shop:'Selai Nusantara', district:'Malang', price:'38.000', views:210, wa:'6281234560012' },
   ];
 
   function renderProducts(view) {
@@ -555,7 +555,7 @@
           </div>
         </div>
         <div class="product-card-actions">
-          <button class="btn btn-wa w-full btn-sm" onclick="event.stopPropagation();chatWA('${p.shop}')">
+          <button class="btn btn-wa w-full btn-sm" onclick="event.stopPropagation();chatWA('${p.shop}', '${p.wa}')">
             <i class="fa-brands fa-whatsapp"></i> Chat WA
           </button>
           <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();" style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;">
@@ -586,9 +586,9 @@
 
   function sortProducts(val) { /* Would re-sort products array */ }
 
-  function chatWA(shop) {
+  function chatWA(shop, wa) {
     const msg = encodeURIComponent(`Halo, saya tertarik dengan produk dari ${shop} di PasarLokal.`);
-    window.open(`https://wa.me/6281234567890?text=${msg}`, '_blank');
+    window.open(`https://wa.me/${wa}?text=${msg}`, '_blank');
   }
         </script>
     </body>

@@ -1535,6 +1535,73 @@
                 grid-template-columns: repeat(3, 1fr);
             }
         }
+
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .district-card {
+            padding: 10px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all .18s;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .district-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .district-card.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .district-card .dc-icon {
+            font-size: .9rem;
+            flex-shrink: 0;
+        }
+
+        .district-card .dc-name {
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .district-card.active .dc-name {
+            color: var(--primary);
+        }
+
+        .district-card .dc-check {
+            margin-left: auto;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: .55rem;
+            flex-shrink: 0;
+        }
+
+        .district-card.active .dc-check {
+            display: flex;
+        }
+
+        @media (max-width: 640px) {
+            .cat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 
@@ -1722,7 +1789,8 @@
 
                 <div class="panel" id="panel-produk-saya">
                     <div class="sec-title-row">
-                        <h3>Kelola Produk <span style="font-size:.8rem;color:var(--dark-light);font-weight:400;">({{ count($jsProducts ?? []) }}
+                        <h3>Kelola Produk <span
+                                style="font-size:.8rem;color:var(--dark-light);font-weight:400;">({{ count($jsProducts ?? []) }}
                                 produk)</span></h3>
                         <button class="btn btn-primary btn-sm"
                             onclick="showPanel('tambah-produk'); setActive(document.querySelector('[data-panel=tambah-produk]'))">
@@ -1787,8 +1855,10 @@
                         <span class="badge" style="background:var(--primary);color:white;">MODE: TAMBAH</span>
                     </div>
                     @if ($errors->any())
-                        <div class="alert alert-danger" style="background:var(--danger);color:white;padding:15px;border-radius:8px;margin-bottom:20px;width:100%;">
-                            <div style="font-weight:bold;margin-bottom:8px;"><i class="fa-solid fa-triangle-exclamation"></i> Terdapat kesalahan pada form:</div>
+                        <div class="alert alert-danger"
+                            style="background:var(--danger);color:white;padding:15px;border-radius:8px;margin-bottom:20px;width:100%;">
+                            <div style="font-weight:bold;margin-bottom:8px;"><i
+                                    class="fa-solid fa-triangle-exclamation"></i> Terdapat kesalahan pada form:</div>
                             <ul style="margin:0;padding-left:20px;">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -1798,7 +1868,8 @@
                     @endif
 
                     <div class="tp-layout">
-                        <form id="form-tambah-produk" action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data" onsubmit="return handleFormSubmit(event)">
+                        <form id="form-tambah-produk" action="{{ route('product.store') }}" method="POST"
+                            enctype="multipart/form-data" onsubmit="return handleFormSubmit(event)">
                             @csrf
 
                             <div class="fcard">
@@ -1812,8 +1883,9 @@
                                         id="img-count-badge">0 / 4</span>
                                 </div>
                                 <div class="fcard-body">
-                                    <input type="file" id="file-input" name="images[]" class="img-hidden-input" multiple accept="image/*" style="display:none;">
-                                    
+                                    <input type="file" id="file-input" name="images[]" class="img-hidden-input"
+                                        multiple accept="image/*" style="display:none;">
+
                                     <div class="img-upload-area" id="drop-zone" ondragover="onDragOver(event)"
                                         ondragleave="onDragLeave(event)" ondrop="onDrop(event)"
                                         onclick="document.getElementById('file-input').click()">
@@ -1890,8 +1962,8 @@
                                     </div>
                                     <div class="form-group" style="margin-bottom:0;">
                                         <label class="form-label">Deskripsi Produk <span>*</span></label>
-                                        <textarea class="form-control" id="prod-desc" name="description" rows="5" maxlength="2000" oninput="onDesc(this.value)"
-                                            placeholder="Deskripsikan produkmu secara detail..."></textarea>
+                                        <textarea class="form-control" id="prod-desc" name="description" rows="5" maxlength="2000"
+                                            oninput="onDesc(this.value)" placeholder="Deskripsikan produkmu secara detail..."></textarea>
                                         <div class="ffoot"><span class="form-hint">Min. 50 karakter untuk
                                                 publikasi.</span><span class="cc" id="cc-desc">0/2000</span>
                                         </div>
@@ -1993,7 +2065,8 @@
                                     <div class="save-bar-acts">
                                         <button type="button" class="btn btn-ghost" onclick="saveDraft()"><i
                                                 class="fa-solid fa-floppy-disk fa-xs"></i> Draft</button>
-                                        <button type="submit" form="form-tambah-produk" class="btn btn-primary" id="pub-btn">
+                                        <button type="submit" form="form-tambah-produk" class="btn btn-primary"
+                                            id="pub-btn">
                                             <i class="fa-solid fa-rocket fa-xs"></i> Simpan & Publikasikan
                                         </button>
                                     </div>
@@ -2088,17 +2161,72 @@
                         <h3>Pengaturan Info Toko</h3>
                     </div>
                     <div class="info-card">
-                        <div class="info-card-title"><i class="fa-solid fa-circle-info"></i> Informasi Utama Toko
+                        <div class="info-card-title"
+                            style="display:flex; justify-content:space-between; align-items:center;">
+                            <span><i class="fa-solid fa-circle-info"></i> Informasi Utama Toko (Edit Cepat)</span>
+                            <a href="{{ route('shop.edit') }}"
+                                style="font-size:0.75rem; color:var(--primary); font-weight:600; text-decoration:none;"><i
+                                    class="fa-solid fa-pen-to-square"></i> Edit Selengkapnya</a>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Nama Toko</label>
-                            <input class="form-control" value="Dapur Bu Sari">
+                            <input class="form-control" id="qe-name" value="{{ $shop->name }}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Kategori</label>
+                            <div class="cat-grid" id="cat-grid">
+                                <div class="district-card {{ ($shop->category ?? '') == 'kuliner' ? 'active' : '' }}" onclick="selectCat(this,'kuliner')">
+                                    <span class="dc-icon">🍱</span><span class="dc-name">Kuliner</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'fashion' ? 'active' : '' }}" onclick="selectCat(this,'fashion')">
+                                    <span class="dc-icon">👗</span><span class="dc-name">Fashion</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'kerajinan' ? 'active' : '' }}" onclick="selectCat(this,'kerajinan')">
+                                    <span class="dc-icon">🎨</span><span class="dc-name">Kerajinan</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'pertanian' ? 'active' : '' }}" onclick="selectCat(this,'pertanian')">
+                                    <span class="dc-icon">🌿</span><span class="dc-name">Pertanian</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'kecantikan' ? 'active' : '' }}" onclick="selectCat(this,'kecantikan')">
+                                    <span class="dc-icon">💆</span><span class="dc-name">Kecantikan</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'dekorasi' ? 'active' : '' }}" onclick="selectCat(this,'dekorasi')">
+                                    <span class="dc-icon">🪴</span><span class="dc-name">Dekorasi</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'elektronik' ? 'active' : '' }}" onclick="selectCat(this,'elektronik')">
+                                    <span class="dc-icon">🔌</span><span class="dc-name">Elektronik</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                                <div class="district-card {{ ($shop->category ?? '') == 'lainnya' ? 'active' : '' }}" onclick="selectCat(this,'lainnya')">
+                                    <span class="dc-icon">📦</span><span class="dc-name">Lainnya</span>
+                                    <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="qe-cat" value="{{ $shop->category }}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nomor Whatsapp</label>
+                            <div style="position:relative;">
+                                <span
+                                    style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--dark-mid); font-weight:600;">+62</span>
+                                <input class="form-control" id="qe-wa"
+                                    value="{{ preg_replace('/^(\+?62|0)/', '', $shop->whatsapp_number) }}"
+                                    style="padding-left: 42px;"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Deskripsi Toko</label>
-                            <textarea class="form-control" rows="4">Spesialis kue kering premium homemade. Nastar, kastengel, putri salju, dan hampers lebaran terbaik.</textarea>
+                            <textarea class="form-control" id="qe-desc" rows="4">{{ $shop->description }}</textarea>
                         </div>
-                        <button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan
+                        <button class="btn btn-primary" id="btn-quick-edit" onclick="saveQuickEdit()"><i
+                                class="fa-solid fa-floppy-disk"></i> Simpan
                             Perubahan</button>
                     </div>
                 </div>
@@ -2123,8 +2251,8 @@
 
     <script>
         /* ═══════════════════════════════════════
-                       TAB & PANEL MANAGEMENT
-                    ═══════════════════════════════════════ */
+                           TAB & PANEL MANAGEMENT
+                        ═══════════════════════════════════════ */
         function showPanel(id, el) {
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
             document.getElementById('panel-' + id).classList.add('active');
@@ -2246,7 +2374,7 @@
         let _syncing = false;
         const fileInput = document.getElementById('file-input');
 
-        if(fileInput) {
+        if (fileInput) {
             fileInput.addEventListener('change', function() {
                 if (_syncing) return;
                 if (this.files && this.files.length) {
@@ -2263,12 +2391,12 @@
         function onDragOver(e) {
             e.preventDefault();
             const dropZone = document.getElementById('drop-zone');
-            if(dropZone) dropZone.classList.add('dragover');
+            if (dropZone) dropZone.classList.add('dragover');
         }
 
         function onDragLeave(e) {
             const dropZone = document.getElementById('drop-zone');
-            if(dropZone) dropZone.classList.remove('dragover');
+            if (dropZone) dropZone.classList.remove('dragover');
         }
 
         function onDrop(e) {
@@ -2291,7 +2419,13 @@
 
                 const isPrimary = images.length === 0;
                 const idx = images.length;
-                images.push({ file: f, url: null, emoji: null, isPrimary, loading: true });
+                images.push({
+                    file: f,
+                    url: null,
+                    emoji: null,
+                    isPrimary,
+                    loading: true
+                });
                 renderImageGrid();
 
                 const reader = new FileReader();
@@ -2303,7 +2437,8 @@
                         if (images[idx].isPrimary) {
                             updatePreviewImage(e.target.result);
                         }
-                        toast(`📸 Foto ${idx + 1} berhasil dimuat${images[idx].isPrimary ? ' sebagai foto utama' : ''}`);
+                        toast(
+                            `📸 Foto ${idx + 1} berhasil dimuat${images[idx].isPrimary ? ' sebagai foto utama' : ''}`);
                     }
                     syncFileInput();
                     updateProgress();
@@ -2316,17 +2451,23 @@
         function addEmojiSlot(btn, emoji) {
             if (images.length >= 4) return toast('Maksimal 4 foto produk', 'err');
             const isPrimary = images.length === 0;
-            images.push({ file: null, url: null, emoji, isPrimary, loading: false });
+            images.push({
+                file: null,
+                url: null,
+                emoji,
+                isPrimary,
+                loading: false
+            });
             renderImageGrid();
             updateProgress();
             if (isPrimary) {
                 const pe = document.getElementById('prev-emoji');
-                if(pe) {
+                if (pe) {
                     pe.textContent = emoji;
                     pe.style.display = '';
                 }
                 const pi = document.getElementById('prev-img');
-                if(pi) {
+                if (pi) {
                     pi.style.background = IMG_BG[Math.floor(Math.random() * IMG_BG.length)];
                     const existingImg = pi.querySelector('img');
                     if (existingImg) existingImg.remove();
@@ -2338,8 +2479,8 @@
         function updatePreviewImage(url) {
             const prevImgEl = document.getElementById('prev-img');
             const prevEmoji = document.getElementById('prev-emoji');
-            if(prevEmoji) prevEmoji.style.display = 'none';
-            if(prevImgEl) {
+            if (prevEmoji) prevEmoji.style.display = 'none';
+            if (prevImgEl) {
                 let img = prevImgEl.querySelector('img');
                 if (!img) {
                     img = document.createElement('img');
@@ -2356,15 +2497,15 @@
             syncFileInput();
             renderImageGrid();
             updateProgress();
-            
+
             if (images.length === 0) {
                 const pe = document.getElementById('prev-emoji');
-                if(pe) {
+                if (pe) {
                     pe.textContent = '📦';
                     pe.style.display = '';
                 }
                 const pi = document.getElementById('prev-img');
-                if(pi) {
+                if (pi) {
                     pi.style.background = 'linear-gradient(135deg,#fef3c7,#fed7aa)';
                     const existingImg = pi.querySelector('img');
                     if (existingImg) existingImg.remove();
@@ -2373,12 +2514,12 @@
                 updatePreviewImage(images[0].url);
             } else if (images[0].emoji) {
                 const pe = document.getElementById('prev-emoji');
-                if(pe) {
+                if (pe) {
                     pe.textContent = images[0].emoji;
                     pe.style.display = '';
                 }
                 const pi = document.getElementById('prev-img');
-                if(pi) {
+                if (pi) {
                     const existingImg = pi.querySelector('img');
                     if (existingImg) existingImg.remove();
                 }
@@ -2393,12 +2534,12 @@
                 updatePreviewImage(images[idx].url);
             } else if (images[idx].emoji) {
                 const pe = document.getElementById('prev-emoji');
-                if(pe) {
+                if (pe) {
                     pe.textContent = images[idx].emoji;
                     pe.style.display = '';
                 }
                 const pi = document.getElementById('prev-img');
-                if(pi) {
+                if (pi) {
                     const existingImg = pi.querySelector('img');
                     if (existingImg) existingImg.remove();
                 }
@@ -2412,17 +2553,19 @@
             images.forEach(img => {
                 if (img.file) dt.items.add(img.file);
             });
-            if(fileInput) fileInput.files = dt.files;
-            setTimeout(() => { _syncing = false; }, 50);
+            if (fileInput) fileInput.files = dt.files;
+            setTimeout(() => {
+                _syncing = false;
+            }, 50);
         }
 
         function renderImageGrid() {
             const grid = document.getElementById('img-preview-grid');
-            if(!grid) return;
-            
+            if (!grid) return;
+
             const badge = document.getElementById('img-count-badge');
-            if(badge) badge.textContent = images.length + ' / 4';
-            
+            if (badge) badge.textContent = images.length + ' / 4';
+
             let html = images.map((img, i) => {
                 if (img.loading) {
                     return `
@@ -2532,7 +2675,7 @@
             }
 
             const btn = document.getElementById('pub-btn');
-            if(btn) {
+            if (btn) {
                 btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin fa-xs"></i> Mempublikasikan...';
                 btn.disabled = true;
             }
@@ -2541,6 +2684,64 @@
 
         function saveDraft() {
             toast('📝 Draft berhasil disimpan');
+        }
+
+        function selectCat(el, val) {
+            document.querySelectorAll('#cat-grid .district-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('qe-cat').value = val;
+        }
+
+        function saveQuickEdit() {
+            const btn = document.getElementById('btn-quick-edit');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Menyimpan...';
+            btn.style.pointerEvents = 'none';
+
+            let wa = document.getElementById('qe-wa').value.trim();
+            if (wa.startsWith('0')) {
+                wa = wa.substring(1);
+            }
+            wa = '+62' + wa;
+
+            const payload = {
+                name: document.getElementById('qe-name').value,
+                description: document.getElementById('qe-desc').value,
+                whatsapp_number: wa,
+                category: document.getElementById('qe-cat').value,
+                slug: {!! json_encode($shop->slug) !!},
+                logo: {!! json_encode($shop->logo) !!},
+                address: {!! json_encode($shop->address) !!},
+                district_name: {!! json_encode($shop->district) !!},
+                operational_hours: {!! json_encode($shop->operational_hours) !!}
+            };
+
+            const csrfToken = "{{ csrf_token() }}";
+
+            fetch("{{ route('shop.update') }}", {
+                    method: 'PUT',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken,
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    btn.innerHTML = originalText;
+                    btn.style.pointerEvents = 'auto';
+                    if (data.success) {
+                        toast('Info toko berhasil diperbarui!');
+                    } else {
+                        toast(data.message || 'Gagal menyimpan', 'err');
+                    }
+                })
+                .catch(err => {
+                    btn.innerHTML = originalText;
+                    btn.style.pointerEvents = 'auto';
+                    toast('Terjadi kesalahan koneksi', 'err');
+                });
         }
 
         // Init preview

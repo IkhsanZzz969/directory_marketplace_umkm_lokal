@@ -363,18 +363,18 @@
 
   // ── Store data ──
   const STORES = [
-    { emoji:'🍱', grad:'linear-gradient(135deg,#FD7400,#ff9944)', name:'Dapur Bu Sari',       dist:'Semarang Tengah',  cat:['Kuliner'],      desc:'Spesialis kue kering premium homemade. Nastar, kastengel, putri salju, dan hampers lebaran terbaik.',   prods:48, txn:320, rating:4.9, badge:'⭐ Unggulan', verified:true },
-    { emoji:'🎨', grad:'linear-gradient(135deg,#2E353D,#4a5568)', name:'Batik Nusantara',      dist:'Laweyan, Solo',    cat:['Fashion'],      desc:'Pengrajin batik tulis & cap dengan motif tradisional Jawa. Melayani grosir dan eceran untuk semua kalangan.',prods:62, txn:185, rating:4.8, badge:'',          verified:true },
-    { emoji:'🌿', grad:'linear-gradient(135deg,#10b981,#34d399)', name:'Herbal Segar',          dist:'Batu, Malang',     cat:['Pertanian'],    desc:'Produsen minuman herbal & jamu tradisional dari bahan-bahan alami pilihan pegunungan Malang.',               prods:29, txn:210, rating:4.7, badge:'🆕 Baru',    verified:true },
-    { emoji:'👜', grad:'linear-gradient(135deg,#8b5cf6,#a78bfa)', name:'Anyaman Jogja',         dist:'Kotagede, Yogyakarta',cat:['Kerajinan'], desc:'Pengrajin tas anyam rotan & bambu handmade. Setiap produk dikerjakan langsung oleh pengrajin lokal.',         prods:35, txn:150, rating:4.9, badge:'⭐ Unggulan', verified:true },
-    { emoji:'🫙', grad:'linear-gradient(135deg,#f59e0b,#fcd34d)', name:'Dapur Lezat',           dist:'Surabaya',         cat:['Kuliner'],      desc:'Sambal & bumbu masak homemade tanpa MSG. Pilihan rasa pedas hingga super pedas untuk menemani makan kamu.',   prods:22, txn:98,  rating:4.6, badge:'',          verified:true },
-    { emoji:'💆', grad:'linear-gradient(135deg,#ec4899,#f9a8d4)', name:'Aroma Cantik',          dist:'Bandung',          cat:['Kecantikan'],   desc:'Produk perawatan kulit alami berbahan dasar rempah nusantara. Bebas paraben dan ramah untuk kulit sensitif.',  prods:41, txn:275, rating:4.8, badge:'⭐ Unggulan', verified:true },
-    { emoji:'🪴', grad:'linear-gradient(135deg,#06b6d4,#67e8f9)', name:'Green Corner',          dist:'Depok, Jawa Barat',cat:['Dekorasi'],    desc:'Nursery tanaman hias indoor & outdoor. Tersedia berbagai jenis suculent, monstera, dan philodendron eksotis.',   prods:88, txn:340, rating:4.7, badge:'',          verified:true },
-    { emoji:'🍯', grad:'linear-gradient(135deg,#d97706,#fbbf24)', name:'Lebah Madu Asli',       dist:'Pekalongan',       cat:['Pertanian'],    desc:'Peternak lebah madu hutan & madu klanceng. Produk 100% murni dengan kadar air rendah, sudah uji lab BPOM.',    prods:15, txn:120, rating:4.9, badge:'',          verified:true },
-    { emoji:'🧵', grad:'linear-gradient(135deg,#7c3aed,#c4b5fd)', name:'Tenun Lombok',          dist:'Mataram, NTB',     cat:['Fashion'],      desc:'Kain tenun ikat tradisional Sasak dengan motif khas Lombok. Tersedia dalam berbagai ukuran dan warna.',         prods:30, txn:88,  rating:4.7, badge:'🆕 Baru',    verified:true },
-    { emoji:'🕯️', grad:'linear-gradient(135deg,#0ea5e9,#7dd3fc)', name:'Aroma Nusantara',       dist:'Yogyakarta',       cat:['Dekorasi'],    desc:'Lilin aromaterapi & home fragrance dari essential oil asli Indonesia. Parfum bali, pandan, sampai kenanga.',    prods:24, txn:160, rating:4.8, badge:'',          verified:true },
-    { emoji:'🥜', grad:'linear-gradient(135deg,#b45309,#d97706)', name:'Cemilan Nusantara',     dist:'Kediri, Jawa Timur',cat:['Kuliner'],    desc:'Aneka kripik & oleh-oleh khas Jawa Timur. Kripik tempe, keripik singkong, dan rempeyek tradisional.',           prods:18, txn:74,  rating:4.5, badge:'',          verified:false },
-    { emoji:'🎍', grad:'linear-gradient(135deg,#065f46,#34d399)', name:'Bambu Kreasi',          dist:'Purwokerto',       cat:['Kerajinan'],    desc:'Produsen furniture & peralatan rumah tangga dari bambu lokal yang ramah lingkungan dan bernilai estetika tinggi.',prods:52, txn:195, rating:4.6, badge:'',          verified:true },
+    { emoji:'🍱', grad:'linear-gradient(135deg,#FD7400,#ff9944)', name:'Dapur Bu Sari',       dist:'Semarang Tengah',  cat:['Kuliner'],      desc:'Spesialis kue kering premium homemade. Nastar, kastengel, putri salju, dan hampers lebaran terbaik.',   prods:48, txn:320, rating:4.9, badge:'⭐ Unggulan', verified:true, wa:'6281234560001' },
+    { emoji:'🎨', grad:'linear-gradient(135deg,#2E353D,#4a5568)', name:'Batik Nusantara',      dist:'Laweyan, Solo',    cat:['Fashion'],      desc:'Pengrajin batik tulis & cap dengan motif tradisional Jawa. Melayani grosir dan eceran untuk semua kalangan.',prods:62, txn:185, rating:4.8, badge:'',          verified:true, wa:'6281234560002' },
+    { emoji:'🌿', grad:'linear-gradient(135deg,#10b981,#34d399)', name:'Herbal Segar',          dist:'Batu, Malang',     cat:['Pertanian'],    desc:'Produsen minuman herbal & jamu tradisional dari bahan-bahan alami pilihan pegunungan Malang.',               prods:29, txn:210, rating:4.7, badge:'🆕 Baru',    verified:true, wa:'6281234560003' },
+    { emoji:'👜', grad:'linear-gradient(135deg,#8b5cf6,#a78bfa)', name:'Anyaman Jogja',         dist:'Kotagede, Yogyakarta',cat:['Kerajinan'], desc:'Pengrajin tas anyam rotan & bambu handmade. Setiap produk dikerjakan langsung oleh pengrajin lokal.',         prods:35, txn:150, rating:4.9, badge:'⭐ Unggulan', verified:true, wa:'6281234560004' },
+    { emoji:'🫙', grad:'linear-gradient(135deg,#f59e0b,#fcd34d)', name:'Dapur Lezat',           dist:'Surabaya',         cat:['Kuliner'],      desc:'Sambal & bumbu masak homemade tanpa MSG. Pilihan rasa pedas hingga super pedas untuk menemani makan kamu.',   prods:22, txn:98,  rating:4.6, badge:'',          verified:true, wa:'6281234560005' },
+    { emoji:'💆', grad:'linear-gradient(135deg,#ec4899,#f9a8d4)', name:'Aroma Cantik',          dist:'Bandung',          cat:['Kecantikan'],   desc:'Produk perawatan kulit alami berbahan dasar rempah nusantara. Bebas paraben dan ramah untuk kulit sensitif.',  prods:41, txn:275, rating:4.8, badge:'⭐ Unggulan', verified:true, wa:'6281234560006' },
+    { emoji:'🪴', grad:'linear-gradient(135deg,#06b6d4,#67e8f9)', name:'Green Corner',          dist:'Depok, Jawa Barat',cat:['Dekorasi'],    desc:'Nursery tanaman hias indoor & outdoor. Tersedia berbagai jenis suculent, monstera, dan philodendron eksotis.',   prods:88, txn:340, rating:4.7, badge:'',          verified:true, wa:'6281234560007' },
+    { emoji:'🍯', grad:'linear-gradient(135deg,#d97706,#fbbf24)', name:'Lebah Madu Asli',       dist:'Pekalongan',       cat:['Pertanian'],    desc:'Peternak lebah madu hutan & madu klanceng. Produk 100% murni dengan kadar air rendah, sudah uji lab BPOM.',    prods:15, txn:120, rating:4.9, badge:'',          verified:true, wa:'6281234560008' },
+    { emoji:'🧵', grad:'linear-gradient(135deg,#7c3aed,#c4b5fd)', name:'Tenun Lombok',          dist:'Mataram, NTB',     cat:['Fashion'],      desc:'Kain tenun ikat tradisional Sasak dengan motif khas Lombok. Tersedia dalam berbagai ukuran dan warna.',         prods:30, txn:88,  rating:4.7, badge:'🆕 Baru',    verified:true, wa:'6281234560009' },
+    { emoji:'🕯️', grad:'linear-gradient(135deg,#0ea5e9,#7dd3fc)', name:'Aroma Nusantara',       dist:'Yogyakarta',       cat:['Dekorasi'],    desc:'Lilin aromaterapi & home fragrance dari essential oil asli Indonesia. Parfum bali, pandan, sampai kenanga.',    prods:24, txn:160, rating:4.8, badge:'',          verified:true, wa:'6281234560010' },
+    { emoji:'🥜', grad:'linear-gradient(135deg,#b45309,#d97706)', name:'Cemilan Nusantara',     dist:'Kediri, Jawa Timur',cat:['Kuliner'],    desc:'Aneka kripik & oleh-oleh khas Jawa Timur. Kripik tempe, keripik singkong, dan rempeyek tradisional.',           prods:18, txn:74,  rating:4.5, badge:'',          verified:false, wa:'6281234560011' },
+    { emoji:'🎍', grad:'linear-gradient(135deg,#065f46,#34d399)', name:'Bambu Kreasi',          dist:'Purwokerto',       cat:['Kerajinan'],    desc:'Produsen furniture & peralatan rumah tangga dari bambu lokal yang ramah lingkungan dan bernilai estetika tinggi.',prods:52, txn:195, rating:4.6, badge:'',          verified:true, wa:'6281234560012' },
   ];
 
   function renderStores() {
@@ -401,7 +401,7 @@
           <button class="btn btn-primary w-full btn-sm" onclick="event.stopPropagation();location.href='store-profile.html'">
             <i class="fa-solid fa-store fa-xs"></i> Lihat Toko
           </button>
-          <button class="btn btn-wa w-full btn-sm" onclick="event.stopPropagation();chatWA('${s.name}')">
+          <button class="btn btn-wa w-full btn-sm" onclick="event.stopPropagation();chatWA('${s.name}', '${s.wa}')">
             <i class="fa-brands fa-whatsapp fa-xs"></i> Chat WA
           </button>
         </div>
@@ -417,8 +417,8 @@
   }
   function setCat(el) { document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
   function clearFilters() { document.querySelectorAll('.filter-opts input').forEach(i=>i.checked=false); }
-  function chatWA(name) {
-    window.open(`https://wa.me/6281234567890?text=${encodeURIComponent('Halo '+name+'! Saya menemukan toko kamu di PasarLokal.')}`, '_blank');
+  function chatWA(name, wa) {
+    window.open(`https://wa.me/${wa}?text=${encodeURIComponent('Halo '+name+'! Saya menemukan toko kamu di PasarLokal.')}`, '_blank');
   }
 </script>
 </body>

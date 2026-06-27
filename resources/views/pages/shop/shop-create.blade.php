@@ -1585,8 +1585,13 @@
 
         function collectStep1() {
             formData.logo = document.getElementById('shop-logo').value;
-            const raw = document.getElementById('shop-wa').value.replace(/\D/g, '');
-            formData.whatsapp_number = raw ? '0' + raw : '';
+            let raw = document.getElementById('shop-wa').value.replace(/\D/g, '');
+            if (raw.startsWith('62')) {
+                raw = raw.substring(2);
+            } else if (raw.startsWith('0')) {
+                raw = raw.substring(1);
+            }
+            formData.whatsapp_number = raw ? '+62' + raw : '';
         }
 
         function collectStep2() {
