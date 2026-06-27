@@ -664,19 +664,21 @@
                         <div class="info-card">
                             <div class="info-card-title"><i class="fa-solid fa-clock"></i> Jam Operasional</div>
                             <div class="hours-grid">
-                                @if(is_array($shop->operational_hours) && count($shop->operational_hours) > 0)
+                                @if (is_array($shop->operational_hours) && count($shop->operational_hours) > 0)
                                     @php
                                         // Bagi hari menjadi 2 kolom (misal: 4 hari pertama, sisanya di kolom kedua)
                                         $firstCol = array_slice($shop->operational_hours, 0, 4);
                                         $secondCol = array_slice($shop->operational_hours, 4);
                                     @endphp
-                                    
+
                                     <div>
-                                        @foreach($firstCol as $hour)
+                                        @foreach ($firstCol as $hour)
                                             <div class="hours-row">
                                                 <span class="hours-day">{{ $hour['day'] }}</span>
-                                                @if(isset($hour['is_open']) && $hour['is_open'])
-                                                    <span class="hours-time">{{ str_replace(':', '.', $hour['open']) }} – {{ str_replace(':', '.', $hour['close']) }}</span>
+                                                @if (isset($hour['is_open']) && $hour['is_open'])
+                                                    <span
+                                                        class="hours-time">{{ str_replace(':', '.', $hour['open']) }}
+                                                        – {{ str_replace(':', '.', $hour['close']) }}</span>
                                                 @else
                                                     <span class="hours-closed">Tutup</span>
                                                 @endif
@@ -684,11 +686,13 @@
                                         @endforeach
                                     </div>
                                     <div>
-                                        @foreach($secondCol as $hour)
+                                        @foreach ($secondCol as $hour)
                                             <div class="hours-row">
                                                 <span class="hours-day">{{ $hour['day'] }}</span>
-                                                @if(isset($hour['is_open']) && $hour['is_open'])
-                                                    <span class="hours-time">{{ str_replace(':', '.', $hour['open']) }} – {{ str_replace(':', '.', $hour['close']) }}</span>
+                                                @if (isset($hour['is_open']) && $hour['is_open'])
+                                                    <span
+                                                        class="hours-time">{{ str_replace(':', '.', $hour['open']) }}
+                                                        – {{ str_replace(':', '.', $hour['close']) }}</span>
                                                 @else
                                                     <span class="hours-closed">Tutup</span>
                                                 @endif
@@ -880,7 +884,8 @@
                         </div>
                         <div id="copy-msg"
                             style="display:none;font-size:.75rem;color:var(--success);margin-top:8px;text-align:center;">
-                            <i class="fa-solid fa-check"></i> Link berhasil disalin!</div>
+                            <i class="fa-solid fa-check"></i> Link berhasil disalin!
+                        </div>
                     </div>
                 </aside>
             </div>
@@ -988,7 +993,7 @@
 
         function chatWA() {
             window.open(
-                `https://wa.me/{{ preg_replace('/^0/', '62', $shop->whatsapp_number) }}?text=${encodeURIComponent('Halo {{ $shop->name }}! Saya menemukan toko kamu di PasarLokal dan ingin bertanya tentang produk kamu.')}`,
+                `https://wa.me/{{ preg_replace('/^0/', '62', $shop->whatsapp_number) }}?text=${encodeURIComponent('Halo {{ $shop->name }}! Saya menemukan toko kamu di Laba UMKM dan ingin bertanya tentang produk kamu.')}`,
                 '_blank');
         }
 
@@ -1007,7 +1012,8 @@
         }
 
         function openGallery(el) {
-            /* Lightbox placeholder */ }
+            /* Lightbox placeholder */
+        }
     </script>
 </body>
 
