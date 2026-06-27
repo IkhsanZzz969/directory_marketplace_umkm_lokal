@@ -70,4 +70,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductReview::class);
     }
+
+    public function wishlistedBy(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'wishlists');
+    }
 }

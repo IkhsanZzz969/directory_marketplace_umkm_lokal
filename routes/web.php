@@ -48,4 +48,5 @@ Route::middleware('auth')->group(function () {
     Route::delete('/produk/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
     Route::get('/produk/{slug}', [ProductController::class, 'show'])->name('product.show');
     Route::post('/produk/{product}/review', [ProductController::class, 'storeReview'])->name('product.review.store');
+    Route::post('/produk/{product}/wishlist', [\App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
 });

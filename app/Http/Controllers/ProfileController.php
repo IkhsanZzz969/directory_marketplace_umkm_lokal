@@ -23,7 +23,13 @@ class ProfileController extends Controller
             }
         }
 
-        return view('pages.menu.profile', compact('totalProducts', 'totalViews'));
+        $wishlistProducts = Auth::user()->wishlistedProducts()
+            ->with(['primaryImage', 'shop', 'category'])
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
+            ->get();
+
+        return view('pages.menu.profile', compact('totalProducts', 'totalViews', 'wishlistProducts'));
     }
 
     public function updateAvatar(Request $request)

@@ -500,6 +500,9 @@
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
         });
 
+        @php
+            $userWishlists = auth()->check() ? auth()->user()->wishlistedProducts()->pluck('products.id')->toArray() : [];
+        @endphp
         const PRODUCTS = [
             @foreach ($products as $index => $p)
                 {
@@ -516,9 +519,9 @@
                     raw_price: {{ $p->price }},
                     views: {{ $p->views_count ?? 0 }},
                     created_at: '{{ $p->created_at }}',
-                    wa: '{!! str_replace('+', '', $p->shop->whatsapp_number ?? '') !!}'
-                }
-                {{ !$loop->last ? ',' : '' }}
+                    wa: '{!! str_replace('+', '', $p->shop->whatsapp_number ?? '') !!}',
+                    is_wishlisted: {{ in_array($p->id, $userWishlists) ? 'true' : 'false' }}
+                }{{ !$loop->last ? ',' : '' }}
             @endforeach
         ];
 
@@ -557,8 +560,11 @@
           <button class="btn btn-wa w-full btn-sm" onclick="event.stopPropagation();chatWA('${p.shop}', '${p.wa}')">
             <i class="fa-brands fa-whatsapp"></i> Chat WA
           </button>
-          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();" style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;">
-            <i class="fa-regular fa-heart"></i>
+          <form id="wishlist-form-${p.id}" action="/produk/${p.id}/wishlist" method="POST" style="display:none;">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+          </form>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); document.getElementById('wishlist-form-${p.id}').submit();" style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px; ${p.is_wishlisted ? 'border-color:#ef4444; color:#ef4444; background:var(--white);' : ''}">
+            <i class="${p.is_wishlisted ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
           </button>
         </div>
       </div>

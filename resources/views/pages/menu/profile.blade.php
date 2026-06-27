@@ -737,7 +737,7 @@
                             <div class="ps-nav-item" onclick="showPanel('wishlist',null); setActive(this)"><span
                                     class="icon"><i class="fa-regular fa-heart"></i></span> Wishlist <span
                                     class="badge badge-primary"
-                                    style="margin-left:auto;font-size:.65rem;padding:1px 7px;">6</span></div>
+                                    style="margin-left:auto;font-size:.65rem;padding:1px 7px;">{{ $wishlistProducts->count() }}</span></div>
                         @endif
                         <div class="ps-nav-item" onclick="showPanel('riwayat',null); setActive(this)"><span
                                 class="icon"><i class="fa-solid fa-clock-rotate-left"></i></span> Riwayat Chat</div>
@@ -765,13 +765,15 @@
                         </div>
 
                         <!-- Quick stat cards -->
-                        <div class="grid-4" style="margin-bottom:24px;">
+                        <div class="{{ Auth::user()->role === 'umkm' ? 'grid-4' : 'grid-2' }}"
+                            style="margin-bottom:24px;">
                             <div class="info-panel-card"
-                                style="padding:18px;margin-bottom:0;text-align:center;border-top:3px solid var(--primary);">
+                                onclick="showPanel('wishlist', null); setActive(document.querySelector('.ps-nav-item:nth-child(3)'))"
+                                style="padding:18px;margin-bottom:0;text-align:center;border-top:3px solid var(--primary);cursor:pointer;">
                                 <div style="font-size:1.8rem;margin-bottom:6px;">❤️</div>
                                 <div
                                     style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--dark);">
-                                    6</div>
+                                    {{ $wishlistProducts->count() }}</div>
                                 <div style="font-size:.75rem;color:var(--dark-light);">Produk Wishlist</div>
                             </div>
                             <div class="info-panel-card"
@@ -782,22 +784,24 @@
                                     14</div>
                                 <div style="font-size:.75rem;color:var(--dark-light);">Chat via WA</div>
                             </div>
-                            <div class="info-panel-card"
-                                style="padding:18px;margin-bottom:0;text-align:center;border-top:3px solid #8b5cf6;">
-                                <div style="font-size:1.8rem;margin-bottom:6px;">🏪</div>
-                                <div
-                                    style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--dark);">
-                                    1</div>
-                                <div style="font-size:.75rem;color:var(--dark-light);">Toko Dimiliki</div>
-                            </div>
-                            <div class="info-panel-card"
-                                style="padding:18px;margin-bottom:0;text-align:center;border-top:3px solid #fbbf24;">
-                                <div style="font-size:1.8rem;margin-bottom:6px;">⭐</div>
-                                <div
-                                    style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--dark);">
-                                    4.9</div>
-                                <div style="font-size:.75rem;color:var(--dark-light);">Rating Toko</div>
-                            </div>
+                            @if (Auth::user()->role === 'umkm')
+                                <div class="info-panel-card"
+                                    style="padding:18px;margin-bottom:0;text-align:center;border-top:3px solid #8b5cf6;">
+                                    <div style="font-size:1.8rem;margin-bottom:6px;">🏪</div>
+                                    <div
+                                        style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--dark);">
+                                        1</div>
+                                    <div style="font-size:.75rem;color:var(--dark-light);">Toko Dimiliki</div>
+                                </div>
+                                <div class="info-panel-card"
+                                    style="padding:18px;margin-bottom:0;text-align:center;border-top:3px solid #fbbf24;">
+                                    <div style="font-size:1.8rem;margin-bottom:6px;">⭐</div>
+                                    <div
+                                        style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--dark);">
+                                        4.9</div>
+                                    <div style="font-size:.75rem;color:var(--dark-light);">Rating Toko</div>
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Activity timeline -->
@@ -1004,10 +1008,61 @@
                     <!-- ■ WISHLIST ■ -->
                     <div class="panel" id="panel-wishlist">
                         <div class="panel-header">
-                            <h3>Wishlist Saya</h3>
+                            <h3>Wishlist Saya ({{ $wishlistProducts->count() }})</h3>
                             <p>Produk yang kamu simpan untuk dibeli nanti.</p>
                         </div>
-                        <div class="wishlist-grid" id="wishlist-grid"></div>
+                        @if($wishlistProducts->count() > 0)
+                        <div class="grid-4" id="wishlist-grid">
+                            @foreach($wishlistProducts as $product)
+                            @php $primaryImg = $product->primaryImage->first(); @endphp
+                            <div class="product-card" style="display:flex;flex-direction:column;cursor:pointer;" onclick="location.href='{{ route('product.show', $product->slug) }}'">
+                                <div class="product-card-img" style="position:relative;overflow:hidden;">
+                                    @if($primaryImg)
+                                    <img src="{{ asset('storage/' . $primaryImg->image_path) }}" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;">
+                                    @else
+                                    <div style="width:100%;height:100%;background:linear-gradient(135deg,#f0fdf4,#dcfce7);display:flex;align-items:center;justify-content:center;font-size:3rem;">🛍️</div>
+                                    @endif
+                                    <div class="wishlist-btn active" style="position:absolute;top:10px;right:10px;z-index:2;background:var(--white);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#ef4444;box-shadow:0 2px 5px rgba(0,0,0,0.1);" onclick="event.stopPropagation(); document.getElementById('wishlist-form-{{ $product->id }}').submit();">
+                                        <i class="fa-solid fa-heart"></i>
+                                    </div>
+                                    <form id="wishlist-form-{{ $product->id }}" action="{{ route('wishlist.toggle', $product->id) }}" method="POST" style="display:none;">
+                                        @csrf
+                                    </form>
+                                    @if($product->stock_status !== 'available')
+                                    <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:white;font-size:0.75rem;padding:6px;text-align:center;font-weight:600;">
+                                        {{ $product->stock_status === 'empty' ? 'Stok Kosong' : ($product->stock_status === 'preorder' ? 'Pre-Order' : 'Stok Terbatas') }}
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="product-card-body" style="padding:14px;flex:1;display:flex;flex-direction:column;">
+                                    <div style="font-size:0.75rem;color:var(--dark-light);margin-bottom:6px;">{{ $product->category->name ?? 'Kategori' }}</div>
+                                    <h4 style="font-size:0.95rem;margin-bottom:8px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1;">
+                                        {{ $product->name }}
+                                    </h4>
+                                    <div style="font-family:var(--font-display);font-weight:700;color:var(--primary);font-size:1.1rem;margin-bottom:8px;">
+                                        Rp {{ number_format($product->price, 0, ',', '.') }}
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:6px;font-size:0.8rem;margin-bottom:8px;">
+                                        <i class="fa-solid fa-star" style="color:#fbbf24;"></i>
+                                        <span style="font-weight:600;color:var(--dark);">{{ number_format($product->reviews_avg_rating ?? 0, 1) }}</span>
+                                        <span style="color:var(--dark-light);">({{ $product->reviews_count }} ulasan)</span>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--dark-mid);">
+                                        <i class="fa-solid fa-store" style="color:var(--dark-light);"></i>
+                                        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $product->shop->name }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @else
+                        <div style="text-align:center;padding:60px 20px;background:var(--white);border-radius:var(--radius-lg);border:1px dashed var(--border);">
+                            <div style="font-size:3rem;margin-bottom:16px;">💔</div>
+                            <h4 style="font-size:1.1rem;margin-bottom:8px;">Belum Ada Wishlist</h4>
+                            <p style="color:var(--dark-light);font-size:0.9rem;margin-bottom:20px;">Kamu belum menyimpan produk apapun ke wishlist.</p>
+                            <a href="{{ route('catalog') }}" class="btn btn-primary">Mulai Belanja</a>
+                        </div>
+                        @endif
                     </div>
 
                     <!-- ■ RIWAYAT ■ -->
@@ -1285,66 +1340,6 @@
         window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window
             .scrollY > 10));
 
-        // Wishlist data
-        const WISHLIST = [{
-                e: '🎨',
-                bg: 'linear-gradient(135deg,#dbeafe,#bfdbfe)',
-                name: 'Batik Tulis Motif Kawung',
-                shop: 'Batik Nusantara',
-                price: '185.000'
-            },
-            {
-                e: '🍯',
-                bg: 'linear-gradient(135deg,#d1fae5,#a7f3d0)',
-                name: 'Madu Hutan Murni 500ml',
-                shop: 'Lebah Madu Asli',
-                price: '85.000'
-            },
-            {
-                e: '👜',
-                bg: 'linear-gradient(135deg,#ede9fe,#ddd6fe)',
-                name: 'Tas Anyam Rotan Handmade L',
-                shop: 'Anyaman Jogja',
-                price: '95.000'
-            },
-            {
-                e: '🌿',
-                bg: 'linear-gradient(135deg,#dcfce7,#bbf7d0)',
-                name: 'Teh Herbal Daun Kelor',
-                shop: 'Herbal Segar',
-                price: '45.000'
-            },
-            {
-                e: '🕯️',
-                bg: 'linear-gradient(135deg,#dbeafe,#e0f2fe)',
-                name: 'Lilin Aromaterapi 200g',
-                shop: 'Aroma Nusantara',
-                price: '55.000'
-            },
-            {
-                e: '🪴',
-                bg: 'linear-gradient(135deg,#f0fdf4,#dcfce7)',
-                name: 'Monstera Mini Pot Keramik',
-                shop: 'Green Corner',
-                price: '75.000'
-            },
-        ];
-        document.getElementById('wishlist-grid').innerHTML = WISHLIST.map(p => `
-    <div class="product-card" onclick="location.href='product-detail.html'" style="cursor:pointer;">
-      <div class="product-card-img">
-        <div style="width:100%;height:100%;background:${p.bg};display:flex;align-items:center;justify-content:center;font-size:2.8rem;">${p.e}</div>
-        <div class="product-card-badge" style="background:#ef4444;cursor:pointer;" onclick="event.stopPropagation();removeWishlist(this)" title="Hapus dari wishlist"><i class="fa-solid fa-heart-crack fa-xs"></i></div>
-      </div>
-      <div class="product-card-body">
-        <div class="product-card-shop"><i class="fa-solid fa-store fa-xs"></i> ${p.shop}</div>
-        <div class="product-card-name">${p.name}</div>
-        <div class="product-card-price">Rp ${p.price}</div>
-      </div>
-      <div class="product-card-actions">
-        <button class="btn btn-wa w-full btn-sm" onclick="event.stopPropagation();"><i class="fa-brands fa-whatsapp"></i> Chat WA</button>
-      </div>
-    </div>
-  `).join('');
 
         function showPanel(id, tabEl) {
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));

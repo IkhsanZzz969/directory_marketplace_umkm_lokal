@@ -589,9 +589,25 @@
 
                     <!-- Secondary actions -->
                     <div class="secondary-actions">
-                        <button class="btn btn-outline w-full" onclick="wishlist(this)">
-                            <i class="fa-regular fa-heart"></i> Simpan ke Wishlist
-                        </button>
+                        @auth
+                            @php
+                                $isWishlisted = auth()->user()->wishlistedProducts()->where('product_id', $product->id)->exists();
+                            @endphp
+                            <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST" style="width: 100%;">
+                                @csrf
+                                <button type="submit" class="btn btn-outline w-full" style="{{ $isWishlisted ? 'border-color:#ef4444; color:#ef4444; background:var(--white);' : '' }}">
+                                    @if($isWishlisted)
+                                        <i class="fa-solid fa-heart"></i> Hapus dari Wishlist
+                                    @else
+                                        <i class="fa-regular fa-heart"></i> Simpan ke Wishlist
+                                    @endif
+                                </button>
+                            </form>
+                        @else
+                            <button class="btn btn-outline w-full" onclick="location.href='{{ route('login') }}'">
+                                <i class="fa-regular fa-heart"></i> Simpan ke Wishlist
+                            </button>
+                        @endauth
                         <div class="share-row" style="margin:0;">
                             <button class="share-btn"><i class="fa-brands fa-whatsapp"
                                     style="color:#25D366;"></i></button>

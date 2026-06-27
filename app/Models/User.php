@@ -75,4 +75,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ProductReview::class);
     }
+
+    public function wishlistedProducts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'wishlists');
+    }
 }
