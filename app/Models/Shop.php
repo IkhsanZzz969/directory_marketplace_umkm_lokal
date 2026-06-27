@@ -21,6 +21,11 @@ class Shop extends Model
         'district',
         'status',
         'is_active',
+        'operational_hours',
+    ];
+
+    protected $casts = [
+        'operational_hours' => 'array',
     ];
 
     public function user(): BelongsTo

@@ -25,8 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
 
-    Route::patch('/administrator/toko/{shop}/setujui', [AdminController::class, 'approveShop'])->name('admin.shop.approve');
-    Route::patch('/administrator/toko/{shop}/tolak', [AdminController::class, 'rejectShop'])->name('admin.shop.reject');
+    Route::patch('/administrator/toko/{shop}/approve', [AdminController::class, 'approveShop'])->name('admin.shop.approve');
+    Route::patch('/administrator/toko/{shop}/reject', [AdminController::class, 'rejectShop'])->name('admin.shop.reject');
 
     Route::post('/administrator/kategori', [AdminController::class, 'storeCategory'])->name('admin.category.store');
     Route::put('/administrator/kategori/{category}', [AdminController::class, 'updateCategory'])->name('admin.category.update');
@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/edit-toko', [ShopController::class, 'update'])->name('shop.update');
     Route::get('/toko/{slug}', [ShopController::class, 'show'])->name('shop.show');
 
-    Route::get('/manage-shop', [ShopController::class, 'manageShop'])->name('shop.manage');
+    Route::get('/kelola-toko', [ShopController::class, 'manageShop'])->name('shop.manage');
 
     Route::get('/tambah-produk', [ProductController::class, 'create'])->name('product.create');
     Route::post('/tambah-produk', [ProductController::class, 'store'])->name('product.store');

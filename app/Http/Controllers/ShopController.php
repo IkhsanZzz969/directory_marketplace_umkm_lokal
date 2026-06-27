@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Shop;
 use Illuminate\Http\Request;
@@ -17,6 +18,8 @@ class ShopController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info('Shop store payload:', $request->all());
+
         // 1. Validasi Input dari Fetch API Javascript
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
@@ -27,6 +30,7 @@ class ShopController extends Controller
             'whatsapp_number' => 'required|string|min:9|max:15',
             'address' => 'required|string|max:300',
             'district_name' => 'required|string',
+            'operational_hours' => 'nullable|array',
         ], [
             // Kustomisasi pesan error bahasa Indonesia
             'slug.unique' => 'URL/Slug toko ini sudah digunakan. Silakan modifikasi nama atau slug toko kamu.',
@@ -58,6 +62,7 @@ class ShopController extends Controller
                 'whatsapp_number' => $request->whatsapp_number,
                 'address' => $request->address,
                 'district' => $request->district_name,
+                'operational_hours' => $request->operational_hours,
                 'status' => 'pending',
             ]);
 
@@ -102,6 +107,7 @@ class ShopController extends Controller
             'whatsapp_number' => 'required|string|min:9|max:15',
             'address' => 'required|string|max:300',
             'district_name' => 'required|string',
+            'operational_hours' => 'nullable|array',
         ], [
             'slug.unique' => 'URL/Slug toko ini sudah digunakan. Silakan modifikasi nama atau slug toko kamu.',
             'slug.regex' => 'Slug hanya boleh berisi huruf kecil, angka, dan tanda hubung (-).',
@@ -125,6 +131,7 @@ class ShopController extends Controller
                 'whatsapp_number' => $request->whatsapp_number,
                 'address' => $request->address,
                 'district' => $request->district_name,
+                'operational_hours' => $request->operational_hours,
                 // Status remains the same or maybe changed to pending depending on business logic. We'll leave it.
             ]);
 

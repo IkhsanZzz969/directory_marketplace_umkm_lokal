@@ -1098,7 +1098,7 @@
                 btn.style.opacity = '0.5';
             });
 
-            const url = `/admin/shop/${shopId}/${action}`;
+            const url = `/administrator/toko/${shopId}/${action}`;
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             try {
@@ -1271,7 +1271,7 @@
             }
 
             // Show success/error modal from session
-            @if(session('success'))
+            @if (session('success'))
                 showModal({
                     type: 'success',
                     title: 'Berhasil!',
@@ -1279,7 +1279,7 @@
                 });
             @endif
 
-            @if(session('error'))
+            @if (session('error'))
                 showModal({
                     type: 'error',
                     title: 'Gagal!',
@@ -1287,7 +1287,7 @@
                 });
             @endif
 
-            @if($errors->any())
+            @if ($errors->any())
                 showModal({
                     type: 'error',
                     title: 'Kesalahan Validasi!',

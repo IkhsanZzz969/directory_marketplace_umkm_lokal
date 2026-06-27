@@ -664,24 +664,42 @@
                         <div class="info-card">
                             <div class="info-card-title"><i class="fa-solid fa-clock"></i> Jam Operasional</div>
                             <div class="hours-grid">
-                                <div>
-                                    <div class="hours-row"><span class="hours-day">Senin</span><span
-                                            class="hours-time">08.00 – 17.00</span></div>
-                                    <div class="hours-row"><span class="hours-day">Selasa</span><span
-                                            class="hours-time">08.00 – 17.00</span></div>
-                                    <div class="hours-row"><span class="hours-day">Rabu</span><span
-                                            class="hours-time">08.00 – 17.00</span></div>
-                                    <div class="hours-row"><span class="hours-day">Kamis</span><span
-                                            class="hours-time">08.00 – 17.00</span></div>
-                                </div>
-                                <div>
-                                    <div class="hours-row"><span class="hours-day">Jumat</span><span
-                                            class="hours-time">08.00 – 16.00</span></div>
-                                    <div class="hours-row"><span class="hours-day">Sabtu</span><span
-                                            class="hours-time">09.00 – 14.00</span></div>
-                                    <div class="hours-row"><span class="hours-day">Minggu</span><span
-                                            class="hours-closed">Tutup</span></div>
-                                </div>
+                                @if(is_array($shop->operational_hours) && count($shop->operational_hours) > 0)
+                                    @php
+                                        // Bagi hari menjadi 2 kolom (misal: 4 hari pertama, sisanya di kolom kedua)
+                                        $firstCol = array_slice($shop->operational_hours, 0, 4);
+                                        $secondCol = array_slice($shop->operational_hours, 4);
+                                    @endphp
+                                    
+                                    <div>
+                                        @foreach($firstCol as $hour)
+                                            <div class="hours-row">
+                                                <span class="hours-day">{{ $hour['day'] }}</span>
+                                                @if(isset($hour['is_open']) && $hour['is_open'])
+                                                    <span class="hours-time">{{ str_replace(':', '.', $hour['open']) }} – {{ str_replace(':', '.', $hour['close']) }}</span>
+                                                @else
+                                                    <span class="hours-closed">Tutup</span>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div>
+                                        @foreach($secondCol as $hour)
+                                            <div class="hours-row">
+                                                <span class="hours-day">{{ $hour['day'] }}</span>
+                                                @if(isset($hour['is_open']) && $hour['is_open'])
+                                                    <span class="hours-time">{{ str_replace(':', '.', $hour['open']) }} – {{ str_replace(':', '.', $hour['close']) }}</span>
+                                                @else
+                                                    <span class="hours-closed">Tutup</span>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div style="grid-column: span 2; color: var(--dark-light); font-size: 0.9rem;">
+                                        <em>Toko ini belum mengatur jam operasional.</em>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 
