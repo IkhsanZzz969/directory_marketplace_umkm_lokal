@@ -11,7 +11,8 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('pages.shop.create-product', compact('categories'));
+
+        return view('pages.products.product-create', compact('categories'));
     }
 
     public function storeCategory(Request $request)
@@ -55,7 +56,7 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('kelola-toko')->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->route('shop.manage')->with('success', 'Produk berhasil ditambahkan!');
     }
 
     public function edit(Product $product)
@@ -94,7 +95,7 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('kelola-toko')->with('success', 'Produk berhasil diupdate!');
+        return redirect()->route('shop.manage')->with('success', 'Produk berhasil diupdate!');
     }
 
     public function destroy(Product $product)
@@ -103,13 +104,13 @@ class ProductController extends Controller
         $product->images()->delete();
         $product->delete();
 
-        return redirect()->route('kelola-toko')->with('success', 'Produk berhasil dihapus!');
+        return redirect()->route('shop.manage')->with('success', 'Produk berhasil dihapus!');
     }
 
     public function show($slug)
     {
         $product = Product::with(['shop', 'images', 'category'])->where('slug', $slug)->firstOrFail();
-        
+
         // Increment views
         $product->increment('views_count');
 
@@ -119,6 +120,6 @@ class ProductController extends Controller
             ->take(4)
             ->get();
 
-        return view('product-detail', compact('product', 'relatedProducts'));
+        return view('pages.products.product-detail', compact('product', 'relatedProducts'));
     }
 }
