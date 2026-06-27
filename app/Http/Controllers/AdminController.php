@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
-use App\Models\Category;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -13,10 +14,13 @@ class AdminController extends Controller
     {
         $umkm = Shop::with('user')->get();
         $pendingUmkm = Shop::with('user')->where('status', 'pending')->count();
+        $activeUmkm = Shop::with('user')->where('is_active', 'active')->count();
+        $totalProduct = Product::count();
 
         $listUser = User::select('id', 'name', 'email', 'phone', 'role', 'created_at')->whereNotIn('role', ['superadmin'])->get();
         $categories = Category::all();
-        return view('pages.admin.administrator', compact('umkm', 'pendingUmkm', 'listUser', 'categories'));
+
+        return view('pages.admin.administrator', compact('umkm', 'pendingUmkm', 'listUser', 'categories', 'activeUmkm', 'totalProduct'));
     }
 
     public function approveShop(Shop $shop)
@@ -61,7 +65,7 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:100',
-            'slug' => 'required|string|max:120|unique:categories,slug,' . $category->id,
+            'slug' => 'required|string|max:120|unique:categories,slug,'.$category->id,
         ]);
 
         $category->update($validated);

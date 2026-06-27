@@ -24,12 +24,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
 
-    Route::patch('/admin/toko/{shop}/setujui', [AdminController::class, 'approveShop'])->name('admin.shop.approve');
-    Route::patch('/admin/toko/{shop}/tolak', [AdminController::class, 'rejectShop'])->name('admin.shop.reject');
+    Route::patch('/administrator/toko/{shop}/setujui', [AdminController::class, 'approveShop'])->name('admin.shop.approve');
+    Route::patch('/administrator/toko/{shop}/tolak', [AdminController::class, 'rejectShop'])->name('admin.shop.reject');
 
-    Route::post('/admin/kategori', [AdminController::class, 'storeCategory'])->name('admin.category.store');
-    Route::put('/admin/kategori/{category}', [AdminController::class, 'updateCategory'])->name('admin.category.update');
-    Route::delete('/admin/kategori/{category}', [AdminController::class, 'deleteCategory'])->name('admin.category.destroy');
+    Route::post('/administrator/kategori', [AdminController::class, 'storeCategory'])->name('admin.category.store');
+    Route::put('/administrator/kategori/{category}', [AdminController::class, 'updateCategory'])->name('admin.category.update');
+    Route::delete('/administrator/kategori/{category}', [AdminController::class, 'deleteCategory'])->name('admin.category.destroy');
 
     Route::get('/buat-toko', [ShopController::class, 'create'])->name('shop.create');
     Route::post('/buat-toko', [ShopController::class, 'store'])->name('shop.store');
