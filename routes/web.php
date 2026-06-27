@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/administrator', [AdminController::class, 'administrator'])->name('administrator');
 
     Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
 
     Route::patch('/administrator/toko/{shop}/setujui', [AdminController::class, 'approveShop'])->name('admin.shop.approve');
     Route::patch('/administrator/toko/{shop}/tolak', [AdminController::class, 'rejectShop'])->name('admin.shop.reject');

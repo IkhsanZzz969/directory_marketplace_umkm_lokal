@@ -55,6 +55,10 @@ class User extends Authenticatable
 
     public function getAvatarUrlAttribute()
     {
+        if ($this->avatar && \Storage::disk('public')->exists('avatars/' . $this->avatar)) {
+            return asset('storage/avatars/' . $this->avatar);
+        }
+
         // Mengambil nama user, default ke 'User' jika kosong
         $name = $this->name ?: 'User';
         

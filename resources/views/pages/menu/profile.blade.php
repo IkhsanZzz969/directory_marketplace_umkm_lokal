@@ -8,6 +8,7 @@
     <title>Profil Saya — PasarLokal</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <style>
         .page-content {
             padding-top: var(--nav-h);
@@ -574,6 +575,40 @@
                 align-items: flex-start;
             }
         }
+
+        /* ── MODAL OVERLAY ── */
+        .success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(46, 53, 61, .6);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-box {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+            animation: modalPopIn .25s ease;
+        }
+
+        @keyframes modalPopIn {
+            from {
+                transform: scale(.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
@@ -590,10 +625,12 @@
                 <div class="profile-header-inner">
                     <div class="profile-avatar-wrap">
                         <div class="profile-avatar">
-                            <img src="{{ auth()->user()->avatar_url }}" alt="Profile Avatar"
-                                style="border-radius: 50%;">
+                            <img id="avatarImagePreview" src="{{ auth()->user()->avatar_url }}" alt="Profile Avatar"
+                                style="border-radius: 50%; width: 100%; height: 100%; object-fit: cover;">
                         </div>
-                        <div class="avatar-edit-btn" title="Ganti foto"><i class="fa-solid fa-camera"></i></div>
+                        <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
+                        <div class="avatar-edit-btn" title="Ganti foto" id="editProfileAvatar"><i
+                                class="fa-solid fa-camera"></i></div>
                     </div>
                     <div class="profile-info">
                         <div class="profile-name">{{ auth()->user()->name }}</div>
@@ -723,7 +760,7 @@
                     <!-- ■ DASHBOARD ■ -->
                     <div class="panel active" id="panel-dashboard">
                         <div class="panel-header">
-                            <h3>Selamat Datang, Sari 👋</h3>
+                            <h3>Selamat Datang, {{ Auth::user()->name }} 👋</h3>
                             <p>Pantau aktivitas dan ringkasan akun kamu di sini.</p>
                         </div>
 
@@ -1386,6 +1423,148 @@
                     });
                 });
         }
+    </script>
+
+    <!-- Cropper Modal -->
+    <div class="success-overlay" id="cropperModal" style="z-index:9999; display: none;">
+        <div class="success-box" style="text-align:left; max-width: 600px; width: 90%;">
+            <h2 style="margin-bottom:20px;">Sesuaikan Foto Profil</h2>
+            <div style="max-height: 400px; overflow: hidden; margin-bottom: 20px;">
+                <img id="cropperImage" src="" style="max-width: 100%; display: block;">
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button type="button" class="btn btn-outline" id="btnCancelCrop">Batal</button>
+                <button type="button" class="btn btn-primary" id="btnSaveCrop">Simpan Foto</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cropper.js Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatarEditBtn = document.getElementById('editProfileAvatar');
+            const avatarFileInput = document.getElementById('avatarFileInput');
+            const cropperModal = document.getElementById('cropperModal');
+            const cropperImage = document.getElementById('cropperImage');
+            const btnCancelCrop = document.getElementById('btnCancelCrop');
+            const btnSaveCrop = document.getElementById('btnSaveCrop');
+
+            let cropper = null;
+
+            if (avatarEditBtn && avatarFileInput) {
+                avatarEditBtn.addEventListener('click', () => {
+                    avatarFileInput.click();
+                });
+
+                avatarFileInput.addEventListener('change', (e) => {
+                    const files = e.target.files;
+                    if (files && files.length > 0) {
+                        const file = files[0];
+                        const url = URL.createObjectURL(file);
+                        cropperImage.src = url;
+                        cropperModal.style.display = 'flex';
+
+                        if (cropper) {
+                            cropper.destroy();
+                        }
+
+                        cropper = new Cropper(cropperImage, {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            autoCropArea: 1,
+                        });
+
+                        avatarFileInput.value = ''; // Reset input
+                    }
+                });
+            }
+
+            if (btnCancelCrop) {
+                btnCancelCrop.addEventListener('click', () => {
+                    cropperModal.style.display = 'none';
+                    if (cropper) {
+                        cropper.destroy();
+                        cropper = null;
+                    }
+                });
+            }
+
+            if (btnSaveCrop) {
+                btnSaveCrop.addEventListener('click', () => {
+                    if (!cropper) return;
+
+                    const btn = btnSaveCrop;
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+                    btn.disabled = true;
+
+                    const canvas = cropper.getCroppedCanvas({
+                        width: 256,
+                        height: 256
+                    });
+
+                    if (canvas) {
+                        const base64Image = canvas.toDataURL('image/jpeg');
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content');
+
+                        fetch('{{ route('profile.avatar.update') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    avatar: base64Image
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                btn.innerHTML = originalText;
+                                btn.disabled = false;
+                                cropperModal.style.display = 'none';
+
+                                if (cropper) {
+                                    cropper.destroy();
+                                    cropper = null;
+                                }
+
+                                if (data.success) {
+                                    document.getElementById('avatarImagePreview').src = data.avatar_url;
+                                    // Also update small avatar in navbar if it exists
+                                    document.querySelectorAll('.nav-avatar img').forEach(img => {
+                                        img.src = data.avatar_url;
+                                    });
+
+                                    showModal({
+                                        type: 'success',
+                                        title: 'Berhasil',
+                                        message: data.message
+                                    });
+                                } else {
+                                    showModal({
+                                        type: 'error',
+                                        title: 'Gagal',
+                                        message: data.message || 'Terjadi kesalahan'
+                                    });
+                                }
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                btn.innerHTML = originalText;
+                                btn.disabled = false;
+                                showModal({
+                                    type: 'error',
+                                    title: 'Kesalahan',
+                                    message: 'Tidak dapat mengunggah foto.'
+                                });
+                            });
+                    }
+                });
+            }
+        });
     </script>
 
     @include('layouts.partials.custom-modal')
