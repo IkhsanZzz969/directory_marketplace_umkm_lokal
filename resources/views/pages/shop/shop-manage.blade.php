@@ -1597,10 +1597,150 @@
             display: flex;
         }
 
+        /* EMOJI QUICK-PICK */
+        .emoji-picker-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .ep-label {
+            font-size: .72rem;
+            color: var(--dark-light);
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .ep-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border);
+            background: var(--white);
+            cursor: pointer;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .18s;
+        }
+
+        .ep-btn:hover {
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .ep-btn.picked {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        /* TAG INPUT */
+        .tag-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            padding: 8px 10px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            min-height: 44px;
+            cursor: text;
+            transition: border-color .2s;
+        }
+
+        .tag-wrap:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(253, 116, 0, .1);
+        }
+
+        .tag-chip {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 3px 9px;
+            border-radius: var(--radius-full);
+            font-size: .73rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tag-x {
+            cursor: pointer;
+            opacity: .6;
+            line-height: 1;
+        }
+
+        .tag-x:hover {
+            opacity: 1;
+        }
+
+        .tag-input-bare {
+            border: none;
+            outline: none;
+            font-family: var(--font-body);
+            font-size: .85rem;
+            min-width: 80px;
+            flex: 1;
+            background: transparent;
+        }
+
+        /* STATUS CARDS */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .stcard {
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 13px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .2s;
+            background: var(--white);
+        }
+
+        .stcard:hover,
+        .stcard.on {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .stcard .st-ico {
+            font-size: 1.4rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stcard .st-lbl {
+            font-size: .75rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .stcard .st-sub {
+            font-size: .64rem;
+            color: var(--dark-light);
+            margin-top: 2px;
+        }
+
+        .stcard.on .st-lbl {
+            color: var(--primary);
+        }
+
         @media (max-width: 640px) {
             .cat-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+
         }
     </style>
 </head>
@@ -1644,7 +1784,7 @@
                 <div class="sec-tab active" data-panel="ringkasan" onclick="showPanel('ringkasan',this)"><i
                         class="fa-solid fa-house-chimney fa-xs"></i> Ringkasan</div>
                 <div class="sec-tab" data-panel="produk-saya" onclick="showPanel('produk-saya',this)"><i
-                        class="fa-solid fa-box fa-xs"></i> Produk <span class="cnt">48</span></div>
+                        class="fa-solid fa-box fa-xs"></i> Produk <span class="cnt">{{ $totalProducts }}</span></div>
                 <div class="sec-tab" data-panel="tambah-produk" onclick="showPanel('tambah-produk',this)"><i
                         class="fa-solid fa-circle-plus fa-xs"></i> Tambah Produk</div>
                 <div class="sec-tab" data-panel="analitik" onclick="showPanel('analitik',this)"><i
@@ -1657,7 +1797,6 @@
 
     <div class="container">
         <div class="manage-layout">
-
             <aside class="manage-sidebar">
                 <div class="side-card">
                     <div class="side-nav-item active" data-panel="ringkasan" onclick="showPanel('ringkasan',this)">
@@ -1665,7 +1804,7 @@
                     </div>
                     <div class="side-nav-item" data-panel="produk-saya" onclick="showPanel('produk-saya',this)">
                         <i class="fa-solid fa-box"></i> Kelola Produk <span class="badge badge-primary"
-                            style="margin-left:auto;font-size:.65rem;padding:1px 6px;">48</span>
+                            style="margin-left:auto;font-size:.65rem;padding:1px 6px;">{{ $totalProducts }}</span>
                     </div>
                     <div class="side-nav-item" data-panel="tambah-produk" onclick="showPanel('tambah-produk',this)">
                         <i class="fa-solid fa-circle-plus"></i> Tambah Produk
@@ -1725,7 +1864,7 @@
                             <div class="stat-card-icon" style="background:#fff3e8;"><i class="fa-solid fa-box"
                                     style="color:var(--primary);"></i></div>
                             <div class="stat-card-label">Total Produk</div>
-                            <div class="stat-card-num">48</div>
+                            <div class="stat-card-num">{{ $totalProducts }}</div>
                             <div class="stat-card-change change-up"><i class="fa-solid fa-arrow-trend-up fa-xs"></i>
                                 +4 bulan ini</div>
                             <div class="mini-chart" id="mc-produk"></div>
@@ -1743,7 +1882,7 @@
                             <div class="stat-card-icon" style="background:#dbeafe;"><i class="fa-regular fa-eye"
                                     style="color:#3b82f6;"></i></div>
                             <div class="stat-card-label">Total Dilihat</div>
-                            <div class="stat-card-num">1.24K</div>
+                            <div class="stat-card-num">{{ $totalViews }}</div>
                             <div class="stat-card-change change-up"><i class="fa-solid fa-arrow-trend-up fa-xs"></i>
                                 +32% vs bln lalu</div>
                             <div class="mini-chart" id="mc-views"></div>
@@ -1872,12 +2011,15 @@
                             enctype="multipart/form-data" onsubmit="return handleFormSubmit(event)">
                             @csrf
 
+                            {{-- ██ 1. FOTO PRODUK ██ --}}
                             <div class="fcard">
                                 <div class="fcard-head">
                                     <div class="fcard-icon"><i class="fa-solid fa-images"></i></div>
                                     <div>
                                         <div class="fcard-title">Foto Produk</div>
-                                        <div class="fcard-sub">Tabel <code>product_images</code> · Maks. 4 foto</div>
+                                        <div class="fcard-sub">Tabel <code>product_images</code> ·
+                                            <code>image_path</code> · <code>is_primary</code> · Maks. 4 foto
+                                        </div>
                                     </div>
                                     <span class="badge badge-primary" style="margin-left:auto;font-size:.68rem;"
                                         id="img-count-badge">0 / 4</span>
@@ -1896,6 +2038,8 @@
                                         <button type="button" class="btn btn-outline btn-sm"
                                             onclick="event.stopPropagation();document.getElementById('file-input').click()"><i
                                                 class="fa-solid fa-upload fa-xs"></i> Pilih File</button>
+                                        <div style="font-size:.72rem;color:var(--dark-light);margin-top:8px;">JPG · PNG
+                                            · WebP · Maks. 5MB · Min. 800×800px</div>
 
                                         <div class="emoji-picker-row">
                                             <div class="ep-label">⚡ Pilih emoji sebagai placeholder foto:</div>
@@ -1912,58 +2056,81 @@
                                             <button type="button" class="ep-btn"
                                                 onclick="event.stopPropagation();addEmojiSlot(this,'🎨')">🎨</button>
                                             <button type="button" class="ep-btn"
+                                                onclick="event.stopPropagation();addEmojiSlot(this,'🌿')">🌿</button>
+                                            <button type="button" class="ep-btn"
+                                                onclick="event.stopPropagation();addEmojiSlot(this,'🛍️')">🛍️</button>
+                                            <button type="button" class="ep-btn"
+                                                onclick="event.stopPropagation();addEmojiSlot(this,'🧶')">🧶</button>
+                                            <button type="button" class="ep-btn"
+                                                onclick="event.stopPropagation();addEmojiSlot(this,'🪴')">🪴</button>
+                                            <button type="button" class="ep-btn"
                                                 onclick="event.stopPropagation();addEmojiSlot(this,'🍱')">🍱</button>
+                                            <button type="button" class="ep-btn"
+                                                onclick="event.stopPropagation();addEmojiSlot(this,'🕯️')">🕯️</button>
                                         </div>
                                     </div>
                                     <div class="img-preview-grid" id="img-preview-grid"></div>
+                                    <div id="img-hint-text"
+                                        style="font-size:.74rem;color:var(--dark-light);margin-top:8px;display:flex;align-items:center;gap:5px;">
+                                        <i class="fa-solid fa-circle-info fa-xs" style="color:var(--primary);"></i>
+                                        Foto pertama secara otomatis menjadi <strong>foto utama (is_primary =
+                                            true)</strong>. Klik foto untuk atur ulang urutan.
+                                    </div>
                                 </div>
                             </div>
 
+                            {{-- ██ 2. INFO DASAR ██ --}}
                             <div class="fcard">
                                 <div class="fcard-head">
                                     <div class="fcard-icon"><i class="fa-solid fa-file-lines"></i></div>
                                     <div>
                                         <div class="fcard-title">Informasi Dasar</div>
                                         <div class="fcard-sub">Kolom: <code>name</code> · <code>slug</code> ·
-                                            <code>description</code>
+                                            <code>description</code> · <code>category_id</code>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="fcard-body">
+                                    {{-- name --}}
                                     <div class="form-group">
                                         <label class="form-label">Nama Produk <span>*</span></label>
                                         <input class="form-control" id="prod-name" name="name"
                                             placeholder="Contoh: Nastar Keju Premium Lebaran 500gr" maxlength="150"
                                             oninput="onName(this.value)">
-                                        <div class="ffoot"><span class="form-hint">Sertakan
-                                                ukuran/varian.</span><span class="cc" id="cc-name">0/150</span>
-                                        </div>
+                                        <div class="ffoot"><span class="form-hint">Sertakan ukuran/varian. Min. 10
+                                                karakter.</span><span class="cc" id="cc-name">0/150</span></div>
                                     </div>
+
+                                    {{-- category_id + slug --}}
                                     <div class="fg2">
                                         <div class="form-group">
                                             <label class="form-label">Kategori <span>*</span></label>
                                             <select class="form-control" id="prod-cat" name="category_id"
-                                                onchange="updateProgress()">
+                                                onchange="updatePreview()">
                                                 <option value="">— Pilih Kategori —</option>
                                                 @foreach ($categories as $category)
-                                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                    <option value="{{ $category->id }}">{{ $category->name }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">Slug URL <span>*</span></label>
                                             <input class="form-control" id="prod-slug" name="slug"
-                                                placeholder="nastar-keju-premium" maxlength="170"
+                                                placeholder="nastar-keju-premium-500gr" maxlength="170"
                                                 oninput="onSlug(this.value)">
                                             <div class="slug-pill" id="slug-pill"><i class="fa-solid fa-link fa-xs"
                                                     style="color:var(--dark-light);"></i> /produk/<span
                                                     class="slug-val" id="slug-val">nama-produk</span></div>
                                         </div>
                                     </div>
+
+                                    {{-- description --}}
                                     <div class="form-group" style="margin-bottom:0;">
                                         <label class="form-label">Deskripsi Produk <span>*</span></label>
-                                        <textarea class="form-control" id="prod-desc" name="description" rows="5" maxlength="2000"
-                                            oninput="onDesc(this.value)" placeholder="Deskripsikan produkmu secara detail..."></textarea>
+                                        <textarea class="form-control" id="prod-desc" name="description" rows="7" maxlength="2000"
+                                            oninput="onDesc(this.value)"
+                                            placeholder="Deskripsikan produkmu secara detail:&#10;&#10;• Bahan baku dan komposisi&#10;• Ukuran / berat / volume&#10;• Keunggulan produk (tanpa pengawet, bersertifikat, dll)&#10;• Masa simpan / kedaluwarsa&#10;• Cara pemesanan dan pengiriman"></textarea>
                                         <div class="ffoot"><span class="form-hint">Min. 50 karakter untuk
                                                 publikasi.</span><span class="cc" id="cc-desc">0/2000</span>
                                         </div>
@@ -1971,79 +2138,221 @@
                                 </div>
                             </div>
 
+                            {{-- ██ 3. HARGA & DETAIL SATUAN ██ --}}
                             <div class="fcard">
                                 <div class="fcard-head">
                                     <div class="fcard-icon"><i class="fa-solid fa-tag"></i></div>
                                     <div>
                                         <div class="fcard-title">Harga & Detail Satuan</div>
+                                        <div class="fcard-sub">Kolom: <code>price DECIMAL(12,2)</code> — harga yang
+                                            tampil ke pembeli</div>
                                     </div>
                                 </div>
                                 <div class="fcard-body">
                                     <div class="fg2">
+                                        {{-- price --}}
                                         <div class="form-group">
                                             <label class="form-label">Harga Jual <span>*</span></label>
                                             <div class="price-row">
-                                                <div class="price-pfx">Rp</div><input class="form-control"
-                                                    id="prod-price" name="price" type="number" min="0"
+                                                <div class="price-pfx">Rp</div>
+                                                <input class="form-control" id="prod-price" name="price"
+                                                    type="number" min="0" step="500" placeholder="65000"
                                                     oninput="onPrice()">
                                             </div>
+                                            <div class="price-result" id="price-result">
+                                                <i class="fa-solid fa-tag fa-xs" style="color:var(--primary);"></i>
+                                                Tampil sebagai <strong id="price-fmt"></strong>
+                                            </div>
                                         </div>
+
+                                        {{-- original price --}}
                                         <div class="form-group">
                                             <label class="form-label">Harga Coret <span
                                                     style="font-weight:400;color:var(--dark-light);">(opsional)</span></label>
                                             <div class="price-row">
-                                                <div class="price-pfx" style="color:var(--dark-light);">Rp</div><input
-                                                    class="form-control" id="prod-price-ori" type="number"
-                                                    min="0" oninput="onPrice()">
+                                                <div class="price-pfx" style="color:var(--dark-light);">Rp</div>
+                                                <input class="form-control" id="prod-price-ori" name="original_price"
+                                                    type="number" min="0" placeholder="80000"
+                                                    oninput="onPrice()">
                                             </div>
+                                            <div class="price-result" id="disc-result">
+                                                <i class="fa-solid fa-fire fa-xs" style="color:var(--danger);"></i>
+                                                Diskon <strong id="disc-pct"></strong>
+                                                <span class="discount-badge" id="disc-badge"></span>
+                                            </div>
+                                            <span class="form-hint">Harga asli sebelum diskon, ditampilkan
+                                                dicoret.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="fg3">
+                                        <div class="form-group">
+                                            <label class="form-label">Satuan</label>
+                                            <select class="form-control" id="prod-unit" name="unit">
+                                                <option>pcs / buah</option>
+                                                <option>toples</option>
+                                                <option>lusin (12 pcs)</option>
+                                                <option>kg</option>
+                                                <option>gram</option>
+                                                <option>liter</option>
+                                                <option>ml</option>
+                                                <option>paket / set</option>
+                                                <option>meter</option>
+                                                <option>lembar</option>
+                                                <option>porsi</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Min. Pemesanan</label>
+                                            <input class="form-control" type="number" id="prod-moq"
+                                                name="min_order" value="1" min="1">
+                                            <span class="form-hint">1 = min. 1 pcs per pesan</span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Berat Produk (gram)</label>
+                                            <input class="form-control" type="number" id="prod-weight"
+                                                name="weight" placeholder="500" min="1">
+                                            <span class="form-hint">Termasuk kemasan, untuk ongkir</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+                            {{-- ██ 4. STOK ██ --}}
                             <div class="fcard">
                                 <div class="fcard-head">
                                     <div class="fcard-icon green"><i class="fa-solid fa-boxes-stacked"></i></div>
                                     <div>
                                         <div class="fcard-title">Ketersediaan Stok</div>
+                                        <div class="fcard-sub">Ditampilkan di halaman produk agar pembeli tahu kondisi
+                                            stok</div>
                                     </div>
                                 </div>
                                 <div class="fcard-body">
                                     <div class="stock-grid">
-                                        <div class="scard on" onclick="setStock(this,'available')"><span
-                                                class="s-ico">✅</span>
+                                        <div class="scard on" id="s-available" onclick="setStock(this,'available')">
+                                            <span class="s-ico">✅</span>
                                             <div class="s-lbl">Ready Stock</div>
+                                            <div class="s-sub">Tersedia sekarang</div>
                                         </div>
-                                        <div class="scard" onclick="setStock(this,'preorder')"><span
-                                                class="s-ico">🕐</span>
+                                        <div class="scard" id="s-preorder" onclick="setStock(this,'preorder')">
+                                            <span class="s-ico">🕐</span>
                                             <div class="s-lbl">Pre-Order</div>
+                                            <div class="s-sub">Pesan dulu</div>
                                         </div>
-                                        <div class="scard" onclick="setStock(this,'limited')"><span
-                                                class="s-ico">⚠️</span>
-                                            <div class="s-lbl">Terbatas</div>
+                                        <div class="scard" id="s-limited" onclick="setStock(this,'limited')">
+                                            <span class="s-ico">⚠️</span>
+                                            <div class="s-lbl">Stok Terbatas</div>
+                                            <div class="s-sub">Hampir habis</div>
                                         </div>
-                                        <div class="scard" onclick="setStock(this,'empty')"><span
-                                                class="s-ico">❌</span>
+                                        <div class="scard" id="s-empty" onclick="setStock(this,'empty')">
+                                            <span class="s-ico">❌</span>
                                             <div class="s-lbl">Habis</div>
+                                            <div class="s-sub">Tidak tersedia</div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="prod-stock" name="stock_status" value="available">
+
+                                    {{-- Pre-order fields --}}
+                                    <div id="po-fields"
+                                        style="display:none;margin-top:16px;padding:14px;background:var(--bg);border-radius:var(--radius-md);border:1.5px dashed var(--border);">
+                                        <label class="form-label" style="margin-bottom:8px;">⏱ Estimasi Waktu
+                                            Pre-Order</label>
+                                        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                                            <input class="form-control" type="number" id="po-days"
+                                                name="preorder_days" value="3" min="1"
+                                                style="max-width:80px;">
+                                            <select class="form-control" id="po-unit" name="preorder_unit"
+                                                style="max-width:130px;">
+                                                <option>Hari Kerja</option>
+                                                <option>Hari</option>
+                                                <option>Minggu</option>
+                                            </select>
+                                            <span style="font-size:.82rem;color:var(--dark-mid);">setelah pembayaran
+                                                dikonfirmasi</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+                            {{-- ██ 5. INFO TAMBAHAN ██ --}}
+                            <div class="fcard">
+                                <div class="fcard-head">
+                                    <div class="fcard-icon blue"><i class="fa-solid fa-layer-group"></i></div>
+                                    <div>
+                                        <div class="fcard-title">Informasi Tambahan</div>
+                                        <div class="fcard-sub">Tag pencarian, catatan pengiriman, dan dimensi produk
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="fcard-body">
+                                    {{-- Tags --}}
+                                    <div class="form-group">
+                                        <label class="form-label">Tag / Kata Kunci</label>
+                                        <div class="tag-wrap" id="tag-wrap"
+                                            onclick="document.getElementById('tag-input').focus()">
+                                            <input class="tag-input-bare" id="tag-input"
+                                                placeholder="Tambah tag, tekan Enter..." onkeydown="addTag(event)">
+                                        </div>
+                                        <input type="hidden" id="tags-hidden" name="tags" value="">
+                                        <span class="form-hint">Tekan Enter atau koma untuk tambah. Maks. 10 tag.
+                                            Membantu pembeli menemukan produk ini.</span>
+                                    </div>
+
+                                    {{-- Shipping note --}}
+                                    <div class="form-group">
+                                        <label class="form-label">Catatan Pengiriman</label>
+                                        <textarea class="form-control" id="prod-ship" name="shipping_note" rows="2"
+                                            placeholder="Contoh: Dikemas vakum. COD area Semarang. Ekspedisi: JNE, J&T, SiCepat."></textarea>
+                                    </div>
+
+                                    {{-- Dimensions --}}
+                                    <div class="form-group" style="margin-bottom:0;">
+                                        <label class="form-label">Dimensi Kemasan <span
+                                                style="font-weight:400;color:var(--dark-light);">(cm,
+                                                opsional)</span></label>
+                                        <div class="fg3">
+                                            <div>
+                                                <input class="form-control" type="number" name="dimension_length"
+                                                    placeholder="Panjang" min="0">
+                                                <span class="form-hint"
+                                                    style="text-align:center;display:block;">Panjang</span>
+                                            </div>
+                                            <div>
+                                                <input class="form-control" type="number" name="dimension_width"
+                                                    placeholder="Lebar" min="0">
+                                                <span class="form-hint"
+                                                    style="text-align:center;display:block;">Lebar</span>
+                                            </div>
+                                            <div>
+                                                <input class="form-control" type="number" name="dimension_height"
+                                                    placeholder="Tinggi" min="0">
+                                                <span class="form-hint"
+                                                    style="text-align:center;display:block;">Tinggi</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- ██ 6. VISIBILITAS & STATUS ██ --}}
                             <div class="fcard">
                                 <div class="fcard-head">
                                     <div class="fcard-icon gold"><i class="fa-solid fa-eye"></i></div>
                                     <div>
                                         <div class="fcard-title">Visibilitas & Status Produk</div>
+                                        <div class="fcard-sub">Kolom: <code>is_featured BOOLEAN</code> · Status
+                                            penayangan di katalog</div>
                                     </div>
                                 </div>
                                 <div class="fcard-body">
+                                    {{-- is_featured --}}
                                     <div class="feat-row" id="feat-row" onclick="toggleFeat()">
                                         <div class="feat-ico">⭐</div>
                                         <div class="feat-info">
                                             <div class="feat-lbl">Tandai sebagai Produk Unggulan</div>
-                                            <div class="feat-sub">Produk unggulan tampil di bagian atas halaman toko.
-                                            </div>
+                                            <div class="feat-sub">Produk unggulan tampil di bagian atas halaman toko
+                                                dan mendapat 3× tayangan lebih banyak</div>
                                         </div>
                                         <label class="tsw" onclick="event.stopPropagation()">
                                             <input type="checkbox" id="prod-feat" name="is_featured" value="1"
@@ -2051,9 +2360,33 @@
                                             <div class="tsw-track"></div>
                                         </label>
                                     </div>
+
+                                    {{-- Status --}}
+                                    <div style="margin-top:16px;">
+                                        <label class="form-label">Status Penayangan</label>
+                                        <div class="status-grid">
+                                            <div class="stcard on" onclick="setStat(this,'active')">
+                                                <span class="st-ico">✅</span>
+                                                <div class="st-lbl">Aktif</div>
+                                                <div class="st-sub">Tampil di katalog</div>
+                                            </div>
+                                            <div class="stcard" onclick="setStat(this,'draft')">
+                                                <span class="st-ico">📝</span>
+                                                <div class="st-lbl">Draft</div>
+                                                <div class="st-sub">Belum tampil</div>
+                                            </div>
+                                            <div class="stcard" onclick="setStat(this,'archived')">
+                                                <span class="st-ico">📦</span>
+                                                <div class="st-lbl">Arsip</div>
+                                                <div class="st-sub">Sembunyikan</div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="prod-status" name="status" value="active">
+                                    </div>
                                 </div>
                             </div>
 
+                            {{-- SAVE BAR --}}
                             <div class="save-bar">
                                 <div class="save-bar-inner">
                                     <div class="save-bar-info">
@@ -2175,35 +2508,43 @@
                         <div class="form-group">
                             <label class="form-label">Kategori</label>
                             <div class="cat-grid" id="cat-grid">
-                                <div class="district-card {{ ($shop->category ?? '') == 'kuliner' ? 'active' : '' }}" onclick="selectCat(this,'kuliner')">
+                                <div class="district-card {{ ($shop->category ?? '') == 'kuliner' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'kuliner')">
                                     <span class="dc-icon">🍱</span><span class="dc-name">Kuliner</span>
                                     <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
                                 </div>
-                                <div class="district-card {{ ($shop->category ?? '') == 'fashion' ? 'active' : '' }}" onclick="selectCat(this,'fashion')">
+                                <div class="district-card {{ ($shop->category ?? '') == 'fashion' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'fashion')">
                                     <span class="dc-icon">👗</span><span class="dc-name">Fashion</span>
                                     <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
                                 </div>
-                                <div class="district-card {{ ($shop->category ?? '') == 'kerajinan' ? 'active' : '' }}" onclick="selectCat(this,'kerajinan')">
+                                <div class="district-card {{ ($shop->category ?? '') == 'kerajinan' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'kerajinan')">
                                     <span class="dc-icon">🎨</span><span class="dc-name">Kerajinan</span>
                                     <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
                                 </div>
-                                <div class="district-card {{ ($shop->category ?? '') == 'pertanian' ? 'active' : '' }}" onclick="selectCat(this,'pertanian')">
+                                <div class="district-card {{ ($shop->category ?? '') == 'pertanian' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'pertanian')">
                                     <span class="dc-icon">🌿</span><span class="dc-name">Pertanian</span>
                                     <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
                                 </div>
-                                <div class="district-card {{ ($shop->category ?? '') == 'kecantikan' ? 'active' : '' }}" onclick="selectCat(this,'kecantikan')">
+                                <div class="district-card {{ ($shop->category ?? '') == 'kecantikan' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'kecantikan')">
                                     <span class="dc-icon">💆</span><span class="dc-name">Kecantikan</span>
                                     <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
                                 </div>
-                                <div class="district-card {{ ($shop->category ?? '') == 'dekorasi' ? 'active' : '' }}" onclick="selectCat(this,'dekorasi')">
+                                <div class="district-card {{ ($shop->category ?? '') == 'dekorasi' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'dekorasi')">
                                     <span class="dc-icon">🪴</span><span class="dc-name">Dekorasi</span>
                                     <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
                                 </div>
-                                <div class="district-card {{ ($shop->category ?? '') == 'elektronik' ? 'active' : '' }}" onclick="selectCat(this,'elektronik')">
+                                <div class="district-card {{ ($shop->category ?? '') == 'elektronik' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'elektronik')">
                                     <span class="dc-icon">🔌</span><span class="dc-name">Elektronik</span>
                                     <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
                                 </div>
-                                <div class="district-card {{ ($shop->category ?? '') == 'lainnya' ? 'active' : '' }}" onclick="selectCat(this,'lainnya')">
+                                <div class="district-card {{ ($shop->category ?? '') == 'lainnya' ? 'active' : '' }}"
+                                    onclick="selectCat(this,'lainnya')">
                                     <span class="dc-icon">📦</span><span class="dc-name">Lainnya</span>
                                     <div class="dc-check"><i class="fa-solid fa-check fa-xs"></i></div>
                                 </div>
@@ -2251,8 +2592,8 @@
 
     <script>
         /* ═══════════════════════════════════════
-                           TAB & PANEL MANAGEMENT
-                        ═══════════════════════════════════════ */
+                                       TAB & PANEL MANAGEMENT
+                                    ═══════════════════════════════════════ */
         function showPanel(id, el) {
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
             document.getElementById('panel-' + id).classList.add('active');
@@ -2438,7 +2779,8 @@
                             updatePreviewImage(e.target.result);
                         }
                         toast(
-                            `📸 Foto ${idx + 1} berhasil dimuat${images[idx].isPrimary ? ' sebagai foto utama' : ''}`);
+                            `📸 Foto ${idx + 1} berhasil dimuat${images[idx].isPrimary ? ' sebagai foto utama' : ''}`
+                        );
                     }
                     syncFileInput();
                     updateProgress();
@@ -2610,13 +2952,81 @@
 
         function onPrice() {
             const p = parseInt(document.getElementById('prod-price').value) || 0;
-            document.getElementById('prev-price').textContent = p > 0 ? 'Rp ' + p.toLocaleString('id-ID') : 'Rp —';
+            const ori = parseInt(document.getElementById('prod-price-ori').value) || 0;
+            const prevPrice = document.getElementById('prev-price');
+            const priceResult = document.getElementById('price-result');
+            const priceFmt = document.getElementById('price-fmt');
+            const discResult = document.getElementById('disc-result');
+            const discPct = document.getElementById('disc-pct');
+            const discBadge = document.getElementById('disc-badge');
+
+            if (prevPrice) prevPrice.textContent = p > 0 ? 'Rp ' + p.toLocaleString('id-ID') : 'Rp —';
+            if (priceResult && priceFmt) {
+                if (p > 0) {
+                    priceResult.style.display = 'flex';
+                    priceFmt.textContent = 'Rp ' + p.toLocaleString('id-ID');
+                } else {
+                    priceResult.style.display = 'none';
+                }
+            }
+            if (discResult && discPct && discBadge) {
+                if (ori > 0 && p > 0 && ori > p) {
+                    const pctVal = Math.round(((ori - p) / ori) * 100);
+                    discResult.style.display = 'flex';
+                    discPct.textContent = pctVal + '%';
+                    discBadge.textContent = '-' + pctVal + '%';
+                } else {
+                    discResult.style.display = 'none';
+                }
+            }
             updateProgress();
         }
 
         function setStock(el, val) {
-            document.querySelectorAll('.scard').forEach(c => c.classList.remove('on'));
+            document.querySelectorAll('#panel-tambah-produk .scard').forEach(c => c.classList.remove('on'));
             el.classList.add('on');
+            const stockInput = document.getElementById('prod-stock');
+            if (stockInput) stockInput.value = val;
+            const poFields = document.getElementById('po-fields');
+            if (poFields) poFields.style.display = val === 'preorder' ? 'block' : 'none';
+        }
+
+        function setStat(el, val) {
+            document.querySelectorAll('#panel-tambah-produk .stcard').forEach(c => c.classList.remove('on'));
+            el.classList.add('on');
+            const statusInput = document.getElementById('prod-status');
+            if (statusInput) statusInput.value = val;
+        }
+
+        function addTag(e) {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const val = e.target.value.trim().replace(/,/g, '');
+                if (!val) return;
+                const wrap = document.getElementById('tag-wrap');
+                const chips = wrap.querySelectorAll('.tag-chip');
+                if (chips.length >= 10) {
+                    toast('Maksimal 10 tag', 'err');
+                    return;
+                }
+                // Check duplicate
+                for (const chip of chips) {
+                    if (chip.textContent.replace('✕', '').trim().toLowerCase() === val.toLowerCase()) return;
+                }
+                const chip = document.createElement('div');
+                chip.className = 'tag-chip';
+                chip.innerHTML = val + ' <span class="tag-x" onclick="this.parentElement.remove();syncTags()">✕</span>';
+                wrap.insertBefore(chip, e.target);
+                e.target.value = '';
+                syncTags();
+            }
+        }
+
+        function syncTags() {
+            const chips = document.querySelectorAll('#tag-wrap .tag-chip');
+            const tags = Array.from(chips).map(c => c.textContent.replace('✕', '').trim());
+            const hidden = document.getElementById('tags-hidden');
+            if (hidden) hidden.value = tags.join(',');
         }
 
         function toggleFeat() {
@@ -2673,6 +3083,9 @@
                 toast('⚠️ Harap tunggu, sedang memproses foto...', 'err');
                 return false;
             }
+
+            // Sync tags before submit
+            syncTags();
 
             const btn = document.getElementById('pub-btn');
             if (btn) {

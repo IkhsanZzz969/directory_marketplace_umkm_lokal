@@ -14,15 +14,36 @@ class Product extends Model
         'name',
         'slug',
         'price',
+        'original_price',
+        'unit',
+        'min_order',
+        'weight',
+        'stock_status',
+        'preorder_days',
+        'preorder_unit',
         'description',
         'is_featured',
+        'status',
+        'tags',
+        'shipping_note',
+        'dimension_length',
+        'dimension_width',
+        'dimension_height',
         'views_count',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'original_price' => 'decimal:2',
         'is_featured' => 'boolean',
         'views_count' => 'integer',
+        'min_order' => 'integer',
+        'weight' => 'integer',
+        'preorder_days' => 'integer',
+        'tags' => 'array',
+        'dimension_length' => 'decimal:2',
+        'dimension_width' => 'decimal:2',
+        'dimension_height' => 'decimal:2',
     ];
 
     public function shop(): BelongsTo

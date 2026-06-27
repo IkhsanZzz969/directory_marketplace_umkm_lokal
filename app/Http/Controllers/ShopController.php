@@ -164,6 +164,9 @@ class ShopController extends Controller
         }
 
         $categories = Category::all();
+        $totalProducts = Product::where('shop_id', $shop->id)->count();
+        $totalViews = Product::where('shop_id', $shop->id)->sum('views_count');
+
         $products = Product::with(['category', 'primaryImage'])->where('shop_id', $shop->id)->orderByDesc('created_at')->get()->map(function ($p) {
             $primaryImg = $p->primaryImage->first();
 
@@ -182,6 +185,6 @@ class ShopController extends Controller
             ];
         });
 
-        return view('pages.shop.shop-manage', ['shop' => $shop, 'categories' => $categories, 'jsProducts' => $products]);
+        return view('pages.shop.shop-manage', ['shop' => $shop, 'categories' => $categories, 'jsProducts' => $products, 'totalProducts' => $totalProducts, 'totalViews' => $totalViews]);
     }
 }

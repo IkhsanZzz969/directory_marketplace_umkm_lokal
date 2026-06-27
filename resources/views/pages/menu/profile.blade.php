@@ -1137,7 +1137,7 @@
                                         style="padding:16px;margin-bottom:0;text-align:center;">
                                         <div
                                             style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--primary);">
-                                            48</div>
+                                            {{ $totalProducts }}</div>
                                         <div style="font-size:.75rem;color:var(--dark-light);">Total Produk</div>
                                     </div>
                                     <div class="info-panel-card"
@@ -1151,7 +1151,7 @@
                                         style="padding:16px;margin-bottom:0;text-align:center;">
                                         <div
                                             style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:#8b5cf6;">
-                                            1.2K</div>
+                                            {{ $totalViews }}</div>
                                         <div style="font-size:.75rem;color:var(--dark-light);">Total Dilihat</div>
                                     </div>
                                     <div class="info-panel-card"
