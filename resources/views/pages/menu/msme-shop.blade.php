@@ -189,7 +189,7 @@
       <div class="hero-search-wrap">
         <div class="search-bar">
           <i class="fa-solid fa-store" style="padding-left:18px;color:rgba(255,255,255,.5);"></i>
-          <input type="text" placeholder="Cari nama toko, kota, atau kategori..." id="store-search">
+          <input type="text" placeholder="Cari nama toko, kota, atau kategori..." id="search-input">
           <button>Cari Toko</button>
         </div>
       </div>
@@ -219,13 +219,10 @@
           <div class="filter-sec">
             <div class="filter-sec-title">Kategori Toko <i class="fa-solid fa-chevron-up fa-xs"></i></div>
             <div class="filter-opts">
-              <label class="filter-opt"><input type="checkbox" checked> Semua Kategori <span class="filter-cnt">2.4k</span></label>
-              <label class="filter-opt"><input type="checkbox"> 🍱 Kuliner & Makanan <span class="filter-cnt">680</span></label>
-              <label class="filter-opt"><input type="checkbox"> 👗 Fashion & Batik <span class="filter-cnt">420</span></label>
-              <label class="filter-opt"><input type="checkbox"> 🎨 Kerajinan Tangan <span class="filter-cnt">310</span></label>
-              <label class="filter-opt"><input type="checkbox"> 🌿 Pertanian & Herbal <span class="filter-cnt">195</span></label>
-              <label class="filter-opt"><input type="checkbox"> 💆 Kecantikan <span class="filter-cnt">240</span></label>
-              <label class="filter-opt"><input type="checkbox"> 🪴 Tanaman & Dekorasi <span class="filter-cnt">160</span></label>
+              <label class="filter-opt"><input type="checkbox" name="cat_filter" value="semua" onchange="sidebarCatChange(this)" checked> Semua Kategori <span class="filter-cnt">{{ $shops->count() }}</span></label>
+              @foreach($categories as $cat)
+              <label class="filter-opt"><input type="checkbox" name="cat_filter" value="{{ strtolower(str_replace(' ', '-', $cat)) }}" onchange="sidebarCatChange(this)"> {{ $cat }}</label>
+              @endforeach
             </div>
           </div>
 
@@ -236,14 +233,9 @@
               <input type="text" placeholder="Cari kota atau kab...">
             </div>
             <div class="filter-opts" style="max-height:180px;overflow-y:auto;">
-              <label class="filter-opt"><input type="checkbox"> Semarang <span class="filter-cnt">420</span></label>
-              <label class="filter-opt"><input type="checkbox"> Yogyakarta <span class="filter-cnt">510</span></label>
-              <label class="filter-opt"><input type="checkbox"> Solo <span class="filter-cnt">380</span></label>
-              <label class="filter-opt"><input type="checkbox"> Malang <span class="filter-cnt">290</span></label>
-              <label class="filter-opt"><input type="checkbox"> Surabaya <span class="filter-cnt">640</span></label>
-              <label class="filter-opt"><input type="checkbox"> Bandung <span class="filter-cnt">520</span></label>
-              <label class="filter-opt"><input type="checkbox"> Jakarta <span class="filter-cnt">310</span></label>
-              <label class="filter-opt"><input type="checkbox"> Bali <span class="filter-cnt">175</span></label>
+              @foreach($districts as $d)
+              <label class="filter-opt"><input type="checkbox" value="{{ $d['name'] }}" onchange="toggleDistrict(this)"> {{ $d['name'] }}</label>
+              @endforeach
             </div>
           </div>
 
@@ -300,27 +292,24 @@
 
         <!-- Category chip strip -->
         <div class="cat-strip">
-          <div class="tag active" onclick="setCat(this)">Semua</div>
-          <div class="tag" onclick="setCat(this)">🍱 Kuliner</div>
-          <div class="tag" onclick="setCat(this)">👗 Fashion</div>
-          <div class="tag" onclick="setCat(this)">🎨 Kerajinan</div>
-          <div class="tag" onclick="setCat(this)">🌿 Pertanian</div>
-          <div class="tag" onclick="setCat(this)">💆 Kecantikan</div>
-          <div class="tag" onclick="setCat(this)">🪴 Dekorasi</div>
+          <div class="tag active" onclick="filterCat(this, 'semua')">Semua</div>
+          @foreach($categories as $cat)
+          <div class="tag" onclick="filterCat(this, '{{ strtolower(str_replace(' ', '-', $cat)) }}')">{{ $cat }}</div>
+          @endforeach
         </div>
 
         <!-- Top bar -->
         <div class="store-topbar">
           <div class="result-info">
-            Menampilkan <strong>1–12</strong> dari <strong>2.480</strong> toko
+            Menampilkan <strong><span id="result-count">{{ $shops->count() }}</span></strong> toko
           </div>
           <div class="topbar-right">
-            <select class="sort-sel">
-              <option>Paling Relevan</option>
-              <option>Rating Tertinggi</option>
-              <option>Produk Terbanyak</option>
-              <option>Terbaru Bergabung</option>
-              <option>Transaksi Terbanyak</option>
+            <select class="sort-sel" onchange="sortStores(this.value)">
+              <option value="relevance">Paling Relevan</option>
+              <option value="rating">Rating Tertinggi</option>
+              <option value="products-desc">Produk Terbanyak</option>
+              <option value="newest">Terbaru Bergabung</option>
+              <option value="transactions">Transaksi Terbanyak</option>
             </select>
             <div class="view-toggle">
               <button class="vtbtn active" id="btn-grid" onclick="setView('grid')"><i class="fa-solid fa-grip"></i></button>
@@ -334,14 +323,8 @@
 
         <!-- Pagination -->
         <div class="pager">
-          <div class="pagination">
-            <button class="page-btn"><i class="fa-solid fa-chevron-left fa-xs"></i></button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <span style="padding:0 4px;color:var(--dark-light);">…</span>
-            <button class="page-btn">21</button>
-            <button class="page-btn"><i class="fa-solid fa-chevron-right fa-xs"></i></button>
+          <div class="pagination" id="pagination-container">
+            <!-- Pagination rendered by JS -->
           </div>
         </div>
       </main>
@@ -361,44 +344,66 @@
     document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
   });
 
-  // ── Store data ──
-  const STORES = [
-    { emoji:'🍱', grad:'linear-gradient(135deg,#FD7400,#ff9944)', name:'Dapur Bu Sari',       dist:'Semarang Tengah',  cat:['Kuliner'],      desc:'Spesialis kue kering premium homemade. Nastar, kastengel, putri salju, dan hampers lebaran terbaik.',   prods:48, txn:320, rating:4.9, badge:'⭐ Unggulan', verified:true, wa:'6281234560001' },
-    { emoji:'🎨', grad:'linear-gradient(135deg,#2E353D,#4a5568)', name:'Batik Nusantara',      dist:'Laweyan, Solo',    cat:['Fashion'],      desc:'Pengrajin batik tulis & cap dengan motif tradisional Jawa. Melayani grosir dan eceran untuk semua kalangan.',prods:62, txn:185, rating:4.8, badge:'',          verified:true, wa:'6281234560002' },
-    { emoji:'🌿', grad:'linear-gradient(135deg,#10b981,#34d399)', name:'Herbal Segar',          dist:'Batu, Malang',     cat:['Pertanian'],    desc:'Produsen minuman herbal & jamu tradisional dari bahan-bahan alami pilihan pegunungan Malang.',               prods:29, txn:210, rating:4.7, badge:'🆕 Baru',    verified:true, wa:'6281234560003' },
-    { emoji:'👜', grad:'linear-gradient(135deg,#8b5cf6,#a78bfa)', name:'Anyaman Jogja',         dist:'Kotagede, Yogyakarta',cat:['Kerajinan'], desc:'Pengrajin tas anyam rotan & bambu handmade. Setiap produk dikerjakan langsung oleh pengrajin lokal.',         prods:35, txn:150, rating:4.9, badge:'⭐ Unggulan', verified:true, wa:'6281234560004' },
-    { emoji:'🫙', grad:'linear-gradient(135deg,#f59e0b,#fcd34d)', name:'Dapur Lezat',           dist:'Surabaya',         cat:['Kuliner'],      desc:'Sambal & bumbu masak homemade tanpa MSG. Pilihan rasa pedas hingga super pedas untuk menemani makan kamu.',   prods:22, txn:98,  rating:4.6, badge:'',          verified:true, wa:'6281234560005' },
-    { emoji:'💆', grad:'linear-gradient(135deg,#ec4899,#f9a8d4)', name:'Aroma Cantik',          dist:'Bandung',          cat:['Kecantikan'],   desc:'Produk perawatan kulit alami berbahan dasar rempah nusantara. Bebas paraben dan ramah untuk kulit sensitif.',  prods:41, txn:275, rating:4.8, badge:'⭐ Unggulan', verified:true, wa:'6281234560006' },
-    { emoji:'🪴', grad:'linear-gradient(135deg,#06b6d4,#67e8f9)', name:'Green Corner',          dist:'Depok, Jawa Barat',cat:['Dekorasi'],    desc:'Nursery tanaman hias indoor & outdoor. Tersedia berbagai jenis suculent, monstera, dan philodendron eksotis.',   prods:88, txn:340, rating:4.7, badge:'',          verified:true, wa:'6281234560007' },
-    { emoji:'🍯', grad:'linear-gradient(135deg,#d97706,#fbbf24)', name:'Lebah Madu Asli',       dist:'Pekalongan',       cat:['Pertanian'],    desc:'Peternak lebah madu hutan & madu klanceng. Produk 100% murni dengan kadar air rendah, sudah uji lab BPOM.',    prods:15, txn:120, rating:4.9, badge:'',          verified:true, wa:'6281234560008' },
-    { emoji:'🧵', grad:'linear-gradient(135deg,#7c3aed,#c4b5fd)', name:'Tenun Lombok',          dist:'Mataram, NTB',     cat:['Fashion'],      desc:'Kain tenun ikat tradisional Sasak dengan motif khas Lombok. Tersedia dalam berbagai ukuran dan warna.',         prods:30, txn:88,  rating:4.7, badge:'🆕 Baru',    verified:true, wa:'6281234560009' },
-    { emoji:'🕯️', grad:'linear-gradient(135deg,#0ea5e9,#7dd3fc)', name:'Aroma Nusantara',       dist:'Yogyakarta',       cat:['Dekorasi'],    desc:'Lilin aromaterapi & home fragrance dari essential oil asli Indonesia. Parfum bali, pandan, sampai kenanga.',    prods:24, txn:160, rating:4.8, badge:'',          verified:true, wa:'6281234560010' },
-    { emoji:'🥜', grad:'linear-gradient(135deg,#b45309,#d97706)', name:'Cemilan Nusantara',     dist:'Kediri, Jawa Timur',cat:['Kuliner'],    desc:'Aneka kripik & oleh-oleh khas Jawa Timur. Kripik tempe, keripik singkong, dan rempeyek tradisional.',           prods:18, txn:74,  rating:4.5, badge:'',          verified:false, wa:'6281234560011' },
-    { emoji:'🎍', grad:'linear-gradient(135deg,#065f46,#34d399)', name:'Bambu Kreasi',          dist:'Purwokerto',       cat:['Kerajinan'],    desc:'Produsen furniture & peralatan rumah tangga dari bambu lokal yang ramah lingkungan dan bernilai estetika tinggi.',prods:52, txn:195, rating:4.6, badge:'',          verified:true, wa:'6281234560012' },
+  const SHOPS = [
+    @foreach ($shops as $index => $s)
+        {
+            id: {{ $s->id }},
+            slug: '{!! addslashes($s->slug) !!}',
+            category_slug: '{!! $s->category ? strtolower(str_replace(' ', '-', $s->category)) : '' !!}',
+            category_name: '{!! addslashes($s->category ?? '') !!}',
+            image: '{!! $s->logo ?? '' !!}',
+            grad: 'linear-gradient(135deg,#fef3c7,#fed7aa)',
+            name: '{!! addslashes($s->name) !!}',
+            district: '{!! addslashes($s->district ?? '') !!}',
+            desc: '{!! addslashes($s->description ?? '') !!}',
+            prods: {{ $s->products_count ?? 0 }},
+            txn: 0, // Placeholder
+            rating: 0, // Placeholder
+            verified: true, // Placeholder
+            badge: '', // Placeholder
+            created_at: '{{ $s->created_at }}',
+            wa: '{!! str_replace('+', '', $s->whatsapp_number ?? '') !!}'
+        }
+        {{ !$loop->last ? ',' : '' }}
+    @endforeach
   ];
 
-  function renderStores() {
+  let filteredShops = [...SHOPS];
+  let currentPage = 1;
+  const itemsPerPage = 12;
+
+  function renderStores(view) {
     const grid = document.getElementById('stores-grid');
-    grid.innerHTML = STORES.map(s => `
-      <div class="store-card" onclick="location.href='store-profile.html'">
+    if (filteredShops.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--dark-mid);">Pencarian tidak ditemukan. Coba filter lain.</div>';
+        document.getElementById('result-count').textContent = '0';
+        document.getElementById('pagination-container').innerHTML = '';
+        return;
+    }
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedShops = filteredShops.slice(startIndex, startIndex + itemsPerPage);
+
+    grid.innerHTML = paginatedShops.map(s => `
+      <div class="store-card" onclick="location.href='/toko/${s.slug}'">
         <div class="sc-banner" style="background:${s.grad};">
-          <div class="sc-logo">${s.emoji}</div>
+          <div class="sc-logo">${s.image ? `<img src="/storage/${s.image}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">` : '🛍️'}</div>
           ${s.verified ? '<div class="sc-verified"><i class="fa-solid fa-circle-check fa-xs"></i> Terverifikasi</div>' : ''}
         </div>
         <div class="sc-body">
           <div class="sc-name">${s.name} ${s.badge ? `<span style="font-size:.68rem;color:var(--primary);font-weight:600;margin-left:4px;">${s.badge}</span>` : ''}</div>
-          <div class="sc-district"><i class="fa-solid fa-location-dot fa-xs"></i> ${s.dist}</div>
+          <div class="sc-district"><i class="fa-solid fa-location-dot fa-xs"></i> ${s.district}</div>
           <div class="sc-desc">${s.desc}</div>
-          <div class="sc-tags">${s.cat.map(c=>`<span class="sc-tag">${c}</span>`).join('')}</div>
+          <div class="sc-tags">${s.category_name ? `<span class="sc-tag">${s.category_name}</span>` : ''}</div>
           <div class="sc-divider"></div>
           <div class="sc-stats">
             <div class="sc-stat"><div class="sc-stat-num">${s.prods}</div><div class="sc-stat-lbl">Produk</div></div>
             <div class="sc-stat"><div class="sc-stat-num">${s.txn}+</div><div class="sc-stat-lbl">Transaksi</div></div>
-            <div class="sc-stat"><div class="sc-stat-num">${s.rating}⭐</div><div class="sc-stat-lbl">Rating</div></div>
+            <div class="sc-stat"><div class="sc-stat-num">${s.rating ? s.rating + '⭐' : '-'}</div><div class="sc-stat-lbl">Rating</div></div>
           </div>
         </div>
         <div class="sc-footer">
-          <button class="btn btn-primary w-full btn-sm" onclick="event.stopPropagation();location.href='store-profile.html'">
+          <button class="btn btn-primary w-full btn-sm" onclick="event.stopPropagation();location.href='/toko/${s.slug}'">
             <i class="fa-solid fa-store fa-xs"></i> Lihat Toko
           </button>
           <button class="btn btn-wa w-full btn-sm" onclick="event.stopPropagation();chatWA('${s.name}', '${s.wa}')">
@@ -407,16 +412,154 @@
         </div>
       </div>
     `).join('');
+
+    document.getElementById('result-count').textContent = filteredShops.length;
+    renderPagination();
   }
-  renderStores();
+
+  function renderPagination() {
+      const container = document.getElementById('pagination-container');
+      const totalPages = Math.ceil(filteredShops.length / itemsPerPage);
+      
+      if (totalPages <= 1) {
+          container.innerHTML = '';
+          return;
+      }
+
+      let html = '';
+      
+      html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fa-solid fa-chevron-left fa-xs"></i></button>`;
+      
+      for (let i = 1; i <= totalPages; i++) {
+          if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+              html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+          } else if (i === currentPage - 2 || i === currentPage + 2) {
+              html += `<span style="padding:0 4px;color:var(--dark-light);">…</span>`;
+          }
+      }
+      
+      html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fa-solid fa-chevron-right fa-xs"></i></button>`;
+
+      container.innerHTML = html;
+  }
+
+  function goToPage(page) {
+      const totalPages = Math.ceil(filteredShops.length / itemsPerPage);
+      if (page < 1 || page > totalPages) return;
+      currentPage = page;
+      renderStores(document.querySelector('.vtbtn.active').id === 'btn-grid' ? 'grid' : 'list');
+      window.scrollTo({ top: 300, behavior: 'smooth' });
+  }
+
+  renderStores('grid');
 
   function setView(v) {
     document.getElementById('btn-grid').classList.toggle('active', v==='grid');
     document.getElementById('btn-list').classList.toggle('active', v==='list');
     document.getElementById('stores-grid').classList.toggle('list-view', v==='list');
   }
-  function setCat(el) { document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
-  function clearFilters() { document.querySelectorAll('.filter-opts input').forEach(i=>i.checked=false); }
+
+  // FILTER STATE
+  let activeCategory = 'semua';
+  let searchQuery = '';
+  let selectedDistricts = [];
+
+  function filterCat(el, cat) {
+      document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+      if(el) el.classList.add('active');
+      
+      document.querySelectorAll('input[name="cat_filter"]').forEach(cb => {
+          if(cat === 'semua' && cb.value === 'semua') cb.checked = true;
+          else if (cat === cb.value) cb.checked = true;
+          else cb.checked = false;
+      });
+
+      activeCategory = cat;
+      applyFilters();
+  }
+
+  function sidebarCatChange(cb) {
+      if(cb.checked) {
+          filterCat(null, cb.value);
+          document.querySelectorAll('.tag').forEach(t => {
+              t.classList.remove('active');
+              if(t.getAttribute('onclick').includes(cb.value)) {
+                  t.classList.add('active');
+              }
+          });
+      } else {
+          filterCat(null, 'semua');
+          document.querySelector('.tag[onclick*="semua"]').classList.add('active');
+      }
+  }
+
+  function toggleDistrict(cb) {
+      if(cb.checked) {
+          selectedDistricts.push(cb.value);
+      } else {
+          selectedDistricts = selectedDistricts.filter(d => d !== cb.value);
+      }
+      applyFilters();
+  }
+
+  document.getElementById('search-input').addEventListener('input', function(e) {
+      searchQuery = e.target.value.toLowerCase();
+      applyFilters();
+  });
+
+  function clearFilters() {
+      activeCategory = 'semua';
+      searchQuery = '';
+      selectedDistricts = [];
+      
+      document.getElementById('search-input').value = '';
+      
+      document.querySelectorAll('input[type="checkbox"]').forEach(i => i.checked = false);
+      document.querySelector('input[name="cat_filter"][value="semua"]').checked = true;
+      
+      document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+      document.querySelector('.tag[onclick*="semua"]').classList.add('active');
+
+      applyFilters();
+  }
+
+  function applyFilters() {
+      currentPage = 1;
+      filteredShops = SHOPS.filter(s => {
+          let match = true;
+          
+          if (activeCategory !== 'semua' && s.category_slug !== activeCategory) {
+              match = false;
+          }
+          
+          if (searchQuery && !s.name.toLowerCase().includes(searchQuery) && !s.district.toLowerCase().includes(searchQuery)) {
+              match = false;
+          }
+          
+          if (selectedDistricts.length > 0 && !selectedDistricts.includes(s.district)) {
+              match = false;
+          }
+          
+          return match;
+      });
+      
+      sortStores(document.querySelector('.sort-sel').value);
+      renderStores('grid');
+  }
+
+  function sortStores(val) {
+      if (val === 'relevance') {
+          filteredShops.sort((a, b) => a.id - b.id);
+      } else if (val === 'newest') {
+          filteredShops.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      } else if (val === 'products-desc') {
+          filteredShops.sort((a, b) => b.prods - a.prods);
+      }
+      // rating and transactions don't have real data yet, leave as default
+      
+      renderStores('grid');
+  }
+
   function chatWA(name, wa) {
     window.open(`https://wa.me/${wa}?text=${encodeURIComponent('Halo '+name+'! Saya menemukan toko kamu di PasarLokal.')}`, '_blank');
   }
