@@ -952,7 +952,7 @@
                                                             class="fa-solid fa-pencil"></i></button>
                                                     <form action="{{ route('admin.category.destroy', $cat->id) }}"
                                                         method="POST"
-                                                        onsubmit="return confirm('Hapus kategori ini?');"
+                                                        onsubmit="event.preventDefault(); confirmDeleteCategory(this, '{{ addslashes($cat->name) }}');"
                                                         style="display:inline-block;">
                                                         @csrf
                                                         @method('DELETE')
@@ -1048,6 +1048,7 @@
         function showPanel(id, tabEl) {
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
             document.getElementById('panel-' + id).classList.add('active');
+            localStorage.setItem('activeAdminPanel', id);
 
             // update horizontal tabs
             if (tabEl) {
@@ -1202,7 +1203,7 @@
                     }
                 })
                 .then(response => {
-                    window.location.href = '/admin/login';
+                    window.location.href = "{{ route('login') }}";
                 })
                 .catch(error => {
                     console.error('Error Logout:', error);
@@ -1217,22 +1218,26 @@
 
     <script>
         // JS Category handling
+        let isSlugEdited = false;
+
         function showCategoryModal() {
             const form = document.getElementById('category-form');
-            form.action = "{{ route('category.store') }}";
+            form.action = "{{ route('admin.category.store') }}";
             document.getElementById('cat-method').innerHTML = ''; // POST
             document.getElementById('cat-name').value = '';
             document.getElementById('cat-slug').value = '';
+            isSlugEdited = false;
             document.getElementById('cat-modal-title').innerText = 'Tambah Kategori';
             document.getElementById('category-modal').style.display = 'flex';
         }
 
         function editCategory(id, name, slug) {
             const form = document.getElementById('category-form');
-            form.action = `/admin/category/${id}`;
+            form.action = `/administrator/kategori/${id}`;
             document.getElementById('cat-method').innerHTML = '<input type="hidden" name="_method" value="PUT">';
             document.getElementById('cat-name').value = name;
             document.getElementById('cat-slug').value = slug;
+            isSlugEdited = false;
             document.getElementById('cat-modal-title').innerText = 'Edit Kategori';
             document.getElementById('category-modal').style.display = 'flex';
         }
@@ -1241,11 +1246,67 @@
             document.getElementById('category-modal').style.display = 'none';
         }
 
+        async function confirmDeleteCategory(formElement, categoryName) {
+            const confirmed = await showConfirm({
+                type: 'danger',
+                title: 'Hapus Kategori?',
+                message: `Yakin ingin menghapus kategori "${categoryName}"? Tindakan ini tidak dapat dibatalkan.`,
+                confirmText: 'Ya, Hapus',
+                cancelText: 'Batal',
+            });
+            if (confirmed) formElement.submit();
+        }
+
         // Auto-generate slug for category
-        document.getElementById('cat-name')?.addEventListener('input', function(e) {
-            const slug = e.target.value.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(
-                /-+/g, '-').replace(/^-|-$/g, '');
-            document.getElementById('cat-slug').value = slug;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Restore active panel from localStorage
+            const activePanel = localStorage.getItem('activeAdminPanel');
+            if (activePanel) {
+                const tabEl = document.getElementById('tab-' + activePanel);
+                if (tabEl) {
+                    showPanel(activePanel, tabEl);
+                } else {
+                    showPanel(activePanel, null);
+                }
+            }
+
+            // Show success/error modal from session
+            @if(session('success'))
+                showModal({
+                    type: 'success',
+                    title: 'Berhasil!',
+                    message: "{!! addslashes(session('success')) !!}"
+                });
+            @endif
+
+            @if(session('error'))
+                showModal({
+                    type: 'error',
+                    title: 'Gagal!',
+                    message: "{!! addslashes(session('error')) !!}"
+                });
+            @endif
+
+            @if($errors->any())
+                showModal({
+                    type: 'error',
+                    title: 'Kesalahan Validasi!',
+                    message: "{!! addslashes(implode('<br>', $errors->all())) !!}"
+                });
+            @endif
+            document.getElementById('cat-name')?.addEventListener('input', function(e) {
+                if (!isSlugEdited) {
+                    const slug = e.target.value.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g,
+                        '-').replace(
+                        /-+/g, '-').replace(/^-|-$/g, '');
+                    document.getElementById('cat-slug').value = slug;
+                }
+            });
+
+            // Track if slug is manually edited
+            document.getElementById('cat-slug')?.addEventListener('input', function(e) {
+                isSlugEdited = true;
+            });
         });
     </script>
 

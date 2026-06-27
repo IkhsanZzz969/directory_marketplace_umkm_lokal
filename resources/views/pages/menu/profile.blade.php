@@ -1374,7 +1374,7 @@
                 .then(data => {
                     if (data.success) {
                         // Setelah server merespon sukses, arahkan browser ke halaman login/awal
-                        window.location.href = '/auth';
+                        window.location.href = "{{ route('login') }}";
                     }
                 })
                 .catch(error => {

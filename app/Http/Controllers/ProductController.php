@@ -15,18 +15,6 @@ class ProductController extends Controller
         return view('pages.products.product-create', compact('categories'));
     }
 
-    public function storeCategory(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:categories,slug',
-        ]);
-
-        Category::create($validated);
-
-        return redirect()->back()->with('success', 'Kategori berhasil ditambahkan!');
-    }
-
     public function store(Request $request)
     {
         $validated = $request->validate([

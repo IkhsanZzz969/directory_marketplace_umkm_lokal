@@ -42,7 +42,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/tambah-produk', [ProductController::class, 'create'])->name('product.create');
     Route::post('/tambah-produk', [ProductController::class, 'store'])->name('product.store');
-    Route::post('/kategori', [ProductController::class, 'storeCategory'])->name('category.store');
+
     Route::put('/produk/{product}', [ProductController::class, 'update'])->name('product.update');
     Route::delete('/produk/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
     Route::get('/produk/{slug}', [ProductController::class, 'show'])->name('product.show');
