@@ -70,4 +70,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Shop::class, 'user_id', 'id');
     }
+
+    public function reviews(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
 }

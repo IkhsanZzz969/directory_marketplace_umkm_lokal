@@ -505,12 +505,17 @@
                     <h1 class="product-title">{{ $product->name }}</h1>
 
                     <div class="product-meta-row">
-                        <div class="stars">
-                            <span class="star">★</span><span class="star">★</span><span class="star">★</span>
-                            <span class="star">★</span><span class="star">★</span>
+                        <div class="stars" style="color:#fbbf24;">
+                            @php
+                                $avgRating = $product->reviews->avg('rating') ?: 0;
+                                $totalReviews = $product->reviews->count();
+                                $roundedAvg = round($avgRating);
+                            @endphp
+                            @for($i = 0; $i < $roundedAvg; $i++)★@endfor
+                            @for($i = $roundedAvg; $i < 5; $i++)<span style="color:var(--border);">★</span>@endfor
                         </div>
-                        <span style="font-size:0.82rem;color:var(--dark-mid);">5.0 <span
-                                style="color:var(--dark-light)">(0 ulasan)</span></span>
+                        <span style="font-size:0.82rem;color:var(--dark-mid);">{{ number_format($avgRating, 1) }} <span
+                                style="color:var(--dark-light)">({{ $totalReviews }} ulasan)</span></span>
                         <div class="product-views"><i class="fa-regular fa-eye"></i>
                             {{ number_format($product->views_count, 0, ',', '.') }} dilihat</div>
                     </div>
@@ -611,7 +616,7 @@
                 <div class="desc-tabs">
                     <div class="desc-tab active" onclick="switchDesc('deskripsi',this)">Deskripsi Produk</div>
                     <div class="desc-tab" onclick="switchDesc('spesifikasi',this)">Spesifikasi</div>
-                    <div class="desc-tab" onclick="switchDesc('ulasan',this)">Ulasan (248)</div>
+                    <div class="desc-tab" onclick="switchDesc('ulasan',this)">Ulasan ({{ $totalReviews }})</div>
                 </div>
 
                 <div class="desc-panel active" id="desc-deskripsi">
@@ -655,78 +660,104 @@
                 </div>
 
                 <div class="desc-panel" id="desc-ulasan">
+                    @php
+                        $ratingCounts = [
+                            5 => $product->reviews->where('rating', 5)->count(),
+                            4 => $product->reviews->where('rating', 4)->count(),
+                            3 => $product->reviews->where('rating', 3)->count(),
+                            2 => $product->reviews->where('rating', 2)->count(),
+                            1 => $product->reviews->where('rating', 1)->count(),
+                        ];
+                    @endphp
                     <div style="display:flex;gap:32px;align-items:center;margin-bottom:32px;flex-wrap:wrap;">
                         <div style="text-align:center;">
                             <div
                                 style="font-family:var(--font-display);font-size:3.5rem;font-weight:700;color:var(--dark);line-height:1;">
-                                4.9</div>
-                            <div class="stars" style="justify-content:center;margin:6px 0;">★★★★★</div>
-                            <div style="font-size:0.78rem;color:var(--dark-light);">dari 248 ulasan</div>
+                                {{ number_format($avgRating, 1) }}</div>
+                            <div class="stars" style="justify-content:center;margin:6px 0;color:#fbbf24;">
+                                @for($i = 0; $i < $roundedAvg; $i++)★@endfor
+                                @for($i = $roundedAvg; $i < 5; $i++)<span style="color:var(--border);">★</span>@endfor
+                            </div>
+                            <div style="font-size:0.78rem;color:var(--dark-light);">dari {{ $totalReviews }} ulasan</div>
                         </div>
                         <div style="flex:1;min-width:200px;">
+                            @foreach([5, 4, 3, 2, 1] as $star)
+                            @php
+                                $pct = $totalReviews > 0 ? round(($ratingCounts[$star] / $totalReviews) * 100) : 0;
+                            @endphp
                             <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:0.82rem;">
-                                <span style="width:16px;text-align:right;color:var(--dark-mid);">5</span><span
+                                <span style="width:16px;text-align:right;color:var(--dark-mid);">{{ $star }}</span><span
                                     style="color:#fbbf24;">★</span>
                                 <div
                                     style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-                                    <div style="width:87%;height:100%;background:#fbbf24;border-radius:3px;"></div>
+                                    <div style="width:{{ $pct }}%;height:100%;background:#fbbf24;border-radius:3px;"></div>
                                 </div>
-                                <span style="width:28px;color:var(--dark-light);">87%</span>
+                                <span style="width:28px;color:var(--dark-light);">{{ $pct }}%</span>
                             </div>
-                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:0.82rem;">
-                                <span style="width:16px;text-align:right;color:var(--dark-mid);">4</span><span
-                                    style="color:#fbbf24;">★</span>
-                                <div
-                                    style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-                                    <div style="width:10%;height:100%;background:#fbbf24;border-radius:3px;"></div>
-                                </div>
-                                <span style="width:28px;color:var(--dark-light);">10%</span>
-                            </div>
-                            <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;">
-                                <span style="width:16px;text-align:right;color:var(--dark-mid);">3</span><span
-                                    style="color:#fbbf24;">★</span>
-                                <div
-                                    style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-                                    <div style="width:3%;height:100%;background:#fbbf24;border-radius:3px;"></div>
-                                </div>
-                                <span style="width:28px;color:var(--dark-light);">3%</span>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
                     <!-- Review items -->
                     <div style="display:flex;flex-direction:column;gap:20px;">
-                        <div
-                            style="padding:20px;background:var(--bg);border-radius:var(--radius-md);border:1px solid var(--border);">
-                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                                <div
-                                    style="width:36px;height:36px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;">
-                                    R</div>
-                                <div>
-                                    <div style="font-weight:600;font-size:0.88rem;">Rizky P.</div>
-                                    <div style="font-size:0.72rem;color:var(--dark-light);">2 Jun 2026</div>
-                                </div>
-                                <div class="stars" style="margin-left:auto;">★★★★★</div>
+                        @auth
+                            @if(!$product->reviews->where('user_id', auth()->id())->count())
+                            <div style="padding:20px;background:var(--white);border-radius:var(--radius-md);border:1px solid var(--border);">
+                                <h4 style="margin-bottom:12px;font-size:1rem;">Tulis Ulasan Anda</h4>
+                                <form action="{{ route('product.review.store', $product->id) }}" method="POST">
+                                    @csrf
+                                    <div style="margin-bottom:12px;">
+                                        <label style="display:block;margin-bottom:6px;font-size:0.85rem;color:var(--dark-mid);">Rating (1-5)</label>
+                                        <select name="rating" required style="padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);width:100%;max-width:200px;">
+                                            <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                                            <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                                            <option value="3">⭐⭐⭐ (3/5)</option>
+                                            <option value="2">⭐⭐ (2/5)</option>
+                                            <option value="1">⭐ (1/5)</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-bottom:12px;">
+                                        <label style="display:block;margin-bottom:6px;font-size:0.85rem;color:var(--dark-mid);">Komentar (Opsional)</label>
+                                        <textarea name="review_text" rows="3" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);" placeholder="Tuliskan pengalaman Anda..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm">Kirim Ulasan</button>
+                                </form>
                             </div>
-                            <p style="font-size:0.88rem;line-height:1.7;color:var(--dark-mid);">Enak banget!
-                                Buttery, isian nanas segar, kejunya kerasa. Packing juga rapi, sampai dalam kondisi
-                                sempurna. Sudah order ke-3 kali dan ga pernah kecewa. Recommended banget!</p>
-                        </div>
-                        <div
-                            style="padding:20px;background:var(--bg);border-radius:var(--radius-md);border:1px solid var(--border);">
-                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                                <div
-                                    style="width:36px;height:36px;background:var(--dark);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;">
-                                    A</div>
-                                <div>
-                                    <div style="font-weight:600;font-size:0.88rem;">Ayu S.</div>
-                                    <div style="font-size:0.72rem;color:var(--dark-light);">28 Mei 2026</div>
-                                </div>
-                                <div class="stars" style="margin-left:auto;">★★★★★</div>
+                            @endif
+                        @else
+                            <div style="padding:16px;background:var(--primary-light);color:var(--primary);border-radius:var(--radius-md);font-size:0.88rem;text-align:center;">
+                                Silakan <a href="{{ route('login') }}" style="font-weight:700;text-decoration:underline;">login</a> untuk memberikan ulasan.
                             </div>
-                            <p style="font-size:0.88rem;line-height:1.7;color:var(--dark-mid);">Pesan lewat WA
-                                langsung respon cepat. Bu Sari orangnya ramah dan komunikatif. Nastarnya homemade
-                                banget rasanya, sangat berbeda dengan yang dijual di toko. Wajib coba!</p>
+                        @endauth
+                        
+                        @forelse($product->reviews as $review)
+                        <div style="padding:20px;background:var(--bg);border-radius:var(--radius-md);border:1px solid var(--border);">
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                                <div style="width:36px;height:36px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;overflow:hidden;">
+                                    @if($review->user->avatar_url)
+                                        <img src="{{ $review->user->avatar_url }}" style="width:100%;height:100%;object-fit:cover;">
+                                    @else
+                                        {{ strtoupper(substr($review->user->name, 0, 1)) }}
+                                    @endif
+                                </div>
+                                <div>
+                                    <div style="font-weight:600;font-size:0.88rem;">{{ $review->user->name }}</div>
+                                    <div style="font-size:0.72rem;color:var(--dark-light);">{{ $review->created_at->format('d M Y') }}</div>
+                                </div>
+                                <div class="stars" style="margin-left:auto;color:#fbbf24;">
+                                    @for($i = 0; $i < $review->rating; $i++)★@endfor
+                                    @for($i = $review->rating; $i < 5; $i++)<span style="color:var(--border);">★</span>@endfor
+                                </div>
+                            </div>
+                            @if($review->review_text)
+                            <p style="font-size:0.88rem;line-height:1.7;color:var(--dark-mid);">{{ $review->review_text }}</p>
+                            @endif
                         </div>
+                        @empty
+                        <div style="text-align:center;padding:40px 0;color:var(--dark-light);">
+                            <i class="fa-regular fa-comment-dots" style="font-size:2rem;margin-bottom:10px;"></i>
+                            <p>Belum ada ulasan untuk produk ini.</p>
+                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>

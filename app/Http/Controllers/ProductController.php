@@ -135,7 +135,7 @@ class ProductController extends Controller
 
     public function show($slug)
     {
-        $product = Product::with(['shop', 'images', 'category'])->where('slug', $slug)->firstOrFail();
+        $product = Product::with(['shop', 'images', 'category', 'reviews.user'])->where('slug', $slug)->firstOrFail();
 
         // Increment views
         $product->increment('views_count');
@@ -147,5 +147,26 @@ class ProductController extends Controller
             ->get();
 
         return view('pages.products.product-detail', compact('product', 'relatedProducts'));
+    }
+
+    public function storeReview(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'review_text' => 'nullable|string|max:1000',
+        ]);
+
+        // Check if user already reviewed
+        if ($product->reviews()->where('user_id', auth()->id())->exists()) {
+            return back()->with('error', 'Anda sudah memberikan ulasan untuk produk ini.');
+        }
+
+        $product->reviews()->create([
+            'user_id' => auth()->id(),
+            'rating' => $validated['rating'],
+            'review_text' => $validated['review_text'],
+        ]);
+
+        return back()->with('success', 'Ulasan berhasil ditambahkan!');
     }
 }
