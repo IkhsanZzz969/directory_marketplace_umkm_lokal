@@ -642,20 +642,44 @@
 
                 <div class="desc-panel" id="desc-spesifikasi">
                     <div class="spec-table">
-                        <div class="spec-row"><span class="spec-key">Berat Bersih</span><span class="spec-val">500
-                                gram</span></div>
-                        <div class="spec-row"><span class="spec-key">Ukuran Kemasan</span><span class="spec-val">15
-                                × 15 × 10 cm (toples)</span></div>
-                        <div class="spec-row"><span class="spec-key">Masa Kedaluwarsa</span><span class="spec-val">3
-                                bulan (dikemas vakum)</span></div>
-                        <div class="spec-row"><span class="spec-key">Komposisi</span><span class="spec-val">Tepung
-                                terigu, mentega, kuning telur, keju cheddar, selai nanas</span></div>
-                        <div class="spec-row"><span class="spec-key">Sertifikasi</span><span class="spec-val">PIRT
-                                No. 2063374011234-22</span></div>
-                        <div class="spec-row"><span class="spec-key">Minimum Order</span><span class="spec-val">1
-                                toples (500gr)</span></div>
-                        <div class="spec-row"><span class="spec-key">Pengiriman</span><span class="spec-val">JNE,
-                                J&T, SiCepat, atau COD area Semarang</span></div>
+                        <div class="spec-row">
+                            <span class="spec-key">Berat Bersih</span>
+                            <span class="spec-val">{{ $product->weight ? $product->weight . ' gram' : '-' }}</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-key">Ukuran / Dimensi</span>
+                            <span class="spec-val">
+                                @if($product->dimension_length && $product->dimension_width && $product->dimension_height)
+                                    {{ rtrim(rtrim($product->dimension_length, '0'), '.') }} × {{ rtrim(rtrim($product->dimension_width, '0'), '.') }} × {{ rtrim(rtrim($product->dimension_height, '0'), '.') }} cm
+                                @else
+                                    -
+                                @endif
+                            </span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-key">Minimum Order</span>
+                            <span class="spec-val">{{ $product->min_order }} {{ $product->unit ?: 'pcs' }}</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-key">Status Stok</span>
+                            <span class="spec-val">
+                                @if($product->stock_status === 'available')
+                                    Tersedia
+                                @elseif($product->stock_status === 'preorder')
+                                    Pre-Order ({{ $product->preorder_days }} {{ $product->preorder_unit ?: 'hari' }})
+                                @elseif($product->stock_status === 'limited')
+                                    Stok Terbatas
+                                @elseif($product->stock_status === 'empty')
+                                    Stok Kosong
+                                @else
+                                    -
+                                @endif
+                            </span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-key">Catatan Pengiriman</span>
+                            <span class="spec-val">{{ $product->shipping_note ?: '-' }}</span>
+                        </div>
                     </div>
                 </div>
 
