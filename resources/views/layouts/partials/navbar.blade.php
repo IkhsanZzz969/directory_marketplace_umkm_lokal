@@ -25,9 +25,15 @@
                             class="fa-solid fa-arrow-left fa-xs"></i>
                         Kembali ke Profil</a>
                 @endif
-                <div class="nav-avatar" onclick="location.href='{{ route('profile') }}'">
-                    <img src="{{ auth()->user()->avatar_url }}" alt="Profile Avatar" style="border-radius: 50%;">
-                </div>
+                @if (auth()->user()->role === 'superadmin')
+                    <div class="nav-avatar" onclick="location.href='{{ route('administrator') }}'">
+                        <img src="{{ auth()->user()->avatar_url }}" alt="Profile Avatar" style="border-radius: 50%;">
+                    </div>
+                @else
+                    <div class="nav-avatar" onclick="location.href='{{ route('profile') }}'">
+                        <img src="{{ auth()->user()->avatar_url }}" alt="Profile Avatar" style="border-radius: 50%;">
+                    </div>
+                @endif
             @endauth
         </div>
     </div>
