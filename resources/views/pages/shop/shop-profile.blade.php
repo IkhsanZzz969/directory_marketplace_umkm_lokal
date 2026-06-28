@@ -549,7 +549,8 @@
                                 <span><i class="fa-solid fa-location-dot fa-xs"></i> {{ $shop->district }}</span>
                                 <span><i class="fa-solid fa-store fa-xs"></i> Bergabung
                                     {{ $shop->created_at ? $shop->created_at->format('M Y') : 'Baru saja' }}</span>
-                                <span><i class="fa-solid fa-star fa-xs" style="color:#fbbf24;"></i> 4.9 · 248
+                                <span><i class="fa-solid fa-star fa-xs" style="color:#fbbf24;"></i> {{ $averageRating }}
+                                    · {{ $totalReviews }}
                                     ulasan</span>
                             </div>
                         </div>
@@ -572,7 +573,8 @@
                     <div class="store-nav">
                         <div class="store-nav-link active" onclick="switchStoreTab('produk',this)">Semua Produk</div>
                         <div class="store-nav-link" onclick="switchStoreTab('tentang',this)">Tentang Toko</div>
-                        <div class="store-nav-link" onclick="switchStoreTab('ulasan',this)">Ulasan (248)</div>
+                        <div class="store-nav-link" onclick="switchStoreTab('ulasan',this)">Ulasan ({{ $totalReviews }})
+                        </div>
                         <div class="store-nav-link" onclick="switchStoreTab('galeri',this)">Galeri</div>
                     </div>
                 </div>
@@ -596,7 +598,7 @@
                             <div class="stat-strip-lbl">Transaksi</div>
                         </div>
                         <div class="stat-strip-item">
-                            <div class="stat-strip-num">4.9⭐</div>
+                            <div class="stat-strip-num">{{ $averageRating }}⭐</div>
                             <div class="stat-strip-lbl">Rating</div>
                         </div>
                         <div class="stat-strip-item">
@@ -744,41 +746,29 @@
                         <div class="info-card">
                             <div class="rating-big">
                                 <div style="text-align:center;">
-                                    <div class="rating-num">4.9</div>
-                                    <div class="stars" style="justify-content:center;margin:6px 0;">★★★★★</div>
-                                    <div style="font-size:.72rem;color:var(--dark-light);">248 ulasan</div>
+                                    <div class="rating-num">{{ $averageRating }}</div>
+                                    <div class="stars" style="justify-content:center;margin:6px 0;">
+                                        @for ($i = 0; $i < round($averageRating); $i++)
+                                            ★
+                                        @endfor
+                                        @for ($i = round($averageRating); $i < 5; $i++)
+                                            <span style="color:var(--border)">★</span>
+                                        @endfor
+                                    </div>
+                                    <div style="font-size:.72rem;color:var(--dark-light);">{{ $totalReviews }} ulasan
+                                    </div>
                                 </div>
                                 <div class="rating-bars">
-                                    <div class="r-row"><span style="width:12px;color:var(--dark-mid);">5</span><span
-                                            style="color:#fbbf24;font-size:.8rem;">★</span>
-                                        <div class="r-bar-wrap">
-                                            <div class="r-bar" style="width:87%;"></div>
-                                        </div><span class="r-pct">87%</span>
-                                    </div>
-                                    <div class="r-row"><span style="width:12px;color:var(--dark-mid);">4</span><span
-                                            style="color:#fbbf24;font-size:.8rem;">★</span>
-                                        <div class="r-bar-wrap">
-                                            <div class="r-bar" style="width:10%;"></div>
-                                        </div><span class="r-pct">10%</span>
-                                    </div>
-                                    <div class="r-row"><span style="width:12px;color:var(--dark-mid);">3</span><span
-                                            style="color:#fbbf24;font-size:.8rem;">★</span>
-                                        <div class="r-bar-wrap">
-                                            <div class="r-bar" style="width:2%;"></div>
-                                        </div><span class="r-pct">2%</span>
-                                    </div>
-                                    <div class="r-row"><span style="width:12px;color:var(--dark-mid);">2</span><span
-                                            style="color:#fbbf24;font-size:.8rem;">★</span>
-                                        <div class="r-bar-wrap">
-                                            <div class="r-bar" style="width:1%;"></div>
-                                        </div><span class="r-pct">1%</span>
-                                    </div>
-                                    <div class="r-row"><span style="width:12px;color:var(--dark-mid);">1</span><span
-                                            style="color:#fbbf24;font-size:.8rem;">★</span>
-                                        <div class="r-bar-wrap">
-                                            <div class="r-bar" style="width:0%;"></div>
-                                        </div><span class="r-pct">0%</span>
-                                    </div>
+                                    @for ($star = 5; $star >= 1; $star--)
+                                        <div class="r-row"><span
+                                                style="width:12px;color:var(--dark-mid);">{{ $star }}</span><span
+                                                style="color:#fbbf24;font-size:.8rem;">★</span>
+                                            <div class="r-bar-wrap">
+                                                <div class="r-bar" style="width:{{ $ratingPercentages[$star] }}%;">
+                                                </div>
+                                            </div><span class="r-pct">{{ $ratingPercentages[$star] }}%</span>
+                                        </div>
+                                    @endfor
                                 </div>
                             </div>
                         </div>
@@ -939,33 +929,19 @@
   `).join('');
 
         // ── Reviews ──
-        const REVIEWS = [{
-                initial: 'R',
-                bg: 'var(--primary)',
-                name: 'Rizky P.',
-                date: '2 Jun 2026',
-                stars: 5,
-                text: 'Enak banget! Buttery, isian nanas segar, kejunya kerasa. Packing juga rapi, sampai dalam kondisi sempurna. Sudah order ke-3 kali!',
-                prod: 'Nastar Keju Premium'
-            },
-            {
-                initial: 'A',
-                bg: 'var(--dark)',
-                name: 'Ayu S.',
-                date: '28 Mei 2026',
-                stars: 5,
-                text: 'Pesan lewat WA langsung respon cepat. Bu Sari orangnya ramah. Nastarnya homemade banget rasanya, sangat berbeda dengan yang dijual di toko.',
-                prod: 'Hampers Lebaran Set'
-            },
-            {
-                initial: 'D',
-                bg: '#8b5cf6',
-                name: 'Dian M.',
-                date: '20 Mei 2026',
-                stars: 4,
-                text: 'Hampers-nya cantik dan elegan. Kue-kuenya semua enak, cuma kemasannya sedikit kurang rapat. Overall puas dan akan beli lagi.',
-                prod: 'Hampers Lebaran Set'
-            },
+        const REVIEWS = [
+            @foreach ($reviews as $r)
+                {
+                    initial: '{{ strtoupper(substr($r->user->name ?? 'U', 0, 1)) }}',
+                    bg: '{{ ['var(--primary)', 'var(--dark)', '#8b5cf6', '#ef4444', '#10b981'][$loop->index % 5] }}',
+                    name: '{!! addslashes($r->user->name ?? 'User') !!}',
+                    date: '{{ $r->created_at->format('d M Y') }}',
+                    stars: {{ $r->rating }},
+                    text: '{!! addslashes(str_replace("\n", "\\n", $r->review_text)) !!}',
+                    prod: '{!! addslashes($r->product->name ?? '') !!}'
+                }
+                {{ !$loop->last ? ',' : '' }}
+            @endforeach
         ];
         document.getElementById('reviews-list').innerHTML = REVIEWS.map(r => `
     <div class="review-card">
@@ -993,13 +969,13 @@
 
         function chatWA() {
             @auth
-                window.open(
-                    `https://wa.me/{{ preg_replace('/^0/', '62', $shop->whatsapp_number) }}?text=${encodeURIComponent('Halo {{ $shop->name }}! Saya menemukan toko kamu di Laba UMKM dan ingin bertanya tentang produk kamu.')}`,
-                    '_blank');
-            @else
-                alert('Silakan login terlebih dahulu untuk menghubungi penjual.');
-                window.location.href = "{{ route('login') }}";
-            @endauth
+            window.open(
+                `https://wa.me/{{ preg_replace('/^0/', '62', $shop->whatsapp_number) }}?text=${encodeURIComponent('Halo {{ $shop->name }}! Saya menemukan toko kamu di Laba UMKM dan ingin bertanya tentang produk kamu.')}`,
+                '_blank');
+        @else
+            alert('Silakan login terlebih dahulu untuk menghubungi penjual.');
+            window.location.href = "{{ route('login') }}";
+        @endauth
         }
 
         function toggleFollow(btn) {

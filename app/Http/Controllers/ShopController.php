@@ -152,8 +152,26 @@ class ShopController extends Controller
     {
         $shop = Shop::where('slug', $slug)->firstOrFail();
         $products = Product::where('shop_id', $shop->id)->get();
+        
+        $reviews = \App\Models\ProductReview::whereIn('product_id', $products->pluck('id'))->with('user', 'product')->latest()->get();
+        
+        $totalReviews = $reviews->count();
+        $averageRating = $totalReviews > 0 ? number_format($reviews->avg('rating'), 1) : '0.0';
+        
+        $ratingCounts = [
+            5 => $reviews->where('rating', 5)->count(),
+            4 => $reviews->where('rating', 4)->count(),
+            3 => $reviews->where('rating', 3)->count(),
+            2 => $reviews->where('rating', 2)->count(),
+            1 => $reviews->where('rating', 1)->count(),
+        ];
+        
+        $ratingPercentages = [];
+        foreach ($ratingCounts as $star => $count) {
+            $ratingPercentages[$star] = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
+        }
 
-        return view('pages.shop.shop-profile', compact('shop', 'products'));
+        return view('pages.shop.shop-profile', compact('shop', 'products', 'reviews', 'totalReviews', 'averageRating', 'ratingPercentages'));
     }
 
     public function manageShop()
