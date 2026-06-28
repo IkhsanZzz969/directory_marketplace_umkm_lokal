@@ -754,8 +754,13 @@
         }
 
         function chatWA(shop, wa) {
-            const msg = encodeURIComponent(`Halo, saya tertarik dengan produk dari ${shop} di PasarLokal.`);
-            window.open(`https://wa.me/${wa}?text=${msg}`, '_blank');
+            @auth
+                const msg = encodeURIComponent(`Halo, saya tertarik dengan produk dari ${shop} di PasarLokal.`);
+                window.open(`https://wa.me/${wa}?text=${msg}`, '_blank');
+            @else
+                alert('Silakan login terlebih dahulu untuk menghubungi penjual.');
+                window.location.href = "{{ route('login') }}";
+            @endauth
         }
     </script>
 </body>

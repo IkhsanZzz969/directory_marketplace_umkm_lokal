@@ -561,7 +561,12 @@
   }
 
   function chatWA(name, wa) {
-    window.open(`https://wa.me/${wa}?text=${encodeURIComponent('Halo '+name+'! Saya menemukan toko kamu di PasarLokal.')}`, '_blank');
+    @auth
+      window.open(`https://wa.me/${wa}?text=${encodeURIComponent('Halo '+name+'! Saya menemukan toko kamu di PasarLokal.')}`, '_blank');
+    @else
+      alert('Silakan login terlebih dahulu untuk menghubungi penjual.');
+      window.location.href = "{{ route('login') }}";
+    @endauth
   }
 </script>
 </body>

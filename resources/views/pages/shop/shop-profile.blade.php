@@ -992,9 +992,14 @@
         }
 
         function chatWA() {
-            window.open(
-                `https://wa.me/{{ preg_replace('/^0/', '62', $shop->whatsapp_number) }}?text=${encodeURIComponent('Halo {{ $shop->name }}! Saya menemukan toko kamu di Laba UMKM dan ingin bertanya tentang produk kamu.')}`,
-                '_blank');
+            @auth
+                window.open(
+                    `https://wa.me/{{ preg_replace('/^0/', '62', $shop->whatsapp_number) }}?text=${encodeURIComponent('Halo {{ $shop->name }}! Saya menemukan toko kamu di Laba UMKM dan ingin bertanya tentang produk kamu.')}`,
+                    '_blank');
+            @else
+                alert('Silakan login terlebih dahulu untuk menghubungi penjual.');
+                window.location.href = "{{ route('login') }}";
+            @endauth
         }
 
         function toggleFollow(btn) {

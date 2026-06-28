@@ -835,9 +835,12 @@
                             </div>
                             <div class="product-card-actions" style="margin-top:auto;">
                                 <button class="btn btn-wa w-full btn-sm"
-                                    onclick="event.preventDefault(); event.stopPropagation(); window.open('https://wa.me/{{ preg_replace('/^0/', '62', $rel->shop->whatsapp_number) }}?text={{ urlencode('Halo ' . $rel->shop->name . '! Saya tertarik dengan *' . $rel->name . '* seharga Rp' . number_format($rel->price, 0, ',', '.')) }}', '_blank')"><i
-                                        class="fa-brands fa-whatsapp"></i> Chat
-                                    WA</button>
+                                    @auth
+                                        onclick="event.preventDefault(); event.stopPropagation(); window.open('https://wa.me/{{ preg_replace('/^0/', '62', $rel->shop->whatsapp_number) }}?text={{ urlencode('Halo ' . $rel->shop->name . '! Saya tertarik dengan *' . $rel->name . '* seharga Rp' . number_format($rel->price, 0, ',', '.')) }}', '_blank')"
+                                    @else
+                                        onclick="event.preventDefault(); event.stopPropagation(); alert('Silakan login terlebih dahulu untuk menghubungi penjual.'); window.location.href='{{ route('login') }}';"
+                                    @endauth
+                                    ><i class="fa-brands fa-whatsapp"></i> Chat WA</button>
                             </div>
                         </a>
                     @endforeach
@@ -871,8 +874,13 @@
         }
 
         function sendToWA(phone) {
-            const msg = encodeURIComponent(document.getElementById('wa-message').value);
-            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+            @auth
+                const msg = encodeURIComponent(document.getElementById('wa-message').value);
+                window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+            @else
+                alert('Silakan login terlebih dahulu untuk menghubungi penjual.');
+                window.location.href = "{{ route('login') }}";
+            @endauth
         }
 
         function wishlist(btn) {
