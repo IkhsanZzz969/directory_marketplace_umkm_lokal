@@ -538,59 +538,16 @@
                                 serta <a href="#" style="color:var(--primary);">Kebijakan Privasi</a> Laba.
                             </label>
 
-                            <button class="btn btn-primary w-full btn-lg" onclick="goToOtp()">
-                                Lanjutkan <i class="fa-solid fa-arrow-right"></i>
+                            <button id="btn-register" class="btn btn-primary w-full btn-lg" onclick="doRegister()">
+                                Daftar Sekarang <i class="fa-solid fa-arrow-right"></i>
                             </button>
+                            <div id="register-error" style="text-align:center;color:var(--danger);font-size:0.82rem;margin-top:12px;display:none;">
+                                <i class="fa-solid fa-circle-exclamation"></i> <span id="register-error-msg"></span>
+                            </div>
                             <p class="text-center text-sm mt-16" style="color:var(--dark-light);">
                                 Sudah punya akun? <a href="#" style="color:var(--primary);font-weight:600;"
                                     onclick="switchTab('login')">Masuk</a>
                             </p>
-                        </div>
-
-                        <div id="register-step-2" style="display:none;">
-                            <div style="text-align:center;margin-bottom:32px;">
-                                <div
-                                    style="width:72px;height:72px;background:var(--primary-light);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 16px;">
-                                    📱</div>
-                                <h2 class="auth-title otp-title">Verifikasi OTP</h2>
-                                <p class="otp-desc">Kode 6 digit telah dikirim ke <br><strong
-                                        id="otp-target">08xxxx</strong> via WhatsApp</p>
-                            </div>
-
-                            <div class="otp-inputs" id="otp-inputs">
-                                <input class="otp-input" maxlength="1" type="text" inputmode="numeric"
-                                    oninput="otpMove(this,0)">
-                                <input class="otp-input" maxlength="1" type="text" inputmode="numeric"
-                                    oninput="otpMove(this,1)">
-                                <input class="otp-input" maxlength="1" type="text" inputmode="numeric"
-                                    oninput="otpMove(this,2)">
-                                <input class="otp-input" maxlength="1" type="text" inputmode="numeric"
-                                    oninput="otpMove(this,3)">
-                                <input class="otp-input" maxlength="1" type="text" inputmode="numeric"
-                                    oninput="otpMove(this,4)">
-                                <input class="otp-input" maxlength="1" type="text" inputmode="numeric"
-                                    oninput="otpMove(this,5)">
-                            </div>
-
-                            <div id="otp-error"
-                                style="text-align:center;color:var(--danger);font-size:0.82rem;margin-bottom:12px;display:none;">
-                                <i class="fa-solid fa-circle-exclamation"></i> Kode OTP salah. Silakan coba lagi.
-                            </div>
-
-                            <button id="btn-verify-otp" class="btn btn-primary w-full btn-lg" onclick="verifyOtp()">
-                                <i class="fa-solid fa-shield-check"></i> Verifikasi & Buat Akun
-                            </button>
-
-                            <div class="otp-resend mt-16">
-                                Tidak menerima kode? <span id="resend-countdown">Kirim ulang dalam <strong
-                                        id="countdown">60</strong>s</span>
-                                <a id="resend-link" style="display:none;" onclick="resendOtp()">Kirim Ulang OTP</a>
-                            </div>
-                            <div class="text-center mt-16">
-                                <a href="#" style="color:var(--dark-mid);font-size:0.82rem;" onclick="goBackToForm()">
-                                    <i class="fa-solid fa-arrow-left"></i> Ubah nomor HP
-                                </a>
-                            </div>
                         </div>
 
                         <div id="register-step-3" style="display:none;text-align:center;padding:32px 0;">
@@ -652,69 +609,23 @@
                 lbl.style.color = cls === 'weak' ? 'var(--danger)' : cls === 'medium' ? 'var(--warning)' : 'var(--success)';
             }
 
-            function goToOtp() {
-                const name = document.getElementById('reg-name').value;
-                const email = document.getElementById('reg-email').value;
-                const pass = document.getElementById('reg-pass').value;
-                const phone = document.getElementById('reg-phone').value;
-                const tos = document.getElementById('reg-tos').checked;
-                if (!name || !email || !pass || !phone) { alert('Harap lengkapi semua kolom!'); return; }
-                if (!tos) { alert('Harap setujui syarat dan ketentuan!'); return; }
-                document.getElementById('otp-target').textContent = phone;
-                document.getElementById('register-step-1').style.display = 'none';
-                document.getElementById('register-step-2').style.display = 'block';
-                startCountdown();
-                document.querySelector('.otp-input').focus();
-            }
-
-            function goBackToForm() {
-                document.getElementById('register-step-1').style.display = 'block';
-                document.getElementById('register-step-2').style.display = 'none';
-            }
-
-            let countdownInterval;
-            function startCountdown() {
-                let secs = 60;
-                const el = document.getElementById('countdown');
-                const link = document.getElementById('resend-link');
-                const cd = document.getElementById('resend-countdown');
-                clearInterval(countdownInterval);
-                cd.style.display = 'inline'; link.style.display = 'none';
-                countdownInterval = setInterval(() => {
-                secs--;
-                el.textContent = secs;
-                if (secs <= 0) {
-                    clearInterval(countdownInterval);
-                    cd.style.display = 'none';
-                    link.style.display = 'inline';
-                }
-                }, 1000);
-            }
-
-            function resendOtp() { startCountdown(); }
-
-            function otpMove(el, idx) {
-                el.classList.toggle('filled', el.value !== '');
-                const inputs = document.querySelectorAll('.otp-input');
-                if (el.value && idx < 5) inputs[idx + 1].focus();
-            }
-
-            function verifyOtp() {
-                const inputs = document.querySelectorAll('.otp-input');
-                const code = Array.from(inputs).map(i => i.value).join('');
-                if (code.length < 6) { alert('Masukkan kode OTP 6 digit!'); return; }
-
+            function doRegister() {
                 const name = document.getElementById('reg-name').value;
                 const email = document.getElementById('reg-email').value;
                 const password = document.getElementById('reg-pass').value;
                 const phone = document.getElementById('reg-phone').value;
+                const tos = document.getElementById('reg-tos').checked;
+                
+                if (!name || !email || !password || !phone) { alert('Harap lengkapi semua kolom!'); return; }
+                if (!tos) { alert('Harap setujui syarat dan ketentuan!'); return; }
+
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                const btn = document.getElementById('btn-verify-otp');
+                const btn = document.getElementById('btn-register');
                 const originalText = btn.innerHTML;
                 
                 btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Memproses...';
                 btn.style.pointerEvents = 'none'; 
-                document.getElementById('otp-error').style.display = 'none'; 
+                document.getElementById('register-error').style.display = 'none'; 
 
                 fetch("{{ route('register.store') }}", { 
                     method: 'POST',
@@ -728,8 +639,7 @@
                         name: name,
                         email: email,
                         password: password,
-                        phone: phone,
-                        otp: code
+                        phone: phone
                     })
                 })
                 .then(response => response.json())
@@ -738,11 +648,11 @@
                     btn.style.pointerEvents = 'auto';
 
                     if (data.success) {
-                        document.getElementById('register-step-2').style.display = 'none';
+                        document.getElementById('register-step-1').style.display = 'none';
                         document.getElementById('register-step-3').style.display = 'block';
                     } else {
-                        const errDiv = document.getElementById('otp-error');
-                        errDiv.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${data.message || 'Kode OTP salah. Silakan coba lagi.'}`;
+                        const errDiv = document.getElementById('register-error');
+                        document.getElementById('register-error-msg').textContent = data.message || 'Pendaftaran gagal. Silakan coba lagi.';
                         errDiv.style.display = 'block';
                     }
                 })

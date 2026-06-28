@@ -23,11 +23,9 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
             'phone' => 'required|string|min:10|max:15',
-            'otp' => 'required|string|size:6',
         ], [
             'email.unique' => 'Email ini sudah terdaftar. Silakan gunakan email lain.',
             'password.min' => 'Password minimal harus 8 karakter.',
-            'otp.size' => 'Kode OTP harus berjumlah 6 digit.',
         ]);
 
         if ($validator->fails()) {
@@ -35,14 +33,6 @@ class AuthController extends Controller
                 'success' => false,
                 'message' => $validator->errors()->first(),
             ], 422);
-        }
-        $otpDemoValid = '123456';
-
-        if ($request->otp !== $otpDemoValid) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode OTP salah. Silakan coba lagi dengan kode 123456.',
-            ], 400);
         }
 
         try {
