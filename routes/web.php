@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\WhatsappChatController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [MenuController::class, 'index'])->name('home');
@@ -54,4 +55,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/produk/{slug}', [ProductController::class, 'show'])->name('product.show');
     Route::post('/produk/{product}/review', [ProductController::class, 'storeReview'])->name('product.review.store');
     Route::post('/produk/{product}/wishlist', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::post('/whatsapp-chat/log', [WhatsappChatController::class, 'log'])->name('whatsapp.log');
 });

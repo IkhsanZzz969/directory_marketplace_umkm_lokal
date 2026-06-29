@@ -737,7 +737,8 @@
                             <div class="ps-nav-item" onclick="showPanel('wishlist',null); setActive(this)"><span
                                     class="icon"><i class="fa-regular fa-heart"></i></span> Wishlist <span
                                     class="badge badge-primary"
-                                    style="margin-left:auto;font-size:.65rem;padding:1px 7px;">{{ $wishlistProducts->count() }}</span></div>
+                                    style="margin-left:auto;font-size:.65rem;padding:1px 7px;">{{ $wishlistProducts->count() }}</span>
+                            </div>
                         @endif
                         <div class="ps-nav-item" onclick="showPanel('riwayat',null); setActive(this)"><span
                                 class="icon"><i class="fa-solid fa-clock-rotate-left"></i></span> Riwayat Chat</div>
@@ -1011,57 +1012,79 @@
                             <h3>Wishlist Saya ({{ $wishlistProducts->count() }})</h3>
                             <p>Produk yang kamu simpan untuk dibeli nanti.</p>
                         </div>
-                        @if($wishlistProducts->count() > 0)
-                        <div class="grid-4" id="wishlist-grid">
-                            @foreach($wishlistProducts as $product)
-                            @php $primaryImg = $product->primaryImage->first(); @endphp
-                            <div class="product-card" style="display:flex;flex-direction:column;cursor:pointer;" onclick="location.href='{{ route('product.show', $product->slug) }}'">
-                                <div class="product-card-img" style="position:relative;overflow:hidden;">
-                                    @if($primaryImg)
-                                    <img src="{{ asset('storage/' . $primaryImg->image_path) }}" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;">
-                                    @else
-                                    <div style="width:100%;height:100%;background:linear-gradient(135deg,#f0fdf4,#dcfce7);display:flex;align-items:center;justify-content:center;font-size:3rem;">🛍️</div>
-                                    @endif
-                                    <div class="wishlist-btn active" style="position:absolute;top:10px;right:10px;z-index:2;background:var(--white);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#ef4444;box-shadow:0 2px 5px rgba(0,0,0,0.1);" onclick="event.stopPropagation(); document.getElementById('wishlist-form-{{ $product->id }}').submit();">
-                                        <i class="fa-solid fa-heart"></i>
+                        @if ($wishlistProducts->count() > 0)
+                            <div class="grid-4" id="wishlist-grid">
+                                @foreach ($wishlistProducts as $product)
+                                    @php $primaryImg = $product->primaryImage->first(); @endphp
+                                    <div class="product-card"
+                                        style="display:flex;flex-direction:column;cursor:pointer;"
+                                        onclick="location.href='{{ route('product.show', $product->slug) }}'">
+                                        <div class="product-card-img" style="position:relative;overflow:hidden;">
+                                            @if ($primaryImg)
+                                                <img src="{{ asset('storage/' . $primaryImg->image_path) }}"
+                                                    alt="{{ $product->name }}"
+                                                    style="width:100%;height:100%;object-fit:cover;">
+                                            @else
+                                                <div
+                                                    style="width:100%;height:100%;background:linear-gradient(135deg,#f0fdf4,#dcfce7);display:flex;align-items:center;justify-content:center;font-size:3rem;">
+                                                    🛍️</div>
+                                            @endif
+                                            <div class="wishlist-btn active"
+                                                style="position:absolute;top:10px;right:10px;z-index:2;background:var(--white);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#ef4444;box-shadow:0 2px 5px rgba(0,0,0,0.1);"
+                                                onclick="event.stopPropagation(); document.getElementById('wishlist-form-{{ $product->id }}').submit();">
+                                                <i class="fa-solid fa-heart"></i>
+                                            </div>
+                                            <form id="wishlist-form-{{ $product->id }}"
+                                                action="{{ route('wishlist.toggle', $product->id) }}" method="POST"
+                                                style="display:none;">
+                                                @csrf
+                                            </form>
+                                            @if ($product->stock_status !== 'available')
+                                                <div
+                                                    style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:white;font-size:0.75rem;padding:6px;text-align:center;font-weight:600;">
+                                                    {{ $product->stock_status === 'empty' ? 'Stok Kosong' : ($product->stock_status === 'preorder' ? 'Pre-Order' : 'Stok Terbatas') }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="product-card-body"
+                                            style="padding:14px;flex:1;display:flex;flex-direction:column;">
+                                            <div style="font-size:0.75rem;color:var(--dark-light);margin-bottom:6px;">
+                                                {{ $product->category->name ?? 'Kategori' }}</div>
+                                            <h4
+                                                style="font-size:0.95rem;margin-bottom:8px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1;">
+                                                {{ $product->name }}
+                                            </h4>
+                                            <div
+                                                style="font-family:var(--font-display);font-weight:700;color:var(--primary);font-size:1.1rem;margin-bottom:8px;">
+                                                Rp {{ number_format($product->price, 0, ',', '.') }}
+                                            </div>
+                                            <div
+                                                style="display:flex;align-items:center;gap:6px;font-size:0.8rem;margin-bottom:8px;">
+                                                <i class="fa-solid fa-star" style="color:#fbbf24;"></i>
+                                                <span
+                                                    style="font-weight:600;color:var(--dark);">{{ number_format($product->reviews_avg_rating ?? 0, 1) }}</span>
+                                                <span style="color:var(--dark-light);">({{ $product->reviews_count }}
+                                                    ulasan)</span>
+                                            </div>
+                                            <div
+                                                style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--dark-mid);">
+                                                <i class="fa-solid fa-store" style="color:var(--dark-light);"></i>
+                                                <span
+                                                    style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $product->shop->name }}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <form id="wishlist-form-{{ $product->id }}" action="{{ route('wishlist.toggle', $product->id) }}" method="POST" style="display:none;">
-                                        @csrf
-                                    </form>
-                                    @if($product->stock_status !== 'available')
-                                    <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:white;font-size:0.75rem;padding:6px;text-align:center;font-weight:600;">
-                                        {{ $product->stock_status === 'empty' ? 'Stok Kosong' : ($product->stock_status === 'preorder' ? 'Pre-Order' : 'Stok Terbatas') }}
-                                    </div>
-                                    @endif
-                                </div>
-                                <div class="product-card-body" style="padding:14px;flex:1;display:flex;flex-direction:column;">
-                                    <div style="font-size:0.75rem;color:var(--dark-light);margin-bottom:6px;">{{ $product->category->name ?? 'Kategori' }}</div>
-                                    <h4 style="font-size:0.95rem;margin-bottom:8px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1;">
-                                        {{ $product->name }}
-                                    </h4>
-                                    <div style="font-family:var(--font-display);font-weight:700;color:var(--primary);font-size:1.1rem;margin-bottom:8px;">
-                                        Rp {{ number_format($product->price, 0, ',', '.') }}
-                                    </div>
-                                    <div style="display:flex;align-items:center;gap:6px;font-size:0.8rem;margin-bottom:8px;">
-                                        <i class="fa-solid fa-star" style="color:#fbbf24;"></i>
-                                        <span style="font-weight:600;color:var(--dark);">{{ number_format($product->reviews_avg_rating ?? 0, 1) }}</span>
-                                        <span style="color:var(--dark-light);">({{ $product->reviews_count }} ulasan)</span>
-                                    </div>
-                                    <div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--dark-mid);">
-                                        <i class="fa-solid fa-store" style="color:var(--dark-light);"></i>
-                                        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $product->shop->name }}</span>
-                                    </div>
-                                </div>
+                                @endforeach
                             </div>
-                            @endforeach
-                        </div>
                         @else
-                        <div style="text-align:center;padding:60px 20px;background:var(--white);border-radius:var(--radius-lg);border:1px dashed var(--border);">
-                            <div style="font-size:3rem;margin-bottom:16px;">💔</div>
-                            <h4 style="font-size:1.1rem;margin-bottom:8px;">Belum Ada Wishlist</h4>
-                            <p style="color:var(--dark-light);font-size:0.9rem;margin-bottom:20px;">Kamu belum menyimpan produk apapun ke wishlist.</p>
-                            <a href="{{ route('catalog') }}" class="btn btn-primary">Mulai Belanja</a>
-                        </div>
+                            <div
+                                style="text-align:center;padding:60px 20px;background:var(--white);border-radius:var(--radius-lg);border:1px dashed var(--border);">
+                                <div style="font-size:3rem;margin-bottom:16px;">💔</div>
+                                <h4 style="font-size:1.1rem;margin-bottom:8px;">Belum Ada Wishlist</h4>
+                                <p style="color:var(--dark-light);font-size:0.9rem;margin-bottom:20px;">Kamu belum
+                                    menyimpan produk apapun ke wishlist.</p>
+                                <a href="{{ route('catalog') }}" class="btn btn-primary">Mulai Belanja</a>
+                            </div>
                         @endif
                     </div>
 
@@ -1069,70 +1092,102 @@
                     <div class="panel" id="panel-riwayat">
                         <div class="panel-header">
                             <h3>Riwayat Chat WhatsApp</h3>
-                            <p>Produk yang pernah kamu hubungi via WhatsApp.</p>
+                            <p>Produk atau toko yang pernah kamu hubungi via WhatsApp.</p>
                         </div>
-                        <div class="info-panel-card" style="padding:0;overflow:hidden;">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Produk</th>
-                                        <th>Toko</th>
-                                        <th>Waktu Chat</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div style="font-weight:600;font-size:.88rem;color:var(--dark);">🍪 Nastar
-                                                Keju Premium 500gr</div>
-                                            <div style="font-size:.75rem;color:var(--dark-light);">Rp 65.000</div>
-                                        </td>
-                                        <td>
-                                            <div style="font-size:.85rem;color:var(--dark);">Dapur Bu Sari</div>
-                                            <div style="font-size:.72rem;color:var(--dark-light);">Semarang</div>
-                                        </td>
-                                        <td>
-                                            <div style="font-size:.82rem;">Kemarin, 14.30</div>
-                                        </td>
-                                        <td><button class="btn btn-wa btn-sm" onclick="chatAgain('Dapur Bu Sari')"><i
-                                                    class="fa-brands fa-whatsapp"></i> Chat Lagi</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div style="font-weight:600;font-size:.88rem;color:var(--dark);">👜 Tas
-                                                Anyam Rotan Handmade L</div>
-                                            <div style="font-size:.75rem;color:var(--dark-light);">Rp 95.000</div>
-                                        </td>
-                                        <td>
-                                            <div style="font-size:.85rem;color:var(--dark);">Anyaman Jogja</div>
-                                            <div style="font-size:.72rem;color:var(--dark-light);">Yogyakarta</div>
-                                        </td>
-                                        <td>
-                                            <div style="font-size:.82rem;">3 hari lalu</div>
-                                        </td>
-                                        <td><button class="btn btn-wa btn-sm"><i class="fa-brands fa-whatsapp"></i>
-                                                Chat Lagi</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div style="font-weight:600;font-size:.88rem;color:var(--dark);">🍯 Madu
-                                                Hutan Murni 500ml</div>
-                                            <div style="font-size:.75rem;color:var(--dark-light);">Rp 85.000</div>
-                                        </td>
-                                        <td>
-                                            <div style="font-size:.85rem;color:var(--dark);">Lebah Madu Asli</div>
-                                            <div style="font-size:.72rem;color:var(--dark-light);">Pekalongan</div>
-                                        </td>
-                                        <td>
-                                            <div style="font-size:.82rem;">5 hari lalu</div>
-                                        </td>
-                                        <td><button class="btn btn-wa btn-sm"><i class="fa-brands fa-whatsapp"></i>
-                                                Chat Lagi</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        @if ($chatHistories->count() > 0)
+                            <div class="info-panel-card" style="padding:0;overflow:hidden;">
+                                <div style="overflow-x:auto;">
+                                    <table style="width:100%;border-collapse:collapse;text-align:left;">
+                                        <thead style="background:var(--light);border-bottom:1px solid var(--border);">
+                                            <tr>
+                                                <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
+                                                    Subjek</th>
+                                                <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
+                                                    Toko</th>
+                                                <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
+                                                    Waktu Chat</th>
+                                                <th
+                                                    style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);text-align:center;">
+                                                    Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($chatHistories as $chat)
+                                                <tr
+                                                    style="border-bottom:1px solid var(--border);transition:background 0.2s;">
+                                                    <td style="padding:16px;">
+                                                        @if ($chat->product)
+                                                            <div
+                                                                style="font-weight:600;font-size:.88rem;color:var(--dark);">
+                                                                {{ $chat->product->name }}</div>
+                                                            <div style="font-size:.75rem;color:var(--dark-light);">Rp
+                                                                {{ number_format($chat->product->price, 0, ',', '.') }}
+                                                            </div>
+                                                        @else
+                                                            <div
+                                                                style="font-weight:600;font-size:.88rem;color:var(--dark);">
+                                                                Tanya Toko</div>
+                                                        @endif
+                                                    </td>
+                                                    <td style="padding:16px;">
+                                                        <div
+                                                            style="font-size:.85rem;color:var(--dark);font-weight:500;">
+                                                            {{ $chat->shop->name }}</div>
+                                                        <div style="font-size:.72rem;color:var(--dark-light);">
+                                                            {{ $chat->shop->district }}</div>
+                                                    </td>
+                                                    <td style="padding:16px;">
+                                                        <div style="font-size:.82rem;color:var(--dark-mid);">
+                                                            {{ $chat->created_at->diffForHumans() }}</div>
+                                                    </td>
+                                                    <td style="padding:16px;text-align:center;">
+                                                        @php
+                                                            $waNumber = preg_replace(
+                                                                '/^0/',
+                                                                '62',
+                                                                $chat->shop->whatsapp_number,
+                                                            );
+                                                            $text = $chat->product
+                                                                ? urlencode(
+                                                                    'Halo ' .
+                                                                        $chat->shop->name .
+                                                                        '! Saya tertarik dengan *' .
+                                                                        $chat->product->name .
+                                                                        '* seharga Rp' .
+                                                                        number_format(
+                                                                            $chat->product->price,
+                                                                            0,
+                                                                            ',',
+                                                                            '.',
+                                                                        ),
+                                                                )
+                                                                : urlencode(
+                                                                    'Halo ' .
+                                                                        $chat->shop->name .
+                                                                        '! Saya ingin bertanya.',
+                                                                );
+                                                        @endphp
+                                                        <button class="btn btn-wa btn-sm"
+                                                            onclick="logAndChat({{ $chat->shop_id }}, {{ $chat->product_id ?? 'null' }}, '{{ $waNumber }}', '{{ $text }}')">
+                                                            <i class="fa-brands fa-whatsapp"></i> Chat Lagi
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        @else
+                            <div
+                                style="text-align:center;padding:60px 20px;background:var(--white);border-radius:var(--radius-lg);border:1px dashed var(--border);">
+                                <div style="font-size:3rem;margin-bottom:16px;">💬</div>
+                                <h4 style="font-size:1.1rem;margin-bottom:8px;">Belum Ada Riwayat Chat</h4>
+                                <p style="color:var(--dark-light);font-size:0.9rem;margin-bottom:20px;">Kamu belum
+                                    pernah menghubungi penjual manapun via WhatsApp.</p>
+                                <a href="{{ route('catalog') }}" class="btn btn-primary">Cari Produk</a>
+                            </div>
+                        @endif
                     </div>
 
                     <!-- ■ TOKO SAYA ■ -->
@@ -1560,6 +1615,27 @@
                 });
             }
         });
+    </script>
+    <script>
+        function logAndChat(shopId, productId, waNumber, text) {
+            fetch('{{ route('whatsapp.log') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    shop_id: shopId,
+                    product_id: productId,
+                    message: text
+                })
+            }).then(() => {
+                window.open('https://wa.me/' + waNumber + '?text=' + text, '_blank');
+                location.reload();
+            }).catch(() => {
+                window.open('https://wa.me/' + waNumber + '?text=' + text, '_blank');
+            });
+        }
     </script>
 
     @include('layouts.partials.custom-modal')

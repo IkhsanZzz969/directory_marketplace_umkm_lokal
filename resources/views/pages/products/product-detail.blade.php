@@ -876,7 +876,23 @@
         function sendToWA(phone) {
             @auth
                 const msg = encodeURIComponent(document.getElementById('wa-message').value);
-                window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+                const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '{{ csrf_token() }}';
+                fetch('{{ route("whatsapp.log") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({
+                        shop_id: {{ $product->shop_id }},
+                        product_id: {{ $product->id }},
+                        message: document.getElementById('wa-message').value
+                    })
+                }).then(() => {
+                    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+                }).catch(() => {
+                    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+                });
             @else
                 alert('Silakan login terlebih dahulu untuk menghubungi penjual.');
                 window.location.href = "{{ route('login') }}";

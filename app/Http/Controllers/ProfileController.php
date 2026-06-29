@@ -29,7 +29,12 @@ class ProfileController extends Controller
             ->withCount('reviews')
             ->get();
 
-        return view('pages.menu.profile', compact('totalProducts', 'totalViews', 'wishlistProducts'));
+        $chatHistories = \App\Models\WhatsappChat::where('user_id', Auth::id())
+            ->with(['shop', 'product'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('pages.menu.profile', compact('totalProducts', 'totalViews', 'wishlistProducts', 'chatHistories'));
     }
 
     public function updateAvatar(Request $request)

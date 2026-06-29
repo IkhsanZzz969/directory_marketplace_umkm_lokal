@@ -969,9 +969,23 @@
 
         function chatWA() {
             @auth
-            window.open(
-                `https://wa.me/{{ preg_replace('/^0/', '62', $shop->whatsapp_number) }}?text=${encodeURIComponent('Halo {{ $shop->name }}! Saya menemukan toko kamu di Laba UMKM dan ingin bertanya tentang produk kamu.')}`,
-                '_blank');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '{{ csrf_token() }}';
+            const msg = 'Halo {{ $shop->name }}! Saya menemukan toko kamu di Laba UMKM dan ingin bertanya tentang produk kamu.';
+            fetch('{{ route("whatsapp.log") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    shop_id: {{ $shop->id }},
+                    message: msg
+                })
+            }).then(() => {
+                window.open(`https://wa.me/{{ preg_replace('/^0/', '62', $shop->whatsapp_number) }}?text=${encodeURIComponent(msg)}`, '_blank');
+            }).catch(() => {
+                window.open(`https://wa.me/{{ preg_replace('/^0/', '62', $shop->whatsapp_number) }}?text=${encodeURIComponent(msg)}`, '_blank');
+            });
         @else
             alert('Silakan login terlebih dahulu untuk menghubungi penjual.');
             window.location.href = "{{ route('login') }}";
