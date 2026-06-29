@@ -34,7 +34,15 @@ class ProfileController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('pages.menu.profile', compact('totalProducts', 'totalViews', 'wishlistProducts', 'chatHistories'));
+        $incomingChats = collect();
+        if (Auth::user()->role === 'umkm' && isset($shop)) {
+            $incomingChats = \App\Models\WhatsappChat::where('shop_id', $shop->id)
+                ->with(['user', 'product'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+
+        return view('pages.menu.profile', compact('totalProducts', 'totalViews', 'wishlistProducts', 'chatHistories', 'incomingChats'));
     }
 
     public function updateAvatar(Request $request)

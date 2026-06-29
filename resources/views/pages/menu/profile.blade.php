@@ -1090,103 +1090,181 @@
 
                     <!-- ■ RIWAYAT ■ -->
                     <div class="panel" id="panel-riwayat">
-                        <div class="panel-header">
-                            <h3>Riwayat Chat WhatsApp</h3>
-                            <p>Produk atau toko yang pernah kamu hubungi via WhatsApp.</p>
-                        </div>
-                        @if ($chatHistories->count() > 0)
-                            <div class="info-panel-card" style="padding:0;overflow:hidden;">
-                                <div style="overflow-x:auto;">
-                                    <table style="width:100%;border-collapse:collapse;text-align:left;">
-                                        <thead style="background:var(--light);border-bottom:1px solid var(--border);">
-                                            <tr>
-                                                <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
-                                                    Subjek</th>
-                                                <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
-                                                    Toko</th>
-                                                <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
-                                                    Waktu Chat</th>
-                                                <th
-                                                    style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);text-align:center;">
-                                                    Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($chatHistories as $chat)
-                                                <tr
-                                                    style="border-bottom:1px solid var(--border);transition:background 0.2s;">
-                                                    <td style="padding:16px;">
-                                                        @if ($chat->product)
-                                                            <div
-                                                                style="font-weight:600;font-size:.88rem;color:var(--dark);">
-                                                                {{ $chat->product->name }}</div>
-                                                            <div style="font-size:.75rem;color:var(--dark-light);">Rp
-                                                                {{ number_format($chat->product->price, 0, ',', '.') }}
-                                                            </div>
-                                                        @else
-                                                            <div
-                                                                style="font-weight:600;font-size:.88rem;color:var(--dark);">
-                                                                Tanya Toko</div>
-                                                        @endif
-                                                    </td>
-                                                    <td style="padding:16px;">
-                                                        <div
-                                                            style="font-size:.85rem;color:var(--dark);font-weight:500;">
-                                                            {{ $chat->shop->name }}</div>
-                                                        <div style="font-size:.72rem;color:var(--dark-light);">
-                                                            {{ $chat->shop->district }}</div>
-                                                    </td>
-                                                    <td style="padding:16px;">
-                                                        <div style="font-size:.82rem;color:var(--dark-mid);">
-                                                            {{ $chat->created_at->diffForHumans() }}</div>
-                                                    </td>
-                                                    <td style="padding:16px;text-align:center;">
-                                                        @php
-                                                            $waNumber = preg_replace(
-                                                                '/^0/',
-                                                                '62',
-                                                                $chat->shop->whatsapp_number,
-                                                            );
-                                                            $text = $chat->product
-                                                                ? urlencode(
-                                                                    'Halo ' .
-                                                                        $chat->shop->name .
-                                                                        '! Saya tertarik dengan *' .
-                                                                        $chat->product->name .
-                                                                        '* seharga Rp' .
-                                                                        number_format(
-                                                                            $chat->product->price,
-                                                                            0,
-                                                                            ',',
-                                                                            '.',
-                                                                        ),
-                                                                )
-                                                                : urlencode(
-                                                                    'Halo ' .
-                                                                        $chat->shop->name .
-                                                                        '! Saya ingin bertanya.',
-                                                                );
-                                                        @endphp
-                                                        <button class="btn btn-wa btn-sm"
-                                                            onclick="logAndChat({{ $chat->shop_id }}, {{ $chat->product_id ?? 'null' }}, '{{ $waNumber }}', '{{ $text }}')">
-                                                            <i class="fa-brands fa-whatsapp"></i> Chat Lagi
-                                                        </button>
-                                                    </td>
+                        @if (auth()->user()->role !== 'umkm' || $chatHistories->count() > 0)
+                            <div class="panel-header">
+                                <h3>Riwayat Chat WhatsApp</h3>
+                                <p>Produk atau toko yang pernah kamu hubungi via WhatsApp.</p>
+                            </div>
+                            @if ($chatHistories->count() > 0)
+                                <div class="info-panel-card" style="padding:0;overflow:hidden;">
+                                    <div style="overflow-x:auto;">
+                                        <table style="width:100%;border-collapse:collapse;text-align:left;">
+                                            <thead style="background:var(--light);border-bottom:1px solid var(--border);">
+                                                <tr>
+                                                    <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
+                                                        Subjek</th>
+                                                    <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
+                                                        Toko</th>
+                                                    <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
+                                                        Waktu Chat</th>
+                                                    <th
+                                                        style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);text-align:center;">
+                                                        Aksi</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($chatHistories as $chat)
+                                                    <tr
+                                                        style="border-bottom:1px solid var(--border);transition:background 0.2s;">
+                                                        <td style="padding:16px;">
+                                                            @if ($chat->product)
+                                                                <div
+                                                                    style="font-weight:600;font-size:.88rem;color:var(--dark);">
+                                                                    {{ $chat->product->name }}</div>
+                                                                <div style="font-size:.75rem;color:var(--dark-light);">Rp
+                                                                    {{ number_format($chat->product->price, 0, ',', '.') }}
+                                                                </div>
+                                                            @else
+                                                                <div
+                                                                    style="font-weight:600;font-size:.88rem;color:var(--dark);">
+                                                                    Tanya Toko</div>
+                                                            @endif
+                                                        </td>
+                                                        <td style="padding:16px;">
+                                                            <div
+                                                                style="font-size:.85rem;color:var(--dark);font-weight:500;">
+                                                                {{ $chat->shop->name }}</div>
+                                                            <div style="font-size:.72rem;color:var(--dark-light);">
+                                                                {{ $chat->shop->district }}</div>
+                                                        </td>
+                                                        <td style="padding:16px;">
+                                                            <div style="font-size:.82rem;color:var(--dark-mid);">
+                                                                {{ $chat->created_at->diffForHumans() }}</div>
+                                                        </td>
+                                                        <td style="padding:16px;text-align:center;">
+                                                            @php
+                                                                $waNumber = preg_replace(
+                                                                    '/^0/',
+                                                                    '62',
+                                                                    $chat->shop->whatsapp_number,
+                                                                );
+                                                                $text = $chat->product
+                                                                    ? urlencode(
+                                                                        'Halo ' .
+                                                                            $chat->shop->name .
+                                                                            '! Saya tertarik dengan *' .
+                                                                            $chat->product->name .
+                                                                            '* seharga Rp' .
+                                                                            number_format(
+                                                                                $chat->product->price,
+                                                                                0,
+                                                                                ',',
+                                                                                '.',
+                                                                            ),
+                                                                    )
+                                                                    : urlencode(
+                                                                        'Halo ' .
+                                                                            $chat->shop->name .
+                                                                            '! Saya ingin bertanya.',
+                                                                    );
+                                                            @endphp
+                                                            <button class="btn btn-wa btn-sm"
+                                                                onclick="logAndChat({{ $chat->shop_id }}, {{ $chat->product_id ?? 'null' }}, '{{ $waNumber }}', '{{ $text }}')">
+                                                                <i class="fa-brands fa-whatsapp"></i> Chat Lagi
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
+                            @else
+                                <div
+                                    style="text-align:center;padding:60px 20px;background:var(--white);border-radius:var(--radius-lg);border:1px dashed var(--border);">
+                                    <div style="font-size:3rem;margin-bottom:16px;">💬</div>
+                                    <h4 style="font-size:1.1rem;margin-bottom:8px;">Belum Ada Riwayat Chat</h4>
+                                    <p style="color:var(--dark-light);font-size:0.9rem;margin-bottom:20px;">Kamu belum
+                                        pernah menghubungi penjual manapun via WhatsApp.</p>
+                                    <a href="{{ route('catalog') }}" class="btn btn-primary">Cari Produk</a>
+                                </div>
+                            @endif
+                        @endif
+
+                        @if (auth()->user()->role === 'umkm')
+                            <div class="panel-header" style="{{ $chatHistories->count() > 0 ? 'margin-top: 40px;' : '' }}">
+                                <h3>Pesan Masuk ke Toko Anda</h3>
+                                <p>Riwayat pengguna yang pernah menghubungi toko Anda.</p>
                             </div>
-                        @else
-                            <div
-                                style="text-align:center;padding:60px 20px;background:var(--white);border-radius:var(--radius-lg);border:1px dashed var(--border);">
-                                <div style="font-size:3rem;margin-bottom:16px;">💬</div>
-                                <h4 style="font-size:1.1rem;margin-bottom:8px;">Belum Ada Riwayat Chat</h4>
-                                <p style="color:var(--dark-light);font-size:0.9rem;margin-bottom:20px;">Kamu belum
-                                    pernah menghubungi penjual manapun via WhatsApp.</p>
-                                <a href="{{ route('catalog') }}" class="btn btn-primary">Cari Produk</a>
-                            </div>
+                            @if (isset($incomingChats) && $incomingChats->count() > 0)
+                                <div class="info-panel-card" style="padding:0;overflow:hidden;">
+                                    <div style="overflow-x:auto;">
+                                        <table style="width:100%;border-collapse:collapse;text-align:left;">
+                                            <thead style="background:var(--light);border-bottom:1px solid var(--border);">
+                                                <tr>
+                                                    <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
+                                                        Pengguna</th>
+                                                    <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
+                                                        Subjek</th>
+                                                    <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);">
+                                                        Waktu Chat</th>
+                                                    <th style="padding:12px 16px;font-size:0.85rem;color:var(--dark-mid);text-align:center;">
+                                                        Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($incomingChats as $chat)
+                                                    <tr style="border-bottom:1px solid var(--border);transition:background 0.2s;">
+                                                        <td style="padding:16px;">
+                                                            <div style="font-weight:600;font-size:.88rem;color:var(--dark);">
+                                                                {{ $chat->user->name ?? 'Pengguna Anonim' }}</div>
+                                                            <div style="font-size:.75rem;color:var(--dark-light);">
+                                                                {{ $chat->user->phone ?? 'Tidak ada nomor HP' }}</div>
+                                                        </td>
+                                                        <td style="padding:16px;">
+                                                            @if ($chat->product)
+                                                                <div style="font-weight:600;font-size:.88rem;color:var(--dark);">
+                                                                    {{ $chat->product->name }}</div>
+                                                                <div style="font-size:.72rem;color:var(--dark-light);">
+                                                                    Rp {{ number_format($chat->product->price, 0, ',', '.') }}</div>
+                                                            @else
+                                                                <div style="font-weight:600;font-size:.88rem;color:var(--dark);">
+                                                                    Tanya Toko</div>
+                                                            @endif
+                                                        </td>
+                                                        <td style="padding:16px;">
+                                                            <div style="font-size:.82rem;color:var(--dark-mid);">
+                                                                {{ $chat->created_at->diffForHumans() }}</div>
+                                                        </td>
+                                                        <td style="padding:16px;text-align:center;">
+                                                            @if ($chat->user && $chat->user->phone)
+                                                                @php
+                                                                    $waUserNumber = preg_replace('/^0/', '62', $chat->user->phone);
+                                                                    $replyText = $chat->product
+                                                                        ? urlencode('Halo ' . $chat->user->name . ', terima kasih telah menghubungi toko kami terkait produk *' . $chat->product->name . '*. Ada yang bisa kami bantu?')
+                                                                        : urlencode('Halo ' . $chat->user->name . ', terima kasih telah menghubungi toko kami. Ada yang bisa kami bantu?');
+                                                                @endphp
+                                                                <button class="btn btn-wa btn-sm"
+                                                                    onclick="window.open('https://wa.me/{{ $waUserNumber }}?text={{ $replyText }}', '_blank')">
+                                                                    <i class="fa-brands fa-whatsapp"></i> Balas
+                                                                </button>
+                                                            @else
+                                                                <span style="font-size:0.75rem;color:var(--dark-light);">No HP tidak tersedia</span>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            @else
+                                <div style="text-align:center;padding:60px 20px;background:var(--white);border-radius:var(--radius-lg);border:1px dashed var(--border);">
+                                    <div style="font-size:3rem;margin-bottom:16px;">📥</div>
+                                    <h4 style="font-size:1.1rem;margin-bottom:8px;">Belum Ada Pesan Masuk</h4>
+                                    <p style="color:var(--dark-light);font-size:0.9rem;">Belum ada pengguna yang menghubungi toko Anda.</p>
+                                </div>
+                            @endif
                         @endif
                     </div>
 
