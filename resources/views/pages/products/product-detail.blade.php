@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $product->name }} — PasarLokal</title>
+    <title>{{ $product->name }} — {{ env('APP_NAME') }}</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -511,8 +511,12 @@
                                 $totalReviews = $product->reviews->count();
                                 $roundedAvg = round($avgRating);
                             @endphp
-                            @for($i = 0; $i < $roundedAvg; $i++)★@endfor
-                            @for($i = $roundedAvg; $i < 5; $i++)<span style="color:var(--border);">★</span>@endfor
+                            @for ($i = 0; $i < $roundedAvg; $i++)
+                                ★
+                            @endfor
+                            @for ($i = $roundedAvg; $i < 5; $i++)
+                                <span style="color:var(--border);">★</span>
+                            @endfor
                         </div>
                         <span style="font-size:0.82rem;color:var(--dark-mid);">{{ number_format($avgRating, 1) }} <span
                                 style="color:var(--dark-light)">({{ $totalReviews }} ulasan)</span></span>
@@ -591,12 +595,18 @@
                     <div class="secondary-actions">
                         @auth
                             @php
-                                $isWishlisted = auth()->user()->wishlistedProducts()->where('product_id', $product->id)->exists();
+                                $isWishlisted = auth()
+                                    ->user()
+                                    ->wishlistedProducts()
+                                    ->where('product_id', $product->id)
+                                    ->exists();
                             @endphp
-                            <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST" style="width: 100%;">
+                            <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST"
+                                style="width: 100%;">
                                 @csrf
-                                <button type="submit" class="btn btn-outline w-full" style="{{ $isWishlisted ? 'border-color:#ef4444; color:#ef4444; background:var(--white);' : '' }}">
-                                    @if($isWishlisted)
+                                <button type="submit" class="btn btn-outline w-full"
+                                    style="{{ $isWishlisted ? 'border-color:#ef4444; color:#ef4444; background:var(--white);' : '' }}">
+                                    @if ($isWishlisted)
                                         <i class="fa-solid fa-heart"></i> Hapus dari Wishlist
                                     @else
                                         <i class="fa-regular fa-heart"></i> Simpan ke Wishlist
@@ -665,8 +675,10 @@
                         <div class="spec-row">
                             <span class="spec-key">Ukuran / Dimensi</span>
                             <span class="spec-val">
-                                @if($product->dimension_length && $product->dimension_width && $product->dimension_height)
-                                    {{ rtrim(rtrim($product->dimension_length, '0'), '.') }} × {{ rtrim(rtrim($product->dimension_width, '0'), '.') }} × {{ rtrim(rtrim($product->dimension_height, '0'), '.') }} cm
+                                @if ($product->dimension_length && $product->dimension_width && $product->dimension_height)
+                                    {{ rtrim(rtrim($product->dimension_length, '0'), '.') }} ×
+                                    {{ rtrim(rtrim($product->dimension_width, '0'), '.') }} ×
+                                    {{ rtrim(rtrim($product->dimension_height, '0'), '.') }} cm
                                 @else
                                     -
                                 @endif
@@ -679,7 +691,7 @@
                         <div class="spec-row">
                             <span class="spec-key">Status Stok</span>
                             <span class="spec-val">
-                                @if($product->stock_status === 'available')
+                                @if ($product->stock_status === 'available')
                                     Tersedia
                                 @elseif($product->stock_status === 'preorder')
                                     Pre-Order ({{ $product->preorder_days }} {{ $product->preorder_unit ?: 'hari' }})
@@ -715,88 +727,117 @@
                                 style="font-family:var(--font-display);font-size:3.5rem;font-weight:700;color:var(--dark);line-height:1;">
                                 {{ number_format($avgRating, 1) }}</div>
                             <div class="stars" style="justify-content:center;margin:6px 0;color:#fbbf24;">
-                                @for($i = 0; $i < $roundedAvg; $i++)★@endfor
-                                @for($i = $roundedAvg; $i < 5; $i++)<span style="color:var(--border);">★</span>@endfor
+                                @for ($i = 0; $i < $roundedAvg; $i++)
+                                    ★
+                                @endfor
+                                @for ($i = $roundedAvg; $i < 5; $i++)
+                                    <span style="color:var(--border);">★</span>
+                                @endfor
                             </div>
-                            <div style="font-size:0.78rem;color:var(--dark-light);">dari {{ $totalReviews }} ulasan</div>
+                            <div style="font-size:0.78rem;color:var(--dark-light);">dari {{ $totalReviews }} ulasan
+                            </div>
                         </div>
                         <div style="flex:1;min-width:200px;">
-                            @foreach([5, 4, 3, 2, 1] as $star)
-                            @php
-                                $pct = $totalReviews > 0 ? round(($ratingCounts[$star] / $totalReviews) * 100) : 0;
-                            @endphp
-                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:0.82rem;">
-                                <span style="width:16px;text-align:right;color:var(--dark-mid);">{{ $star }}</span><span
-                                    style="color:#fbbf24;">★</span>
+                            @foreach ([5, 4, 3, 2, 1] as $star)
+                                @php
+                                    $pct = $totalReviews > 0 ? round(($ratingCounts[$star] / $totalReviews) * 100) : 0;
+                                @endphp
                                 <div
-                                    style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-                                    <div style="width:{{ $pct }}%;height:100%;background:#fbbf24;border-radius:3px;"></div>
+                                    style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:0.82rem;">
+                                    <span
+                                        style="width:16px;text-align:right;color:var(--dark-mid);">{{ $star }}</span><span
+                                        style="color:#fbbf24;">★</span>
+                                    <div
+                                        style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+                                        <div
+                                            style="width:{{ $pct }}%;height:100%;background:#fbbf24;border-radius:3px;">
+                                        </div>
+                                    </div>
+                                    <span style="width:28px;color:var(--dark-light);">{{ $pct }}%</span>
                                 </div>
-                                <span style="width:28px;color:var(--dark-light);">{{ $pct }}%</span>
-                            </div>
                             @endforeach
                         </div>
                     </div>
                     <!-- Review items -->
                     <div style="display:flex;flex-direction:column;gap:20px;">
                         @auth
-                            @if(!$product->reviews->where('user_id', auth()->id())->count())
-                            <div style="padding:20px;background:var(--white);border-radius:var(--radius-md);border:1px solid var(--border);">
-                                <h4 style="margin-bottom:12px;font-size:1rem;">Tulis Ulasan Anda</h4>
-                                <form action="{{ route('product.review.store', $product->id) }}" method="POST">
-                                    @csrf
-                                    <div style="margin-bottom:12px;">
-                                        <label style="display:block;margin-bottom:6px;font-size:0.85rem;color:var(--dark-mid);">Rating (1-5)</label>
-                                        <select name="rating" required style="padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);width:100%;max-width:200px;">
-                                            <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
-                                            <option value="4">⭐⭐⭐⭐ (4/5)</option>
-                                            <option value="3">⭐⭐⭐ (3/5)</option>
-                                            <option value="2">⭐⭐ (2/5)</option>
-                                            <option value="1">⭐ (1/5)</option>
-                                        </select>
-                                    </div>
-                                    <div style="margin-bottom:12px;">
-                                        <label style="display:block;margin-bottom:6px;font-size:0.85rem;color:var(--dark-mid);">Komentar (Opsional)</label>
-                                        <textarea name="review_text" rows="3" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);" placeholder="Tuliskan pengalaman Anda..."></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary btn-sm">Kirim Ulasan</button>
-                                </form>
-                            </div>
+                            @if (!$product->reviews->where('user_id', auth()->id())->count())
+                                <div
+                                    style="padding:20px;background:var(--white);border-radius:var(--radius-md);border:1px solid var(--border);">
+                                    <h4 style="margin-bottom:12px;font-size:1rem;">Tulis Ulasan Anda</h4>
+                                    <form action="{{ route('product.review.store', $product->id) }}" method="POST">
+                                        @csrf
+                                        <div style="margin-bottom:12px;">
+                                            <label
+                                                style="display:block;margin-bottom:6px;font-size:0.85rem;color:var(--dark-mid);">Rating
+                                                (1-5)</label>
+                                            <select name="rating" required
+                                                style="padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);width:100%;max-width:200px;">
+                                                <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                                                <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                                                <option value="3">⭐⭐⭐ (3/5)</option>
+                                                <option value="2">⭐⭐ (2/5)</option>
+                                                <option value="1">⭐ (1/5)</option>
+                                            </select>
+                                        </div>
+                                        <div style="margin-bottom:12px;">
+                                            <label
+                                                style="display:block;margin-bottom:6px;font-size:0.85rem;color:var(--dark-mid);">Komentar
+                                                (Opsional)</label>
+                                            <textarea name="review_text" rows="3"
+                                                style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);"
+                                                placeholder="Tuliskan pengalaman Anda..."></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-sm">Kirim Ulasan</button>
+                                    </form>
+                                </div>
                             @endif
                         @else
-                            <div style="padding:16px;background:var(--primary-light);color:var(--primary);border-radius:var(--radius-md);font-size:0.88rem;text-align:center;">
-                                Silakan <a href="{{ route('login') }}" style="font-weight:700;text-decoration:underline;">login</a> untuk memberikan ulasan.
+                            <div
+                                style="padding:16px;background:var(--primary-light);color:var(--primary);border-radius:var(--radius-md);font-size:0.88rem;text-align:center;">
+                                Silakan <a href="{{ route('login') }}"
+                                    style="font-weight:700;text-decoration:underline;">login</a> untuk memberikan ulasan.
                             </div>
                         @endauth
-                        
+
                         @forelse($product->reviews as $review)
-                        <div style="padding:20px;background:var(--bg);border-radius:var(--radius-md);border:1px solid var(--border);">
-                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                                <div style="width:36px;height:36px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;overflow:hidden;">
-                                    @if($review->user->avatar_url)
-                                        <img src="{{ $review->user->avatar_url }}" style="width:100%;height:100%;object-fit:cover;">
-                                    @else
-                                        {{ strtoupper(substr($review->user->name, 0, 1)) }}
-                                    @endif
+                            <div
+                                style="padding:20px;background:var(--bg);border-radius:var(--radius-md);border:1px solid var(--border);">
+                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                                    <div
+                                        style="width:36px;height:36px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;overflow:hidden;">
+                                        @if ($review->user->avatar_url)
+                                            <img src="{{ $review->user->avatar_url }}"
+                                                style="width:100%;height:100%;object-fit:cover;">
+                                        @else
+                                            {{ strtoupper(substr($review->user->name, 0, 1)) }}
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <div style="font-weight:600;font-size:0.88rem;">{{ $review->user->name }}
+                                        </div>
+                                        <div style="font-size:0.72rem;color:var(--dark-light);">
+                                            {{ $review->created_at->format('d M Y') }}</div>
+                                    </div>
+                                    <div class="stars" style="margin-left:auto;color:#fbbf24;">
+                                        @for ($i = 0; $i < $review->rating; $i++)
+                                            ★
+                                        @endfor
+                                        @for ($i = $review->rating; $i < 5; $i++)
+                                            <span style="color:var(--border);">★</span>
+                                        @endfor
+                                    </div>
                                 </div>
-                                <div>
-                                    <div style="font-weight:600;font-size:0.88rem;">{{ $review->user->name }}</div>
-                                    <div style="font-size:0.72rem;color:var(--dark-light);">{{ $review->created_at->format('d M Y') }}</div>
-                                </div>
-                                <div class="stars" style="margin-left:auto;color:#fbbf24;">
-                                    @for($i = 0; $i < $review->rating; $i++)★@endfor
-                                    @for($i = $review->rating; $i < 5; $i++)<span style="color:var(--border);">★</span>@endfor
-                                </div>
+                                @if ($review->review_text)
+                                    <p style="font-size:0.88rem;line-height:1.7;color:var(--dark-mid);">
+                                        {{ $review->review_text }}</p>
+                                @endif
                             </div>
-                            @if($review->review_text)
-                            <p style="font-size:0.88rem;line-height:1.7;color:var(--dark-mid);">{{ $review->review_text }}</p>
-                            @endif
-                        </div>
                         @empty
-                        <div style="text-align:center;padding:40px 0;color:var(--dark-light);">
-                            <i class="fa-regular fa-comment-dots" style="font-size:2rem;margin-bottom:10px;"></i>
-                            <p>Belum ada ulasan untuk produk ini.</p>
-                        </div>
+                            <div style="text-align:center;padding:40px 0;color:var(--dark-light);">
+                                <i class="fa-regular fa-comment-dots" style="font-size:2rem;margin-bottom:10px;"></i>
+                                <p>Belum ada ulasan untuk produk ini.</p>
+                            </div>
                         @endforelse
                     </div>
                 </div>
@@ -836,11 +877,10 @@
                             <div class="product-card-actions" style="margin-top:auto;">
                                 <button class="btn btn-wa w-full btn-sm"
                                     @auth
-                                        onclick="event.preventDefault(); event.stopPropagation(); window.open('https://wa.me/{{ preg_replace('/^0/', '62', $rel->shop->whatsapp_number) }}?text={{ urlencode('Halo ' . $rel->shop->name . '! Saya tertarik dengan *' . $rel->name . '* seharga Rp' . number_format($rel->price, 0, ',', '.')) }}', '_blank')"
+onclick="event.preventDefault(); event.stopPropagation(); window.open('https://wa.me/{{ preg_replace('/^0/', '62', $rel->shop->whatsapp_number) }}?text={{ urlencode('Halo ' . $rel->shop->name . '! Saya tertarik dengan *' . $rel->name . '* seharga Rp' . number_format($rel->price, 0, ',', '.')) }}', '_blank')"
                                     @else
-                                        onclick="event.preventDefault(); event.stopPropagation(); alert('Silakan login terlebih dahulu untuk menghubungi penjual.'); window.location.href='{{ route('login') }}';"
-                                    @endauth
-                                    ><i class="fa-brands fa-whatsapp"></i> Chat WA</button>
+                                        onclick="event.preventDefault(); event.stopPropagation(); alert('Silakan login terlebih dahulu untuk menghubungi penjual.'); window.location.href='{{ route('login') }}';" @endauth><i
+                                        class="fa-brands fa-whatsapp"></i> Chat WA</button>
                             </div>
                         </a>
                     @endforeach
@@ -875,28 +915,29 @@
 
         function sendToWA(phone) {
             @auth
-                const msg = encodeURIComponent(document.getElementById('wa-message').value);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '{{ csrf_token() }}';
-                fetch('{{ route("whatsapp.log") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: JSON.stringify({
-                        shop_id: {{ $product->shop_id }},
-                        product_id: {{ $product->id }},
-                        message: document.getElementById('wa-message').value
-                    })
-                }).then(() => {
-                    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
-                }).catch(() => {
-                    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
-                });
-            @else
-                alert('Silakan login terlebih dahulu untuk menghubungi penjual.');
-                window.location.href = "{{ route('login') }}";
-            @endauth
+            const msg = encodeURIComponent(document.getElementById('wa-message').value);
+            const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector(
+                'meta[name="csrf-token"]').getAttribute('content') : '{{ csrf_token() }}';
+            fetch('{{ route('whatsapp.log') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    shop_id: {{ $product->shop_id }},
+                    product_id: {{ $product->id }},
+                    message: document.getElementById('wa-message').value
+                })
+            }).then(() => {
+                window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+            }).catch(() => {
+                window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+            });
+        @else
+            alert('Silakan login terlebih dahulu untuk menghubungi penjual.');
+            window.location.href = "{{ route('login') }}";
+        @endauth
         }
 
         function wishlist(btn) {
